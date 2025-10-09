@@ -1,0 +1,39 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.0.3 effective-5.10 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)
+// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name PNLight
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+import AdSupport
+import AppTrackingTransparency
+import CoreMotion
+import Foundation
+import Security
+import StoreKit
+import Swift
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import os
+extension PNLight.PNLightSDK {
+  final public func logEvent(_ eventName: Swift.String, eventArgs: [Swift.String : Any]? = nil) async
+}
+extension PNLight.PNLightSDK {
+  final public func getIdfa() -> Swift.String?
+}
+extension PNLight.PNLightSDK {
+  final public func onPurchased() async
+}
+extension PNLight.PNLightSDK {
+  final public func validatePurchase() async -> Swift.Bool
+}
+extension PNLight.PNLightSDK {
+  final public func getOrCreateUserId() -> (id: Swift.String, isNew: Swift.Bool)
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers final public class PNLightSDK : ObjectiveC.NSObject {
+  public static let shared: PNLight.PNLightSDK
+  final public func initialize(apiKey: Swift.String) async
+  @objc deinit
+}
+extension PNLight.PNLightSDK : StoreKit.SKPaymentTransactionObserver {
+  @objc final public func paymentQueue(_ queue: StoreKit.SKPaymentQueue, updatedTransactions transactions: [StoreKit.SKPaymentTransaction])
+}
