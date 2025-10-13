@@ -26,7 +26,8 @@ import PNLightSDK
 await PNLightSDK.shared.initialize(apiKey: "your-api-key")
 
 // 2. Validate a purchase (call before purchase - if false, don't proceed)
-let isValidPurchase = await PNLightSDK.shared.validatePurchase()
+let isValidPurchase = await PNLightSDK.shared.validatePurchase() // captcha defaults to true
+// Or disable captcha: let isValidPurchase = await PNLightSDK.shared.validatePurchase(captcha: false)
 print("Purchase validation result: \(isValidPurchase)")
 
 // 3. Log an event (example: user completed a tutorial)
@@ -52,7 +53,7 @@ The main SDK instance.
 #### Methods
 
 - `initialize(apiKey: String) async` - Initialize the SDK with your API key
-- `validatePurchase() async -> Bool` - Validate a purchase with anti-bot protection
+- `validatePurchase(captcha: Bool = true) async -> Bool` - Validate a purchase with anti-bot protection. Set captcha to false to skip captcha challenge.
 - `logEvent(_ eventName: String, eventArgs: [String: Any]?) async` - Log a custom event
 
 ## Requirements

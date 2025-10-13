@@ -13,9 +13,10 @@ public class PNLightSDK {
     }
 
     /// Validate a purchase with anti-bot protection
+    /// - Parameter captcha: Whether to show captcha challenge if purchase is blocked (default: true)
     /// - Returns: True if purchase is allowed, false if blocked
-    public func validatePurchase() async -> Bool {
-        return await PNLight.PNLightSDK.shared.validatePurchase()
+    public func validatePurchase(captcha: Bool = true) async -> Bool {
+        return await PNLight.PNLightSDK.shared.validatePurchase(captcha: captcha)
     }
 
     /// Log a custom event to PNLight
