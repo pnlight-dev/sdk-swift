@@ -398,18 +398,25 @@
           {
             "kind": "Function",
             "name": "validatePurchase",
-            "printedName": "validatePurchase()",
+            "printedName": "validatePurchase(captcha:)",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Bool",
                 "printedName": "Swift.Bool",
                 "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7PNLight0A3SDKC16validatePurchaseSbyYaF",
-            "mangledName": "$s7PNLight0A3SDKC16validatePurchaseSbyYaF",
+            "usr": "s:7PNLight0A3SDKC16validatePurchase7captchaS2b_tYaF",
+            "mangledName": "$s7PNLight0A3SDKC16validatePurchase7captchaS2b_tYaF",
             "moduleName": "PNLight",
             "declAttributes": [
               "Final",
@@ -586,6 +593,13 @@
     "json_format_version": 8
   },
   "ConstValues": [
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+PurchaseValidation.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3295,
+      "length": 4,
+      "value": "true"
+    },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "StringLiteral",
