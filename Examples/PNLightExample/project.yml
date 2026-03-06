@@ -1,0 +1,34 @@
+name: PNLightExample
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15"
+
+packages:
+  PNLightSDK:
+    url: https://github.com/pnlight-dev/sdk-swift.git
+    from: 0.2.0
+
+targets:
+  PNLightExample:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: PNLightExample
+    info:
+      path: PNLightExample/Info.plist
+      properties:
+        CFBundleDisplayName: PNLight Example
+        UILaunchScreen:
+          UIColorName: ""
+        NSUserTrackingUsageDescription: "This identifier will be used to deliver personalized ads to you."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.pnlight-example
+        SWIFT_VERSION: "5.9"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    dependencies:
+      - package: PNLightSDK

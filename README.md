@@ -8,7 +8,7 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/pnlight-dev/sdk-swift.git", from: "0.2.0")
+    .package(url: "https://github.com/pnlight-dev/sdk-swift.git", from: "0.2.1")
 ]
 ```
 
@@ -22,6 +22,31 @@ Or add it directly in Xcode:
 
 - iOS 13.0+
 - Swift 5.7+
+
+---
+
+## Example Project
+
+A complete example project is included in the `Examples/PNLightExample` directory. It demonstrates:
+
+- SDK initialization with prefetching
+- Purchase validation via `StoreManager`
+- Remote UI rendering with `RemoteUiView`
+- Event logging, attribution, and user identity management
+
+To run the example:
+
+```bash
+cd Examples/PNLightExample
+
+# Generate Xcode project with xcodegen
+xcodegen generate
+
+# Open in Xcode
+open PNLightExample.xcodeproj
+```
+
+Update `YOUR_API_KEY` in `App.swift` with your real credentials before running.
 
 ---
 
