@@ -8,14 +8,14 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/your-org/pnlight-sdk.git", from: "0.3.5")
+    .package(url: "https://github.com/pnlight-dev/sdk-swift.git", from: "0.2.0")
 ]
 ```
 
 Or add it directly in Xcode:
 
 1. Go to **File → Add Packages...**
-2. Enter `https://github.com/your-org/pnlight-sdk.git`
+2. Enter `https://github.com/pnlight-dev/sdk-swift.git`
 3. Select the version you want to use
 
 ## Requirements
@@ -39,7 +39,6 @@ await PNLightSDK.shared.initialize(apiKey: "your-api-key")
 
 ```swift
 let isAllowed = await PNLightSDK.shared.validatePurchase()
-// Pass captcha: false to skip the math challenge on block
 let isAllowed = await PNLightSDK.shared.validatePurchase(captcha: false)
 ```
 
@@ -90,14 +89,20 @@ import PNLightSDK
 import SwiftUI
 
 struct PaywallScreen: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var store: StoreManager
+
     var body: some View {
         RemoteUiView(placement: "paywall", cardId: "paywall_card") { action in
-            // Called when the user taps a custom (non-http/https) element
-            switch action.scheme {
-            case "myapp":
-                handleDeepLink(action)
-            default:
-                break
+            if action.logId == "paywall_button" {
+                navigationPath.append(Route.paywall)
+            } else if action.logId == "purchase_button" {
+                let productId = action.params["id"] ?? ""
+                Task { await store.purchase(productId) }
+            } else if action.logId == "close_button" {
+                dismiss()
+            } else {
+                dismiss()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -122,8 +127,16 @@ final class PaywallViewController: UIViewController {
         view.addSubview(remoteView)
 
         remoteView.onAction = { [weak self] action in
-            print("Action triggered:", action.url)
-            // action.scheme, action.path, action.params are also available
+            if action.logId == "paywall_button" {
+                self?.showPaywall()
+            } else if action.logId == "purchase_button" {
+                let productId = action.params["id"] ?? ""
+                Task { await self?.store.purchase(productId) }
+            } else if action.logId == "close_button" {
+                self?.navigateToMain()
+            } else {
+                self?.navigateToMain()
+            }
         }
 
         Task {
