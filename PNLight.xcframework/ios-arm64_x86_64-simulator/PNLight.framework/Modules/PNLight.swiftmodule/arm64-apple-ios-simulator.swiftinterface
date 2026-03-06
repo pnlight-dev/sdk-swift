@@ -15,6 +15,23 @@ import _StringProcessing
 import _SwiftConcurrencyShims
 import os
 extension PNLight.PNLightSDK {
+  public enum AttributionProvider : Swift.String, Swift.Codable {
+    case appsFlyer
+    case adjust
+    case firebase
+    case appleAdsAttribution
+    case custom
+    case facebook
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  @discardableResult
+  final public func addAttribution(provider: PNLight.PNLightSDK.AttributionProvider, data: [Swift.String : Any]? = nil, identifier: Swift.String? = nil) async -> Swift.Bool
+}
+extension PNLight.PNLightSDK {
   final public func logEvent(_ eventName: Swift.String, eventArgs: [Swift.String : Any]? = nil) async
 }
 extension PNLight.PNLightSDK {
@@ -26,14 +43,31 @@ extension PNLight.PNLightSDK {
 extension PNLight.PNLightSDK {
   final public func validatePurchase(captcha: Swift.Bool = true) async -> Swift.Bool
 }
+public struct UIConfig {
+  public let config: Swift.String?
+  public let parameters: [Swift.String : Any]?
+}
+extension PNLight.PNLightSDK {
+  final public func getUIConfig(placement: Swift.String) async -> PNLight.UIConfig?
+  final public func prefetchUIConfig(placement: Swift.String)
+  final public func clearUIConfigCache()
+}
 extension PNLight.PNLightSDK {
   final public func getOrCreateUserId() -> (id: Swift.String, isNew: Swift.Bool)
+  final public func resetUserId()
+}
+public struct PNLightConfig {
+  public var baseDomain: Swift.String?
+  public init(baseDomain: Swift.String? = nil)
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers final public class PNLightSDK : ObjectiveC.NSObject {
   public static let shared: PNLight.PNLightSDK
-  final public func initialize(apiKey: Swift.String) async
+  final public func initialize(apiKey: Swift.String, config: PNLight.PNLightConfig? = nil) async
   @objc deinit
 }
 extension PNLight.PNLightSDK : StoreKit.SKPaymentTransactionObserver {
   @objc final public func paymentQueue(_ queue: StoreKit.SKPaymentQueue, updatedTransactions transactions: [StoreKit.SKPaymentTransaction])
 }
+extension PNLight.PNLightSDK.AttributionProvider : Swift.Equatable {}
+extension PNLight.PNLightSDK.AttributionProvider : Swift.Hashable {}
+extension PNLight.PNLightSDK.AttributionProvider : Swift.RawRepresentable {}

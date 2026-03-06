@@ -34,6 +34,13 @@
       },
       {
         "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PNLight"
+      },
+      {
+        "kind": "Import",
         "name": "UIKit",
         "printedName": "UIKit",
         "declKind": "Import",
@@ -166,6 +173,189 @@
         "moduleName": "PNLight"
       },
       {
+        "kind": "TypeDecl",
+        "name": "UIConfig",
+        "printedName": "UIConfig",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "config",
+            "printedName": "config",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight8UIConfigV6configSSSgvp",
+            "mangledName": "$s7PNLight8UIConfigV6configSSSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight8UIConfigV6configSSSgvg",
+                "mangledName": "$s7PNLight8UIConfigV6configSSSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "parameters",
+            "printedName": "parameters",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[Swift.String : Any]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Any]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ProtocolComposition",
+                        "printedName": "Any"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight8UIConfigV10parametersSDySSypGSgvp",
+            "mangledName": "$s7PNLight8UIConfigV10parametersSDySSypGSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Any]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Any]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "ProtocolComposition",
+                            "printedName": "Any"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight8UIConfigV10parametersSDySSypGSgvg",
+                "mangledName": "$s7PNLight8UIConfigV10parametersSDySSypGSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7PNLight8UIConfigV",
+        "mangledName": "$s7PNLight8UIConfigV",
+        "moduleName": "PNLight",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "PNLight"
+      },
+      {
         "kind": "Import",
         "name": "Security",
         "printedName": "Security",
@@ -199,6 +389,182 @@
         "printedName": "CoreMotion",
         "declKind": "Import",
         "moduleName": "PNLight"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "PNLightConfig",
+        "printedName": "PNLightConfig",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "baseDomain",
+            "printedName": "baseDomain",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight0A6ConfigV10baseDomainSSSgvp",
+            "mangledName": "$s7PNLight0A6ConfigV10baseDomainSSSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV10baseDomainSSSgvg",
+                "mangledName": "$s7PNLight0A6ConfigV10baseDomainSSSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV10baseDomainSSSgvs",
+                "mangledName": "$s7PNLight0A6ConfigV10baseDomainSSSgvs",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV10baseDomainSSSgvM",
+                "mangledName": "$s7PNLight0A6ConfigV10baseDomainSSSgvM",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(baseDomain:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "PNLightConfig",
+                "printedName": "PNLight.PNLightConfig",
+                "usr": "s:7PNLight0A6ConfigV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7PNLight0A6ConfigV10baseDomainACSSSg_tcfc",
+            "mangledName": "$s7PNLight0A6ConfigV10baseDomainACSSSg_tcfc",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7PNLight0A6ConfigV",
+        "mangledName": "$s7PNLight0A6ConfigV",
+        "moduleName": "PNLight",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
       },
       {
         "kind": "TypeDecl",
@@ -259,7 +625,7 @@
           {
             "kind": "Function",
             "name": "initialize",
-            "printedName": "initialize(apiKey:)",
+            "printedName": "initialize(apiKey:config:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -271,16 +637,482 @@
                 "name": "String",
                 "printedName": "Swift.String",
                 "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "PNLight.PNLightConfig?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "PNLightConfig",
+                    "printedName": "PNLight.PNLightConfig",
+                    "usr": "s:7PNLight0A6ConfigV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7PNLight0A3SDKC10initialize6apiKeyySS_tYaF",
-            "mangledName": "$s7PNLight0A3SDKC10initialize6apiKeyySS_tYaF",
+            "usr": "s:7PNLight0A3SDKC10initialize6apiKey6configySS_AA0A6ConfigVSgtYaF",
+            "mangledName": "$s7PNLight0A3SDKC10initialize6apiKey6configySS_AA0A6ConfigVSgtYaF",
             "moduleName": "PNLight",
             "declAttributes": [
               "Final",
               "AccessControl"
             ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "TypeDecl",
+            "name": "AttributionProvider",
+            "printedName": "AttributionProvider",
+            "children": [
+              {
+                "kind": "Var",
+                "name": "appsFlyer",
+                "printedName": "appsFlyer",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(PNLight.PNLightSDK.AttributionProvider.Type) -> PNLight.PNLightSDK.AttributionProvider",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AttributionProvider",
+                            "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                            "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO9appsFlyeryA2EmF",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO9appsFlyeryA2EmF",
+                "moduleName": "PNLight"
+              },
+              {
+                "kind": "Var",
+                "name": "adjust",
+                "printedName": "adjust",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(PNLight.PNLightSDK.AttributionProvider.Type) -> PNLight.PNLightSDK.AttributionProvider",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AttributionProvider",
+                            "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                            "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO6adjustyA2EmF",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO6adjustyA2EmF",
+                "moduleName": "PNLight"
+              },
+              {
+                "kind": "Var",
+                "name": "firebase",
+                "printedName": "firebase",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(PNLight.PNLightSDK.AttributionProvider.Type) -> PNLight.PNLightSDK.AttributionProvider",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AttributionProvider",
+                            "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                            "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO8firebaseyA2EmF",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO8firebaseyA2EmF",
+                "moduleName": "PNLight"
+              },
+              {
+                "kind": "Var",
+                "name": "appleAdsAttribution",
+                "printedName": "appleAdsAttribution",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(PNLight.PNLightSDK.AttributionProvider.Type) -> PNLight.PNLightSDK.AttributionProvider",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AttributionProvider",
+                            "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                            "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO08appleAdsC0yA2EmF",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO08appleAdsC0yA2EmF",
+                "moduleName": "PNLight"
+              },
+              {
+                "kind": "Var",
+                "name": "custom",
+                "printedName": "custom",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(PNLight.PNLightSDK.AttributionProvider.Type) -> PNLight.PNLightSDK.AttributionProvider",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AttributionProvider",
+                            "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                            "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO6customyA2EmF",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO6customyA2EmF",
+                "moduleName": "PNLight"
+              },
+              {
+                "kind": "Var",
+                "name": "facebook",
+                "printedName": "facebook",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(PNLight.PNLightSDK.AttributionProvider.Type) -> PNLight.PNLightSDK.AttributionProvider",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "AttributionProvider",
+                            "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                            "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO8facebookyA2EmF",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO8facebookyA2EmF",
+                "moduleName": "PNLight"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(rawValue:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "PNLight.PNLightSDK.AttributionProvider?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AttributionProvider",
+                        "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                        "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO8rawValueAESgSS_tcfc",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO8rawValueAESgSS_tcfc",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Var",
+                "name": "rawValue",
+                "printedName": "rawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO8rawValueSSvp",
+                "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO8rawValueSSvp",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:7PNLight0A3SDKC19AttributionProviderO8rawValueSSvg",
+                    "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO8rawValueSSvg",
+                    "moduleName": "PNLight",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Enum",
+            "usr": "s:7PNLight0A3SDKC19AttributionProviderO",
+            "mangledName": "$s7PNLight0A3SDKC19AttributionProviderO",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "enumRawTypeName": "String",
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Equatable",
+                "printedName": "Equatable",
+                "usr": "s:SQ",
+                "mangledName": "$sSQ"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Hashable",
+                "printedName": "Hashable",
+                "usr": "s:SH",
+                "mangledName": "$sSH"
+              },
+              {
+                "kind": "Conformance",
+                "name": "RawRepresentable",
+                "printedName": "RawRepresentable",
+                "children": [
+                  {
+                    "kind": "TypeWitness",
+                    "name": "RawValue",
+                    "printedName": "RawValue",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ]
+                  }
+                ],
+                "usr": "s:SY",
+                "mangledName": "$sSY"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Decodable",
+                "printedName": "Decodable",
+                "usr": "s:Se",
+                "mangledName": "$sSe"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Encodable",
+                "printedName": "Encodable",
+                "usr": "s:SE",
+                "mangledName": "$sSE"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "addAttribution",
+            "printedName": "addAttribution(provider:data:identifier:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AttributionProvider",
+                "printedName": "PNLight.PNLightSDK.AttributionProvider",
+                "usr": "s:7PNLight0A3SDKC19AttributionProviderO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[Swift.String : Any]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Any]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ProtocolComposition",
+                        "printedName": "Any"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC14addAttribution8provider4data10identifierSbAC0D8ProviderO_SDySSypGSgSSSgtYaF",
+            "mangledName": "$s7PNLight0A3SDKC14addAttribution8provider4data10identifierSbAC0D8ProviderO_SDySSypGSgSSSgtYaF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "DiscardableResult",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
             "funcSelfKind": "NonMutating"
           },
           {
@@ -428,6 +1260,96 @@
           },
           {
             "kind": "Function",
+            "name": "getUIConfig",
+            "printedName": "getUIConfig(placement:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "PNLight.UIConfig?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIConfig",
+                    "printedName": "PNLight.UIConfig",
+                    "usr": "s:7PNLight8UIConfigV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC11getUIConfig9placementAA0D0VSgSS_tYaF",
+            "mangledName": "$s7PNLight0A3SDKC11getUIConfig9placementAA0D0VSgSS_tYaF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "prefetchUIConfig",
+            "printedName": "prefetchUIConfig(placement:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC16prefetchUIConfig9placementySS_tF",
+            "mangledName": "$s7PNLight0A3SDKC16prefetchUIConfig9placementySS_tF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "clearUIConfigCache",
+            "printedName": "clearUIConfigCache()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC18clearUIConfigCacheyyF",
+            "mangledName": "$s7PNLight0A3SDKC18clearUIConfigCacheyyF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "getOrCreateUserId",
             "printedName": "getOrCreateUserId()",
             "children": [
@@ -459,6 +1381,28 @@
               "Final",
               "AccessControl",
               "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "resetUserId",
+            "printedName": "resetUserId()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC11resetUserIdyyF",
+            "mangledName": "$s7PNLight0A3SDKC11resetUserIdyyF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
@@ -601,37 +1545,65 @@
       "value": "true"
     },
     {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "Dictionary",
+      "offset": 2705,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "Array",
+      "offset": 2765,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "StringLiteral",
+      "offset": 2825,
+      "length": 32,
+      "value": "\"app.pnlight.sdk.uiconfig.cache\""
+    },
+    {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "StringLiteral",
-      "offset": 502,
+      "offset": 382,
+      "length": 29,
+      "value": "\"https:\/\/console.pnlight.app\""
+    },
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "kind": "StringLiteral",
+      "offset": 731,
       "length": 17,
       "value": "\"app.pnlight.sdk\""
     },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "StringLiteral",
-      "offset": 531,
+      "offset": 760,
       "length": 6,
       "value": "\"main\""
     },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "IntegerLiteral",
-      "offset": 671,
+      "offset": 900,
       "length": 2,
       "value": "15"
     },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "IntegerLiteral",
-      "offset": 715,
+      "offset": 944,
       "length": 2,
       "value": "30"
     },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "Array",
-      "offset": 1050,
+      "offset": 1279,
       "length": 2,
       "value": "[]"
     }

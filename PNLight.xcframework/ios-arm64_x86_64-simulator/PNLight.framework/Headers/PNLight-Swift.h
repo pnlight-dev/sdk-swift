@@ -327,6 +327,8 @@ SWIFT_CLASS("_TtC7PNLight10PNLightSDK")
 
 
 
+
+
 #endif
 #if __has_attribute(external_source_symbol)
 # pragma clang attribute pop
@@ -656,6 +658,8 @@ SWIFT_CLASS("_TtC7PNLight10PNLightSDK")
 @interface PNLightSDK (SWIFT_EXTENSION(PNLight)) <SKPaymentTransactionObserver>
 - (void)paymentQueue:(SKPaymentQueue * _Nonnull)queue updatedTransactions:(NSArray<SKPaymentTransaction *> * _Nonnull)transactions;
 @end
+
+
 
 
 

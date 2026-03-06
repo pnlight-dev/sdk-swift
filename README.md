@@ -8,55 +8,198 @@ Add the following to your `Package.swift` file:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/pnlight-dev/sdk-swift.git", from: "0.1.1")
+    .package(url: "https://github.com/your-org/pnlight-sdk.git", from: "0.3.5")
 ]
 ```
 
 Or add it directly in Xcode:
-1. Go to File → Add Packages...
-2. Enter `https://github.com/pnlight-dev/sdk-swift.git`
+
+1. Go to **File → Add Packages...**
+2. Enter `https://github.com/your-org/pnlight-sdk.git`
 3. Select the version you want to use
-
-## Usage
-
-```swift
-import PNLightSDK
-
-// 1. Initialize the SDK (do this first)
-await PNLightSDK.shared.initialize(apiKey: "your-api-key")
-
-// 2. Validate a purchase (call before purchase - if false, don't proceed)
-let isValidPurchase = await PNLightSDK.shared.validatePurchase() // captcha defaults to true
-// Or disable captcha: let isValidPurchase = await PNLightSDK.shared.validatePurchase(captcha: false)
-print("Purchase validation result: \(isValidPurchase)")
-
-// 3. Log an event (example: user completed a tutorial)
-await PNLightSDK.shared.logEvent("tutorial_completed", eventArgs: [
-    "level": "1",
-    "duration": "300",
-    "success": "true"
-])
-```
-
-### Important Notes
-
-- **Initialization**: Always initialize the SDK first before using any other methods
-- **Purchase Validation**: Call `validatePurchase()` before allowing a purchase. If it returns `false`, it's better not to proceed with the purchase
-- **Event Logging**: Use `logEvent()` to log events to the PNLight platform for analytics and tracking
-
-## API Reference
-
-### `PNLightSDK.shared`
-
-The main SDK instance.
-
-#### Methods
-
-- `initialize(apiKey: String) async` - Initialize the SDK with your API key
-- `validatePurchase(captcha: Bool = true) async -> Bool` - Validate a purchase with anti-bot protection. Set captcha to false to skip captcha challenge.
-- `logEvent(_ eventName: String, eventArgs: [String: Any]?) async` - Log a custom event
 
 ## Requirements
 
 - iOS 13.0+
 - Swift 5.7+
+
+---
+
+## Usage
+
+### Initialization
+
+```swift
+import PNLightSDK
+
+await PNLightSDK.shared.initialize(apiKey: "your-api-key")
+```
+
+### Purchase Validation
+
+```swift
+let isAllowed = await PNLightSDK.shared.validatePurchase()
+// Pass captcha: false to skip the math challenge on block
+let isAllowed = await PNLightSDK.shared.validatePurchase(captcha: false)
+```
+
+### Event Logging
+
+```swift
+await PNLightSDK.shared.logEvent("purchase_completed", eventArgs: [
+    "product_id": "premium_subscription",
+    "amount": 9.99
+])
+```
+
+### Attribution
+
+```swift
+await PNLightSDK.shared.addAttribution(
+    provider: .appsFlyer,
+    data: ["af_status": "Non-organic"],
+    identifier: "your-appsflyer-id"
+)
+```
+
+### User Identity
+
+```swift
+let userId = PNLightSDK.shared.getUserId()
+PNLightSDK.shared.resetUserId()
+```
+
+### IDFA
+
+```swift
+if let idfa = PNLightSDK.shared.getIdfa() {
+    print("IDFA:", idfa)
+}
+```
+
+---
+
+## RemoteUiView — Server-driven UI
+
+`RemoteUiView` fetches and renders a DivKit layout from PNLight for a given placement. It handles loading and error states automatically.
+
+### SwiftUI
+
+```swift
+import PNLightSDK
+import SwiftUI
+
+struct PaywallScreen: View {
+    var body: some View {
+        RemoteUiView(placement: "paywall", cardId: "paywall_card") { action in
+            // Called when the user taps a custom (non-http/https) element
+            switch action.scheme {
+            case "myapp":
+                handleDeepLink(action)
+            default:
+                break
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+```
+
+### UIKit
+
+```swift
+import PNLightSDK
+
+final class PaywallViewController: UIViewController {
+
+    private let remoteView = PNLightRemoteUiView()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        remoteView.frame = view.bounds
+        remoteView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(remoteView)
+
+        remoteView.onAction = { [weak self] action in
+            print("Action triggered:", action.url)
+            // action.scheme, action.path, action.params are also available
+        }
+
+        Task {
+            let config = await PNLightSDK.shared.getUIConfig(placement: "paywall")
+            remoteView.applyConfig(configJson: config?.config, cardId: "paywall_card")
+        }
+    }
+}
+```
+
+### Prefetching
+
+Call `prefetchUIConfig` early (e.g. at app launch) to warm the in-memory cache so `RemoteUiView` renders instantly:
+
+```swift
+PNLightSDK.shared.prefetchUIConfig(placement: "paywall")
+```
+
+### Clearing the cache
+
+```swift
+PNLightSDK.shared.clearUIConfigCache()
+```
+
+---
+
+## API Reference
+
+### `PNLightSDK.shared`
+
+
+| Method                                                    | Description                                                                   |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `initialize(apiKey:config:) async`                        | Initialize the SDK with your API key and optional config                      |
+| `validatePurchase(captcha:) async -> Bool`                | Validate a purchase; shows a CAPTCHA challenge when blocked (default: `true`) |
+| `logEvent(_:eventArgs:) async`                            | Log a custom event with optional arguments                                    |
+| `addAttribution(provider:data:identifier:) async -> Bool` | Send attribution data from AppsFlyer, Adjust, Firebase, etc.                  |
+| `getUserId() -> String`                                   | Get or create a stable user identifier                                        |
+| `resetUserId()`                                           | Reset the user identifier                                                     |
+| `getIdfa() -> String?`                                    | Return IDFA if ATT is already authorized, otherwise `nil`                     |
+| `prefetchUIConfig(placement:)`                            | Prefetch a UI config into the in-memory cache                                 |
+| `getUIConfig(placement:) async -> UIConfig?`              | Fetch a UI config (uses cache when available)                                 |
+| `clearUIConfigCache()`                                    | Clear the in-memory UI config cache                                           |
+
+
+### `RemoteUiView` (SwiftUI, iOS 14+)
+
+
+| Parameter   | Type                          | Description                              |
+| ----------- | ----------------------------- | ---------------------------------------- |
+| `placement` | `String`                      | PNLight placement identifier             |
+| `cardId`    | `String`                      | DivKit card identifier                   |
+| `onAction`  | `((RemoteUiAction) -> Void)?` | Called when a custom action is triggered |
+
+
+### `PNLightRemoteUiView` (UIKit)
+
+
+| Member                                  | Description                                          |
+| --------------------------------------- | ---------------------------------------------------- |
+| `onAction: ((RemoteUiAction) -> Void)?` | Called on the main thread when a custom action fires |
+| `applyConfig(configJson:cardId:)`       | Load and render a DivKit layout from a JSON string   |
+
+
+### `RemoteUiAction`
+
+
+| Property | Type               | Description                             |
+| -------- | ------------------ | --------------------------------------- |
+| `url`    | `String`           | Full URL string of the triggered action |
+| `scheme` | `String`           | URL scheme (e.g. `"myapp"`)             |
+| `path`   | `String`           | URL path component                      |
+| `params` | `[String: String]` | Query parameters extracted from the URL |
+| `logId`  | `String`           | DivKit log ID for the triggered action  |
+
+
+### `AttributionProvider`
+
+`.appsFlyer` · `.adjust` · `.firebase` · `.appleAdsAttribution` · `.facebook` · `.custom`

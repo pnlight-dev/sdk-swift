@@ -7,6 +7,9 @@ let package = Package(
     products: [
         .library(name: "PNLightSDK", targets: ["PNLightSDK"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/divkit/divkit-ios", from: "32.32.0"),
+    ],
     targets: [
         // Replace url and checksum during publish
         .binaryTarget(
@@ -15,7 +18,10 @@ let package = Package(
         ),
         .target(
             name: "PNLightSDK",
-            dependencies: ["PNLight"]
+            dependencies: [
+                "PNLight",
+                .product(name: "DivKit", package: "divkit-ios"),
+            ]
         ),
     ]
 )
