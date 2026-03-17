@@ -1,5 +1,5 @@
 import Foundation
-import PNLight
+@_exported import PNLight
 
 public class PNLightSDK {
     public static let shared = PNLightSDK()
