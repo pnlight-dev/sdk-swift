@@ -4,6 +4,8 @@ import PNLight
 public class PNLightSDK {
     public static let shared = PNLightSDK()
 
+    public typealias AttributionProvider = PNLight.PNLightSDK.AttributionProvider
+
     private init() {}
 
     /// Initialize the PNLight SDK with your API key
@@ -47,7 +49,7 @@ public class PNLightSDK {
     ///   - identifier: Additional identifier string (optional)
     /// - Returns: True if attribution was successfully added
     @discardableResult
-    public func addAttribution(provider: PNLight.PNLightSDK.AttributionProvider, data: [String: Any]? = nil, identifier: String? = nil) async -> Bool {
+    public func addAttribution(provider: AttributionProvider, data: [String: Any]? = nil, identifier: String? = nil) async -> Bool {
         return await PNLight.PNLightSDK.shared.addAttribution(provider: provider, data: data, identifier: identifier)
     }
 
