@@ -1,7 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 6.0.3 effective-5.10 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)
-// swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name PNLight
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+// swift-compiler-version: Apple Swift version 6.2.4 effective-5.10 (swiftlang-6.2.4.1.4 clang-1700.6.4.2)
+// swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name PNLight
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.4
 import AdSupport
 import AppTrackingTransparency
 import CoreMotion
@@ -22,20 +22,28 @@ extension PNLight.PNLightSDK {
     case appleAdsAttribution
     case custom
     case facebook
+    #if compiler(>=5.3) && $NonescapableTypes
     public init?(rawValue: Swift.String)
+    #endif
     public typealias RawValue = Swift.String
     public var rawValue: Swift.String {
       get
     }
   }
+  #if compiler(>=5.3) && $NonescapableTypes
   @discardableResult
   final public func addAttribution(provider: PNLight.PNLightSDK.AttributionProvider, data: [Swift.String : Any]? = nil, identifier: Swift.String? = nil) async -> Swift.Bool
+  #endif
 }
 extension PNLight.PNLightSDK {
+  #if compiler(>=5.3) && $NonescapableTypes
   final public func logEvent(_ eventName: Swift.String, eventArgs: [Swift.String : Any]? = nil) async
+  #endif
 }
 extension PNLight.PNLightSDK {
+  #if compiler(>=5.3) && $NonescapableTypes
   final public func getIdfa() -> Swift.String?
+  #endif
 }
 extension PNLight.PNLightSDK {
   final public func onPurchased() async
@@ -48,21 +56,28 @@ public struct UIConfig {
   public let parameters: [Swift.String : Any]?
 }
 extension PNLight.PNLightSDK {
-  final public func getUIConfig(placement: Swift.String) async -> PNLight.UIConfig?
+  #if compiler(>=5.3) && $NonescapableTypes
+  final public func getUIConfig(placement: Swift.String, attributionRequired: Swift.Bool = true) async -> PNLight.UIConfig?
+  #endif
   final public func prefetchUIConfig(placement: Swift.String)
   final public func clearUIConfigCache()
 }
 extension PNLight.PNLightSDK {
   final public func getOrCreateUserId() -> (id: Swift.String, isNew: Swift.Bool)
   final public func resetUserId()
+  final public func markRemoteUiBlocked()
 }
 public struct PNLightConfig {
   public var baseDomain: Swift.String?
+  #if compiler(>=5.3) && $NonescapableTypes
   public init(baseDomain: Swift.String? = nil)
+  #endif
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers final public class PNLightSDK : ObjectiveC.NSObject {
   public static let shared: PNLight.PNLightSDK
+  #if compiler(>=5.3) && $NonescapableTypes
   final public func initialize(apiKey: Swift.String, config: PNLight.PNLightConfig? = nil) async
+  #endif
   @objc deinit
 }
 extension PNLight.PNLightSDK : StoreKit.SKPaymentTransactionObserver {

@@ -1261,7 +1261,7 @@
           {
             "kind": "Function",
             "name": "getUIConfig",
-            "printedName": "getUIConfig(placement:)",
+            "printedName": "getUIConfig(placement:attributionRequired:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -1282,11 +1282,18 @@
                 "name": "String",
                 "printedName": "Swift.String",
                 "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7PNLight0A3SDKC11getUIConfig9placementAA0D0VSgSS_tYaF",
-            "mangledName": "$s7PNLight0A3SDKC11getUIConfig9placementAA0D0VSgSS_tYaF",
+            "usr": "s:7PNLight0A3SDKC11getUIConfig9placement19attributionRequiredAA0D0VSgSS_SbtYaF",
+            "mangledName": "$s7PNLight0A3SDKC11getUIConfig9placement19attributionRequiredAA0D0VSgSS_SbtYaF",
             "moduleName": "PNLight",
             "declAttributes": [
               "Final",
@@ -1399,6 +1406,28 @@
             "declKind": "Func",
             "usr": "s:7PNLight0A3SDKC11resetUserIdyyF",
             "mangledName": "$s7PNLight0A3SDKC11resetUserIdyyF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "markRemoteUiBlocked",
+            "printedName": "markRemoteUiBlocked()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC19markRemoteUiBlockedyyF",
+            "mangledName": "$s7PNLight0A3SDKC19markRemoteUiBlockedyyF",
             "moduleName": "PNLight",
             "declAttributes": [
               "Final",
@@ -1538,6 +1567,13 @@
   },
   "ConstValues": [
     {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+Attribution.swift",
+      "kind": "BooleanLiteral",
+      "offset": 411,
+      "length": 5,
+      "value": "false"
+    },
+    {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+PurchaseValidation.swift",
       "kind": "BooleanLiteral",
       "offset": 3295,
@@ -1554,16 +1590,37 @@
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Array",
-      "offset": 2765,
+      "offset": 2764,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "Dictionary",
+      "offset": 2851,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "StringLiteral",
-      "offset": 2825,
+      "offset": 2912,
       "length": 32,
       "value": "\"app.pnlight.sdk.uiconfig.cache\""
+    },
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "StringLiteral",
+      "offset": 3022,
+      "length": 4,
+      "value": "\"en\""
+    },
+    {
+      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3734,
+      "length": 4,
+      "value": "true"
     },
     {
       "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
