@@ -7,8 +7,7 @@ options:
 
 packages:
   PNLightSDK:
-    url: https://github.com/pnlight-dev/sdk-swift.git
-    from: 0.2.0
+    path: ../..
 
 targets:
   PNLightExample:

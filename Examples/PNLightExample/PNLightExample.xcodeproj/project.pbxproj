@@ -108,7 +108,7 @@
 			mainGroup = EC314DE9ED9299744BAE3999;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				26F10957AB961E8148ADEC8C /* XCRemoteSwiftPackageReference "sdk-swift" */,
+				26F10957AB961E8148ADEC8C /* XCLocalSwiftPackageReference "../.." */,
 			);
 			projectDirPath = "";
 			projectRoot = "";
@@ -316,21 +316,17 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		26F10957AB961E8148ADEC8C /* XCRemoteSwiftPackageReference "sdk-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pnlight-dev/sdk-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.0;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		26F10957AB961E8148ADEC8C /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../..";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		2CA5078B7A25BC249A8FC904 /* PNLightSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 26F10957AB961E8148ADEC8C /* XCRemoteSwiftPackageReference "sdk-swift" */;
+			package = 26F10957AB961E8148ADEC8C /* XCLocalSwiftPackageReference "../.." */;
 			productName = PNLightSDK;
 		};
 /* End XCSwiftPackageProductDependency section */

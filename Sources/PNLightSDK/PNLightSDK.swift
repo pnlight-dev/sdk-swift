@@ -1,5 +1,5 @@
 import Foundation
-@_exported import PNLight
+import PNLight
 
 public class PNLightSDK {
     public static let shared = PNLightSDK()
@@ -62,8 +62,8 @@ public class PNLightSDK {
     /// Gets UI config for a specific placement (uses cache when available).
     /// - Parameter placement: The placement identifier
     /// - Returns: UIConfig if available, nil otherwise
-    public func getUIConfig(placement: String) async -> PNLight.UIConfig? {
-        return await PNLight.PNLightSDK.shared.getUIConfig(placement: placement)
+    public func getUIConfig(placement: String, attributionRequired: Bool = true) async -> PNLight.UIConfig? {
+        return await PNLight.PNLightSDK.shared.getUIConfig(placement: placement, attributionRequired: attributionRequired)
     }
 
     /// Clears the in-memory UI config cache, forcing subsequent calls to fetch fresh configs.
@@ -71,9 +71,15 @@ public class PNLightSDK {
         PNLight.PNLightSDK.shared.clearUIConfigCache()
     }
 
+    /// Blocks Remote UI fetches after the SDK detects a screen capture attempt.
+    public func markRemoteUiBlocked() {
+        PNLight.PNLightSDK.shared.markRemoteUiBlocked()
+    }
+
     /// Returns the IDFA string when ATT is already authorized, otherwise nil.
     /// Does not prompt for ATT permission — only uses existing authorization status.
     public func getIdfa() -> String? {
         return PNLight.PNLightSDK.shared.getIdfa()
     }
+
 }

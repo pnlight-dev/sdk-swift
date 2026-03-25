@@ -203,7 +203,7 @@ PNLightSDK.shared.clearUIConfigCache()
 | `resetUserId()`                                           | Reset the user identifier                                                     |
 | `getIdfa() -> String?`                                    | Return IDFA if ATT is already authorized, otherwise `nil`                     |
 | `prefetchUIConfig(placement:)`                            | Prefetch a UI config into the in-memory cache                                 |
-| `getUIConfig(placement:) async -> UIConfig?`              | Fetch a UI config (uses cache when available)                                 |
+| `getUIConfig(placement:attributionRequired:) async -> UIConfig?` | Fetch a UI config (waits for AppsFlyer attribution when `attributionRequired` is true) (uses cache when available) |
 | `clearUIConfigCache()`                                    | Clear the in-memory UI config cache                                           |
 
 
