@@ -4,7 +4,25 @@ import PNLight
 public class PNLightSDK {
     public static let shared = PNLightSDK()
 
-    public typealias AttributionProvider = PNLight.PNLightSDK.AttributionProvider
+    public enum AttributionProvider {
+        case appsFlyer
+        case adjust
+        case firebase
+        case appleAdsAttribution
+        case custom
+        case facebook
+
+        fileprivate var underlying: PNLight.PNLightSDK.AttributionProvider {
+            switch self {
+            case .appsFlyer: return .appsFlyer
+            case .adjust: return .adjust
+            case .firebase: return .firebase
+            case .appleAdsAttribution: return .appleAdsAttribution
+            case .custom: return .custom
+            case .facebook: return .facebook
+            }
+        }
+    }
 
     private init() {}
 
@@ -50,7 +68,7 @@ public class PNLightSDK {
     /// - Returns: True if attribution was successfully added
     @discardableResult
     public func addAttribution(provider: AttributionProvider, data: [String: Any]? = nil, identifier: String? = nil) async -> Bool {
-        return await PNLight.PNLightSDK.shared.addAttribution(provider: provider, data: data, identifier: identifier)
+        return await PNLight.PNLightSDK.shared.addAttribution(provider: provider.underlying, data: data, identifier: identifier)
     }
 
     /// Prefetches UI config for a specific placement (background fetch, in-memory cache).
