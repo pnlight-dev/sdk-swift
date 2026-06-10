@@ -83,7 +83,8 @@ public class PNLightRemoteUiRendererView: UIView {
     private let urlHandler: UrlHandler
     private let dismissActionName = "view_dismissed"
     private var captureObservers: [NSObjectProtocol] = []
-    private var hasHandledCaptureAttempt = false
+    private var wasScreenCaptured = false
+    private var didHandleCaptureAttempt = false
     private var pendingDismissAction = false
     var secure: Bool {
         didSet {
@@ -93,8 +94,7 @@ public class PNLightRemoteUiRendererView: UIView {
     }
     var preventRecording: Bool {
         didSet {
-            guard preventRecording != oldValue else { return }
-            updateCaptureMonitoring()
+            // Deprecated. Capture reporting is backend-controlled.
         }
     }
     private var secureTextField: UITextField?
@@ -103,9 +103,7 @@ public class PNLightRemoteUiRendererView: UIView {
     var onCustomAction: ((RemoteUiActionPayload) -> Void)? {
         didSet {
             flushPendingDismissActionIfNeeded()
-            if preventRecording {
-                evaluateCaptureStateIfNeeded()
-            }
+            evaluateCaptureStateIfNeeded()
         }
     }
 
@@ -246,8 +244,6 @@ public class PNLightRemoteUiRendererView: UIView {
     private func updateCaptureMonitoring() {
         stopCaptureMonitoring()
 
-        guard preventRecording else { return }
-
         let notificationCenter = NotificationCenter.default
 
         captureObservers.append(
@@ -256,7 +252,7 @@ public class PNLightRemoteUiRendererView: UIView {
                 object: nil,
                 queue: .main
             ) { [weak self] _ in
-                self?.handleCaptureAttemptIfNeeded()
+                self?.handleCaptureAttempt()
             }
         )
 
@@ -287,20 +283,23 @@ public class PNLightRemoteUiRendererView: UIView {
     }
 
     private func evaluateCaptureStateIfNeeded() {
-        guard preventRecording, isAnyScreenCaptured else { return }
-        handleCaptureAttemptIfNeeded()
+        let isCaptured = isAnyScreenCaptured
+        defer { wasScreenCaptured = isCaptured }
+
+        guard isCaptured, wasScreenCaptured == false else { return }
+        handleCaptureAttempt()
     }
 
     private var isAnyScreenCaptured: Bool {
         UIScreen.screens.contains { $0.isCaptured }
     }
 
-    private func handleCaptureAttemptIfNeeded() {
-        guard hasHandledCaptureAttempt == false else { return }
+    private func handleCaptureAttempt() {
+        guard didHandleCaptureAttempt == false else { return }
 
-        hasHandledCaptureAttempt = true
+        didHandleCaptureAttempt = true
         pendingDismissAction = true
-        PNLightSDK.shared.markRemoteUiBlocked()
+        PNLightSDK.shared.reportRemoteUiCapture()
         flushPendingDismissActionIfNeeded()
     }
 

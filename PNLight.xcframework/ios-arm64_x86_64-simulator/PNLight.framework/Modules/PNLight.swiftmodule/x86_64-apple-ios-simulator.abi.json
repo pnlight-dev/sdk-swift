@@ -173,6 +173,13 @@
         "moduleName": "PNLight"
       },
       {
+        "kind": "Import",
+        "name": "CryptoKit",
+        "printedName": "CryptoKit",
+        "declKind": "Import",
+        "moduleName": "PNLight"
+      },
+      {
         "kind": "TypeDecl",
         "name": "UIConfig",
         "printedName": "UIConfig",
@@ -317,6 +324,126 @@
                 "declKind": "Accessor",
                 "usr": "s:7PNLight8UIConfigV10parametersSDySSypGSgvg",
                 "mangledName": "$s7PNLight8UIConfigV10parametersSDySSypGSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "debug",
+            "printedName": "debug",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.Bool?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight8UIConfigV5debugSbSgvp",
+            "mangledName": "$s7PNLight8UIConfigV5debugSbSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.Bool?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Bool",
+                        "printedName": "Swift.Bool",
+                        "usr": "s:Sb"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight8UIConfigV5debugSbSgvg",
+                "mangledName": "$s7PNLight8UIConfigV5debugSbSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "secure",
+            "printedName": "secure",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.Bool?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight8UIConfigV6secureSbSgvp",
+            "mangledName": "$s7PNLight8UIConfigV6secureSbSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.Bool?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Bool",
+                        "printedName": "Swift.Bool",
+                        "usr": "s:Sb"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight8UIConfigV6secureSbSgvg",
+                "mangledName": "$s7PNLight8UIConfigV6secureSbSgvg",
                 "moduleName": "PNLight",
                 "implicit": true,
                 "accessorKind": "get"
@@ -506,9 +633,229 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "sdkVersion",
+            "printedName": "sdkVersion",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight0A6ConfigV10sdkVersionSSSgvp",
+            "mangledName": "$s7PNLight0A6ConfigV10sdkVersionSSSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV10sdkVersionSSSgvg",
+                "mangledName": "$s7PNLight0A6ConfigV10sdkVersionSSSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV10sdkVersionSSSgvs",
+                "mangledName": "$s7PNLight0A6ConfigV10sdkVersionSSSgvs",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV10sdkVersionSSSgvM",
+                "mangledName": "$s7PNLight0A6ConfigV10sdkVersionSSSgvM",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "sdkPlatform",
+            "printedName": "sdkPlatform",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight0A6ConfigV11sdkPlatformSSSgvp",
+            "mangledName": "$s7PNLight0A6ConfigV11sdkPlatformSSSgvp",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV11sdkPlatformSSSgvg",
+                "mangledName": "$s7PNLight0A6ConfigV11sdkPlatformSSSgvg",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV11sdkPlatformSSSgvs",
+                "mangledName": "$s7PNLight0A6ConfigV11sdkPlatformSSSgvs",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A6ConfigV11sdkPlatformSSSgvM",
+                "mangledName": "$s7PNLight0A6ConfigV11sdkPlatformSSSgvM",
+                "moduleName": "PNLight",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(baseDomain:)",
+            "printedName": "init(baseDomain:sdkVersion:sdkPlatform:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -530,11 +877,41 @@
                 ],
                 "hasDefaultArg": true,
                 "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:7PNLight0A6ConfigV10baseDomainACSSSg_tcfc",
-            "mangledName": "$s7PNLight0A6ConfigV10baseDomainACSSSg_tcfc",
+            "usr": "s:7PNLight0A6ConfigV10baseDomain10sdkVersion0E8PlatformACSSSg_A2Gtcfc",
+            "mangledName": "$s7PNLight0A6ConfigV10baseDomain10sdkVersion0E8PlatformACSSSg_A2Gtcfc",
             "moduleName": "PNLight",
             "declAttributes": [
               "AccessControl"
@@ -612,6 +989,57 @@
                 "declKind": "Accessor",
                 "usr": "s:7PNLight0A3SDKC6sharedACvgZ",
                 "mangledName": "$s7PNLight0A3SDKC6sharedACvgZ",
+                "moduleName": "PNLight",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "defaultSDKVersion",
+            "printedName": "defaultSDKVersion",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7PNLight0A3SDKC17defaultSDKVersionSSvpZ",
+            "mangledName": "$s7PNLight0A3SDKC17defaultSDKVersionSSvpZ",
+            "moduleName": "PNLight",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7PNLight0A3SDKC17defaultSDKVersionSSvgZ",
+                "mangledName": "$s7PNLight0A3SDKC17defaultSDKVersionSSvgZ",
                 "moduleName": "PNLight",
                 "static": true,
                 "implicit": true,
@@ -984,17 +1412,17 @@
               },
               {
                 "kind": "Conformance",
-                "name": "Escapable",
-                "printedName": "Escapable",
-                "usr": "s:s9EscapableP",
-                "mangledName": "$ss9EscapableP"
-              },
-              {
-                "kind": "Conformance",
                 "name": "Equatable",
                 "printedName": "Equatable",
                 "usr": "s:SQ",
                 "mangledName": "$sSQ"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
               },
               {
                 "kind": "Conformance",
@@ -1334,6 +1762,28 @@
           },
           {
             "kind": "Function",
+            "name": "reportRemoteUiCapture",
+            "printedName": "reportRemoteUiCapture()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC21reportRemoteUiCaptureyyF",
+            "mangledName": "$s7PNLight0A3SDKC21reportRemoteUiCaptureyyF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "clearUIConfigCache",
             "printedName": "clearUIConfigCache()",
             "children": [
@@ -1429,9 +1879,11 @@
             "usr": "s:7PNLight0A3SDKC19markRemoteUiBlockedyyF",
             "mangledName": "$s7PNLight0A3SDKC19markRemoteUiBlockedyyF",
             "moduleName": "PNLight",
+            "deprecated": true,
             "declAttributes": [
               "Final",
-              "AccessControl"
+              "AccessControl",
+              "Available"
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
@@ -1499,38 +1951,10 @@
         "conformances": [
           {
             "kind": "Conformance",
-            "name": "Copyable",
-            "printedName": "Copyable",
-            "usr": "s:s8CopyableP",
-            "mangledName": "$ss8CopyableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Escapable",
-            "printedName": "Escapable",
-            "usr": "s:s9EscapableP",
-            "mangledName": "$ss9EscapableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Equatable",
-            "printedName": "Equatable",
-            "usr": "s:SQ",
-            "mangledName": "$sSQ"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Hashable",
-            "printedName": "Hashable",
-            "usr": "s:SH",
-            "mangledName": "$sSH"
-          },
-          {
-            "kind": "Conformance",
-            "name": "CVarArg",
-            "printedName": "CVarArg",
-            "usr": "s:s7CVarArgP",
-            "mangledName": "$ss7CVarArgP"
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
           },
           {
             "kind": "Conformance",
@@ -1541,10 +1965,24 @@
           },
           {
             "kind": "Conformance",
-            "name": "_KeyValueCodingAndObserving",
-            "printedName": "_KeyValueCodingAndObserving",
-            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
-            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
           },
           {
             "kind": "Conformance",
@@ -1555,10 +1993,24 @@
           },
           {
             "kind": "Conformance",
-            "name": "CustomDebugStringConvertible",
-            "printedName": "CustomDebugStringConvertible",
-            "usr": "s:s28CustomDebugStringConvertibleP",
-            "mangledName": "$ss28CustomDebugStringConvertibleP"
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
           }
         ]
       }
@@ -1567,100 +2019,128 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+Attribution.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+Attribution.swift",
       "kind": "BooleanLiteral",
       "offset": 411,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+PurchaseValidation.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+PurchaseValidation.swift",
       "kind": "BooleanLiteral",
       "offset": 3295,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Dictionary",
-      "offset": 2705,
+      "offset": 3672,
       "length": 3,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Array",
-      "offset": 2764,
+      "offset": 3731,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Dictionary",
-      "offset": 2851,
+      "offset": 3818,
       "length": 3,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3878,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "StringLiteral",
-      "offset": 2912,
+      "offset": 3937,
       "length": 32,
       "value": "\"app.pnlight.sdk.uiconfig.cache\""
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "StringLiteral",
-      "offset": 3022,
+      "offset": 4047,
       "length": 4,
       "value": "\"en\""
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
+      "kind": "StringLiteral",
+      "offset": 4338,
+      "length": 34,
+      "value": "\"app.pnlight.sdk.remoteui.capture\""
+    },
+    {
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "BooleanLiteral",
-      "offset": 3734,
+      "offset": 8558,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "StringLiteral",
-      "offset": 382,
+      "offset": 642,
+      "length": 9,
+      "value": "\"unknown\""
+    },
+    {
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "kind": "StringLiteral",
+      "offset": 724,
       "length": 29,
       "value": "\"https:\/\/console.pnlight.app\""
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "StringLiteral",
-      "offset": 731,
+      "offset": 860,
+      "length": 5,
+      "value": "\"ios\""
+    },
+    {
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "kind": "StringLiteral",
+      "offset": 1185,
       "length": 17,
       "value": "\"app.pnlight.sdk\""
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "StringLiteral",
-      "offset": 760,
+      "offset": 1214,
       "length": 6,
       "value": "\"main\""
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "IntegerLiteral",
-      "offset": 900,
+      "offset": 1354,
       "length": 2,
       "value": "15"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "IntegerLiteral",
-      "offset": 944,
+      "offset": 1398,
       "length": 2,
       "value": "30"
     },
     {
-      "filePath": "\/Users\/kirillzaidulin\/Documents\/work\/pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight.swift",
       "kind": "Array",
-      "offset": 1279,
+      "offset": 1733,
       "length": 2,
       "value": "[]"
     }

@@ -1,11 +1,14 @@
 import SwiftUI
 import PNLightSDK
+import AppTrackingTransparency
 
 struct ContentView: View {
 
     @EnvironmentObject private var store: StoreManager
     @State private var showPaywall = false
     @State private var showAttribution = false
+    @State private var currentIdfa: String?
+    @State private var trackingStatus = ATTrackingManager.trackingAuthorizationStatus
 
     var body: some View {
         NavigationStack {
@@ -23,6 +26,32 @@ struct ContentView: View {
                             systemImage: store.isPremium ? "crown.fill" : "person"
                         )
                         .foregroundStyle(store.isPremium ? .yellow : .secondary)
+                    }
+                }
+
+                Section("Test device") {
+                    LabeledContent("IDFA") {
+                        Text(currentIdfa ?? "Unavailable")
+                            .foregroundStyle(.secondary)
+                            .font(.caption.monospaced())
+                            .multilineTextAlignment(.trailing)
+                    }
+
+                    LabeledContent("ATT status") {
+                        Text(trackingStatusDescription)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text("Add this IDFA in Dashboard -> Integration -> Test devices to force Remote UI test-mode delivery for this device.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    Button {
+                        Task {
+                            await requestTrackingAndRefreshIdfa()
+                        }
+                    } label: {
+                        Label("Request ATT / Refresh IDFA", systemImage: "iphone.gen3")
                     }
                 }
 
@@ -73,7 +102,44 @@ struct ContentView: View {
                 PaywallScreen()
                     .environmentObject(store)
             }
+            .task {
+                refreshIdfa()
+            }
         }
+    }
+
+    private var trackingStatusDescription: String {
+        switch trackingStatus {
+        case .authorized:
+            return "Authorized"
+        case .denied:
+            return "Denied"
+        case .restricted:
+            return "Restricted"
+        case .notDetermined:
+            return "Not determined"
+        @unknown default:
+            return "Unknown"
+        }
+    }
+
+    @MainActor
+    private func refreshIdfa() {
+        trackingStatus = ATTrackingManager.trackingAuthorizationStatus
+        currentIdfa = PNLightSDK.shared.getIdfa()
+    }
+
+    @MainActor
+    private func requestTrackingAndRefreshIdfa() async {
+        if ATTrackingManager.trackingAuthorizationStatus == .notDetermined {
+            _ = await withCheckedContinuation {
+                (continuation: CheckedContinuation<ATTrackingManager.AuthorizationStatus, Never>) in
+                ATTrackingManager.requestTrackingAuthorization { status in
+                    continuation.resume(returning: status)
+                }
+            }
+        }
+        refreshIdfa()
     }
 }
 

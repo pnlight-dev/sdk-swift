@@ -9,6 +9,7 @@ struct PNLightExampleApp: App {
     init() {
         Task {
             await PNLightSDK.shared.initialize(apiKey: PNLightConfig.apiKey)
+            PNLightSDK.shared.prefetchUIConfig(placement: PNLightConfig.paywallPlacement)
         }
     }
 

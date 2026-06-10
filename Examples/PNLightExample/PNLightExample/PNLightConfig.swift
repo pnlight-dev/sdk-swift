@@ -5,5 +5,5 @@ enum PNLightConfig {
     static let apiKey: String = "YOUR_API_KEY"
 
     /// Default placement name for the paywall.
-    static let paywallPlacement: String = "paywall"
+    static let paywallPlacement: String = "feature"
 }

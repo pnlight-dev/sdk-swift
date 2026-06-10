@@ -31,7 +31,7 @@ public struct RemoteUiAction {
 ///
 /// Usage:
 /// ```swift
-/// let view = PNLightRemoteUiView(secure: false, preventRecording: true)
+/// let view = PNLightRemoteUiView()
 /// view.onAction = { action in print(action.url) }
 /// Task {
 ///     if let config = await PNLightSDK.shared.getUIConfig(placement: "my_placement") {
@@ -59,10 +59,12 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
         super.init(frame: frame)
     }
 
+    @available(*, deprecated, message: "Remote UI secure rendering and capture blocking are controlled by the backend.")
     public override init(frame: CGRect, secure: Bool, preventRecording: Bool = true) {
         super.init(frame: frame, secure: secure, preventRecording: preventRecording)
     }
 
+    @available(*, deprecated, message: "Remote UI secure rendering and capture blocking are controlled by the backend. Use init() instead.")
     public convenience init(secure: Bool = true, preventRecording: Bool = true) {
         self.init(frame: .zero, secure: secure, preventRecording: preventRecording)
     }
@@ -79,7 +81,7 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
 ///
 /// Usage:
 /// ```swift
-/// RemoteUiView(placement: "my_placement", cardId: "my_card", secure: false, preventRecording: true) { action in
+/// RemoteUiView(placement: "my_placement", cardId: "my_card") { action in
 ///     print("Tapped:", action.url)
 /// }
 /// ```
@@ -87,10 +89,25 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
 public struct RemoteUiView: UIViewRepresentable {
     public let placement: String
     public let cardId: String
+    @available(*, deprecated, message: "Remote UI secure rendering is controlled by the backend.")
     public let secure: Bool
+    @available(*, deprecated, message: "Remote UI capture blocking is controlled by the backend.")
     public let preventRecording: Bool
     public var onAction: ((RemoteUiAction) -> Void)?
 
+    public init(
+        placement: String,
+        cardId: String,
+        onAction: ((RemoteUiAction) -> Void)? = nil
+    ) {
+        self.placement = placement
+        self.cardId = cardId
+        self.secure = true
+        self.preventRecording = true
+        self.onAction = onAction
+    }
+
+    @available(*, deprecated, message: "Remote UI secure rendering and capture blocking are controlled by the backend. Use init(placement:cardId:onAction:) instead.")
     public init(
         placement: String,
         cardId: String,
@@ -106,29 +123,40 @@ public struct RemoteUiView: UIViewRepresentable {
     }
 
     public func makeUIView(context: Context) -> PNLightRemoteUiView {
-        let view = PNLightRemoteUiView(secure: secure, preventRecording: preventRecording)
+        let view = PNLightRemoteUiView()
         view.onAction = onAction
         context.coordinator.load(into: view, placement: placement, cardId: cardId)
         return view
     }
 
     public func updateUIView(_ uiView: PNLightRemoteUiView, context: Context) {
-        uiView.secure = secure
-        uiView.preventRecording = preventRecording
         uiView.onAction = onAction
+        context.coordinator.load(into: uiView, placement: placement, cardId: cardId)
     }
 
     public func makeCoordinator() -> Coordinator { Coordinator() }
 
     public final class Coordinator {
         private var currentPlacement: String?
+        private var currentCardId: String?
+        private var currentRequestId = 0
 
         func load(into view: PNLightRemoteUiView, placement: String, cardId: String) {
-            guard placement != currentPlacement else { return }
+            guard placement != currentPlacement || cardId != currentCardId else { return }
             currentPlacement = placement
-            Task { @MainActor in
+            currentCardId = cardId
+            currentRequestId += 1
+            let requestId = currentRequestId
+            view.secure = true
+            Task {
                 let config = await PNLightSDK.shared.getUIConfig(placement: placement)
-                view.applyConfig(configJson: config?.config, cardId: cardId)
+                await MainActor.run {
+                    guard requestId == currentRequestId,
+                          placement == currentPlacement,
+                          cardId == currentCardId else { return }
+                    view.secure = config?.secure ?? true
+                    view.applyConfig(configJson: config?.config, cardId: cardId)
+                }
             }
         }
     }

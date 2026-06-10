@@ -31,7 +31,11 @@ public class PNLightSDK {
     ///   - apiKey: Your PNLight API key
     ///   - config: Optional configuration object to customize SDK behavior
     public func initialize(apiKey: String, config: PNLight.PNLightConfig? = nil) async {
-        await PNLight.PNLightSDK.shared.initialize(apiKey: apiKey, config: config)
+        var nextConfig = config ?? PNLight.PNLightConfig()
+        if nextConfig.sdkPlatform == nil {
+            nextConfig.sdkPlatform = "spm"
+        }
+        await PNLight.PNLightSDK.shared.initialize(apiKey: apiKey, config: nextConfig)
     }
 
     /// Validate a purchase with anti-bot protection
@@ -77,7 +81,7 @@ public class PNLightSDK {
         PNLight.PNLightSDK.shared.prefetchUIConfig(placement: placement)
     }
 
-    /// Gets UI config for a specific placement (uses cache when available).
+    /// Gets UI config for a specific placement.
     /// - Parameter placement: The placement identifier
     /// - Returns: UIConfig if available, nil otherwise
     public func getUIConfig(placement: String, attributionRequired: Bool = true) async -> PNLight.UIConfig? {
@@ -89,7 +93,13 @@ public class PNLightSDK {
         PNLight.PNLightSDK.shared.clearUIConfigCache()
     }
 
+    /// Reports a Remote UI capture event to PNLight.
+    public func reportRemoteUiCapture() {
+        PNLight.PNLightSDK.shared.reportRemoteUiCapture()
+    }
+
     /// Blocks Remote UI fetches after the SDK detects a screen capture attempt.
+    @available(*, deprecated, message: "Remote UI capture blocking is evaluated by the backend.")
     public func markRemoteUiBlocked() {
         PNLight.PNLightSDK.shared.markRemoteUiBlocked()
     }

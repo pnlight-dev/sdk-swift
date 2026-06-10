@@ -191,9 +191,7 @@ struct PaywallScreen: View {
     var body: some View {
         RemoteUiView(
             placement: "paywall",
-            cardId: "paywall_card",
-            secure: true,
-            preventRecording: true
+            cardId: "paywall_card"
         ) { action in
             if action.logId == "purchase_button" {
                 let productId = action.params["id"] ?? ""
@@ -214,10 +212,7 @@ import PNLightSDK
 import UIKit
 
 final class PaywallViewController: UIViewController {
-    private let remoteView = PNLightRemoteUiView(
-        secure: true,
-        preventRecording: true
-    )
+    private let remoteView = PNLightRemoteUiView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -289,8 +284,8 @@ PNLightSDK.shared.clearUIConfigCache()
 | --- | --- | --- |
 | `placement` | `String` | PNLight placement identifier |
 | `cardId` | `String` | Card identifier |
-| `secure` | `Bool` | Prevent screenshots and recordings; defaults to `true` |
-| `preventRecording` | `Bool` | Dismiss and block Remote UI after a capture attempt; defaults to `true` |
+| `secure` | `Bool` | Deprecated. Secure rendering is controlled by the backend response. |
+| `preventRecording` | `Bool` | Deprecated. Capture blocking is controlled by the backend. |
 | `onAction` | `((RemoteUiAction) -> Void)?` | Called when a custom action is triggered |
 
 ### `PNLightRemoteUiView` (UIKit)
