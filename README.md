@@ -109,7 +109,12 @@ let success = await PNLightSDK.shared.addAttribution(
 
 #### AppsFlyer Integration Example
 
+PNLight does not depend on the AppsFlyer initialization order — it only needs the conversion data, delivered via `addAttribution`. Make sure the conversion ("attribution success") callback is not processed before PNLight is initialized: if it can fire earlier, store the conversion data in memory and call `addAttribution` once `initialize` completes.
+
+AppsFlyer requires the ATT prompt to complete before it starts. If PNLight is initialized before ATT authorization, call `updateIdfa()` after the prompt completes so PNLight receives the granted IDFA.
+
 ```swift
+import AppTrackingTransparency
 import AppsFlyerLib
 import PNLightSDK
 import UIKit
@@ -122,7 +127,17 @@ final class AppDelegate: NSObject, UIApplicationDelegate, AppsFlyerLibDelegate {
         AppsFlyerLib.shared().appsFlyerDevKey = "your-appsflyer-dev-key"
         AppsFlyerLib.shared().appleAppID = "your-ios-app-id"
         AppsFlyerLib.shared().delegate = self
-        AppsFlyerLib.shared().start()
+
+        Task {
+            await PNLightSDK.shared.initialize(apiKey: "your-api-key")
+
+            // Request ATT, then pass the granted IDFA to PNLight.
+            await ATTrackingManager.requestTrackingAuthorization()
+            await PNLightSDK.shared.updateIdfa()
+
+            // Start AppsFlyer after ATT completes (an AppsFlyer requirement).
+            AppsFlyerLib.shared().start()
+        }
         return true
     }
 
@@ -171,13 +186,21 @@ if let idfa = PNLightSDK.shared.getIdfa() {
 }
 ```
 
+If PNLight is initialized before the ATT prompt, send the IDFA once authorization is granted:
+
+```swift
+import PNLightSDK
+
+await PNLightSDK.shared.updateIdfa()
+```
+
 ---
 
 ## RemoteUiView - Server-driven UI
 
 `RemoteUiView` fetches and renders a server-driven layout from PNLight for a given placement. It calls `getUIConfig(placement:)` internally, renders the native view, and emits action events to Swift.
 
-When using external attribution providers such as AppsFlyer, send attribution first and request UI config only after the attribution callback is processed. In production, it is recommended to wait 3-5 seconds before requesting config so provider data has time to become available.
+When using external attribution providers such as AppsFlyer, send attribution as early as possible (see the AppsFlyer example above). `getUIConfig` waits for attribution data internally when `attributionRequired` is `true` (the default), so no manual delay is needed.
 
 ### SwiftUI
 
@@ -231,7 +254,6 @@ final class PaywallViewController: UIViewController {
         }
 
         Task {
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
             let config = await PNLightSDK.shared.getUIConfig(placement: "paywall")
             remoteView.applyConfig(configJson: config?.config, cardId: "paywall_card")
         }
@@ -241,12 +263,10 @@ final class PaywallViewController: UIViewController {
 
 ### Manual Config Fetching
 
-Use `getUIConfig` if you need to fetch the placement configuration yourself. When attribution is required, call it after sending attribution and preferably after a 3-5 second delay:
+Use `getUIConfig` if you need to fetch the placement configuration yourself. When `attributionRequired` is `true` (the default), the SDK waits for attribution data internally before returning:
 
 ```swift
 import PNLightSDK
-
-try? await Task.sleep(nanoseconds: 3_000_000_000)
 
 let config = await PNLightSDK.shared.getUIConfig(placement: "paywall")
 let configWithoutAttributionWait = await PNLightSDK.shared.getUIConfig(
@@ -274,6 +294,7 @@ PNLightSDK.shared.clearUIConfigCache()
 | `addAttribution(provider:data:identifier:) async -> Bool` | Send attribution data from AppsFlyer, Firebase, or Facebook |
 | `getUserId() -> String` | Get or create a stable user identifier |
 | `getIdfa() -> String?` | Return IDFA if ATT is already authorized, otherwise `nil` |
+| `updateIdfa() async -> Bool` | Send the current IDFA to PNLight after the ATT prompt completes |
 | `prefetchUIConfig(placement:)` | Prefetch a UI config into the in-memory cache |
 | `getUIConfig(placement:attributionRequired:) async -> UIConfig?` | Fetch a UI config; waits for attribution by default |
 | `clearUIConfigCache()` | Clear the in-memory UI config cache |

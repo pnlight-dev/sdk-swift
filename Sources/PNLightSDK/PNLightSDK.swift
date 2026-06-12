@@ -110,4 +110,12 @@ public class PNLightSDK {
         return PNLight.PNLightSDK.shared.getIdfa()
     }
 
+    /// Sends the current IDFA to PNLight.
+    /// Call it after the ATT prompt completes when the SDK was initialized before ATT authorization.
+    /// - Returns: True if the IDFA was successfully sent.
+    @discardableResult
+    public func updateIdfa() async -> Bool {
+        return await PNLight.PNLightSDK.shared.updateIdfa()
+    }
+
 }

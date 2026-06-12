@@ -1602,6 +1602,31 @@
           },
           {
             "kind": "Function",
+            "name": "updateIdfa",
+            "printedName": "updateIdfa()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7PNLight0A3SDKC10updateIdfaSbyYaF",
+            "mangledName": "$s7PNLight0A3SDKC10updateIdfaSbyYaF",
+            "moduleName": "PNLight",
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "DiscardableResult",
+              "RawDocComment"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "getIdfa",
             "printedName": "getIdfa()",
             "children": [
@@ -2026,6 +2051,13 @@
       "value": "false"
     },
     {
+      "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+Networking.swift",
+      "kind": "StringLiteral",
+      "offset": 696,
+      "length": 6,
+      "value": "\"POST\""
+    },
+    {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+PurchaseValidation.swift",
       "kind": "BooleanLiteral",
       "offset": 3295,
@@ -2035,56 +2067,56 @@
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Dictionary",
-      "offset": 3672,
+      "offset": 4080,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Array",
-      "offset": 3731,
+      "offset": 4139,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "Dictionary",
-      "offset": 3818,
+      "offset": 4226,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "IntegerLiteral",
-      "offset": 3878,
+      "offset": 4286,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "StringLiteral",
-      "offset": 3937,
+      "offset": 4345,
       "length": 32,
       "value": "\"app.pnlight.sdk.uiconfig.cache\""
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "StringLiteral",
-      "offset": 4047,
+      "offset": 4455,
       "length": 4,
       "value": "\"en\""
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "StringLiteral",
-      "offset": 4338,
+      "offset": 4746,
       "length": 34,
       "value": "\"app.pnlight.sdk.remoteui.capture\""
     },
     {
       "filePath": "pnlight-sdk\/Sources\/PNLight\/PNLight+UI.swift",
       "kind": "BooleanLiteral",
-      "offset": 8558,
+      "offset": 11380,
       "length": 4,
       "value": "true"
     },
