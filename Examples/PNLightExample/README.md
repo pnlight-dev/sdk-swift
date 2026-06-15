@@ -11,14 +11,17 @@ Minimal iOS app demonstrating [PNLight SDK](https://github.com/pnlight-dev/sdk-s
 ## Getting started
 
 ```bash
-# 1. Generate the .xcodeproj
+# 1. Create your local config from the template
+cp PNLightExample/PNLightConfig.example.swift PNLightExample/PNLightConfig.swift
+
+# 2. Generate the .xcodeproj
 xcodegen generate
 
-# 2. Open in Xcode
+# 3. Open in Xcode
 open PNLightExample.xcodeproj
 ```
 
-Then replace `"YOUR_API_KEY"` in `PNLightConfig.swift` with your real PNLight API key.
+Then replace `"YOUR_API_KEY"` in `PNLightConfig.swift` with your real PNLight API key, and set `paywallPlacement` to your placement name. `PNLightConfig.swift` is gitignored, so your key is never committed.
 
 To test debug Remote UI delivery on a physical device:
 

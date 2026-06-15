@@ -51,6 +51,9 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
         }
     }
 
+    /// Called on the main thread when the UI config fails to load (network/server error).
+    public var onError: ((Error) -> Void)?
+
     override var loadFailureMessage: String {
         "Failed to load content"
     }
@@ -93,21 +96,29 @@ public struct RemoteUiView: UIViewRepresentable {
     public let secure: Bool
     @available(*, deprecated, message: "Remote UI capture blocking is controlled by the backend.")
     public let preventRecording: Bool
+    /// When true, always wait for a fresh server response instead of serving the cache.
+    public let ignoreCache: Bool
     public var onAction: ((RemoteUiAction) -> Void)?
+    /// Called when the UI config fails to load (network/server error).
+    public var onError: ((Error) -> Void)?
 
     public init(
         placement: String,
         cardId: String,
-        onAction: ((RemoteUiAction) -> Void)? = nil
+        ignoreCache: Bool = false,
+        onAction: ((RemoteUiAction) -> Void)? = nil,
+        onError: ((Error) -> Void)? = nil
     ) {
         self.placement = placement
         self.cardId = cardId
         self.secure = true
         self.preventRecording = true
+        self.ignoreCache = ignoreCache
         self.onAction = onAction
+        self.onError = onError
     }
 
-    @available(*, deprecated, message: "Remote UI secure rendering and capture blocking are controlled by the backend. Use init(placement:cardId:onAction:) instead.")
+    @available(*, deprecated, message: "Remote UI secure rendering and capture blocking are controlled by the backend. Use init(placement:cardId:ignoreCache:onAction:onError:) instead.")
     public init(
         placement: String,
         cardId: String,
@@ -119,19 +130,23 @@ public struct RemoteUiView: UIViewRepresentable {
         self.cardId = cardId
         self.secure = secure
         self.preventRecording = preventRecording
+        self.ignoreCache = false
         self.onAction = onAction
+        self.onError = nil
     }
 
     public func makeUIView(context: Context) -> PNLightRemoteUiView {
         let view = PNLightRemoteUiView()
         view.onAction = onAction
-        context.coordinator.load(into: view, placement: placement, cardId: cardId)
+        view.onError = onError
+        context.coordinator.load(into: view, placement: placement, cardId: cardId, ignoreCache: ignoreCache)
         return view
     }
 
     public func updateUIView(_ uiView: PNLightRemoteUiView, context: Context) {
         uiView.onAction = onAction
-        context.coordinator.load(into: uiView, placement: placement, cardId: cardId)
+        uiView.onError = onError
+        context.coordinator.load(into: uiView, placement: placement, cardId: cardId, ignoreCache: ignoreCache)
     }
 
     public func makeCoordinator() -> Coordinator { Coordinator() }
@@ -141,21 +156,29 @@ public struct RemoteUiView: UIViewRepresentable {
         private var currentCardId: String?
         private var currentRequestId = 0
 
-        func load(into view: PNLightRemoteUiView, placement: String, cardId: String) {
+        func load(into view: PNLightRemoteUiView, placement: String, cardId: String, ignoreCache: Bool) {
             guard placement != currentPlacement || cardId != currentCardId else { return }
             currentPlacement = placement
             currentCardId = cardId
             currentRequestId += 1
             let requestId = currentRequestId
             view.secure = true
+            view.showLoading()
             Task {
-                let config = await PNLightSDK.shared.getUIConfig(placement: placement)
+                let result = await PNLightSDK.shared.getUIConfigResult(placement: placement, ignoreCache: ignoreCache)
                 await MainActor.run {
                     guard requestId == currentRequestId,
                           placement == currentPlacement,
                           cardId == currentCardId else { return }
-                    view.secure = config?.secure ?? true
-                    view.applyConfig(configJson: config?.config, cardId: cardId)
+                    switch result {
+                    case .success(let config):
+                        view.secure = config?.secure ?? true
+                        view.applyConfig(configJson: config?.config, cardId: cardId)
+                    case .failure(let error):
+                        view.secure = true
+                        view.showLoadFailure()
+                        view.onError?(error)
+                    }
                 }
             }
         }

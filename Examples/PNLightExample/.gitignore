@@ -39,6 +39,9 @@ fastlane/test_output/
 timeline.xctimeline
 playground.xcworkspace
 
+## Local config (copy from PNLightConfig.example.swift; holds your API key)
+PNLightExample/PNLightConfig.swift
+
 ## Other
 *.swp
 *.swo

@@ -169,6 +169,9 @@ public class PNLightRemoteUiRendererView: UIView {
     public func applyConfig(configJson: String?, cardId: String) {
         guard let configJson, !configJson.isEmpty,
               let data = configJson.data(using: .utf8) else {
+            // No content for this placement: stop the loader and show nothing
+            // (empty is not an error).
+            showEmpty()
             return
         }
 
@@ -191,6 +194,32 @@ public class PNLightRemoteUiRendererView: UIView {
                 self.showError(error)
             }
         }
+    }
+
+    /// Shows the loading indicator (e.g. while the config request is in flight).
+    public func showLoading() {
+        errorLabel.alpha = 0
+        divView.alpha = 0
+        loadingIndicator.startAnimating()
+        loadingIndicator.alpha = 1
+    }
+
+    /// Stops the loader and surfaces a load failure in the view.
+    public func showLoadFailure(message: String? = nil) {
+        errorLabel.text = message ?? loadFailureMessage
+        loadingIndicator.stopAnimating()
+        UIView.animate(withDuration: 0.3) {
+            self.loadingIndicator.alpha = 0
+            self.divView.alpha = 0
+            self.errorLabel.alpha = 1
+        }
+    }
+
+    private func showEmpty() {
+        loadingIndicator.stopAnimating()
+        loadingIndicator.alpha = 0
+        divView.alpha = 0
+        errorLabel.alpha = 0
     }
 
     private func setupSubviews() {

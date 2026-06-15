@@ -82,10 +82,26 @@ public class PNLightSDK {
     }
 
     /// Gets UI config for a specific placement.
-    /// - Parameter placement: The placement identifier
+    /// - Parameters:
+    ///   - placement: The placement identifier
+    ///   - attributionRequired: Whether to wait for attribution before fetching
+    ///   - ignoreCache: When true, bypasses the cache and waits for the server
     /// - Returns: UIConfig if available, nil otherwise
-    public func getUIConfig(placement: String, attributionRequired: Bool = true) async -> PNLight.UIConfig? {
-        return await PNLight.PNLightSDK.shared.getUIConfig(placement: placement, attributionRequired: attributionRequired)
+    public func getUIConfig(placement: String, attributionRequired: Bool = true, ignoreCache: Bool = false) async -> PNLight.UIConfig? {
+        return await PNLight.PNLightSDK.shared.getUIConfig(placement: placement, attributionRequired: attributionRequired, ignoreCache: ignoreCache)
+    }
+
+    /// Like ``getUIConfig(placement:attributionRequired:ignoreCache:)`` but distinguishes
+    /// the three outcomes so callers can show a loader / error state:
+    /// - `.success(config)` — a usable config was loaded (from cache or server)
+    /// - `.success(nil)` — the server has no UI for this placement
+    /// - `.failure(error)` — the config could not be loaded and there was no cached fallback
+    /// - Parameters:
+    ///   - placement: The placement identifier
+    ///   - attributionRequired: Whether to wait for attribution before fetching
+    ///   - ignoreCache: When true, bypasses the cache and waits for the server
+    public func getUIConfigResult(placement: String, attributionRequired: Bool = true, ignoreCache: Bool = false) async -> Result<PNLight.UIConfig?, Error> {
+        return await PNLight.PNLightSDK.shared.getUIConfigResult(placement: placement, attributionRequired: attributionRequired, ignoreCache: ignoreCache)
     }
 
     /// Clears the in-memory UI config cache, forcing subsequent calls to fetch fresh configs.
