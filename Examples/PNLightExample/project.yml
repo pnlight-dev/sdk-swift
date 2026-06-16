@@ -16,6 +16,8 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: PNLightExample
+        excludes:
+          - PNLightConfig.example.swift
     info:
       path: PNLightExample/Info.plist
       properties:

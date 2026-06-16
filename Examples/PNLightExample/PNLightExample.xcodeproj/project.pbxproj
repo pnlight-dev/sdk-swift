@@ -3,13 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0E0E9A4A4B27415E11C789A8 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */; };
 		0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */; };
-		8C63D8012FE0A1D600A93E8B /* PNLightConfig.example.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C63D8002FE0A1D600A93E8B /* PNLightConfig.example.swift */; };
 		939750532F2ECAC5B31DAFD0 /* PNLightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 2CA5078B7A25BC249A8FC904 /* PNLightSDK */; };
 		DB447F78A940F286D7F84F8B /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4DA6B9E07D895D4CF92A0 /* App.swift */; };
 		F4254D5FD97D2FE88630F7C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */; };
@@ -20,8 +19,8 @@
 		05874CA18F4B5A2AF68AD6CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
 		75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
-		8C63D8002FE0A1D600A93E8B /* PNLightConfig.example.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNLightConfig.example.swift; sourceTree = "<group>"; };
 		CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E19704FAF862140CDEFC3466 /* sdk-swift-0.7.2 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "sdk-swift-0.7.2"; path = ../..; sourceTree = SOURCE_ROOT; };
 		F8E4DA6B9E07D895D4CF92A0 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -45,9 +44,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		D8078531768EA57C29A02D87 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				E19704FAF862140CDEFC3466 /* sdk-swift-0.7.2 */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		EC314DE9ED9299744BAE3999 = {
 			isa = PBXGroup;
 			children = (
+				D8078531768EA57C29A02D87 /* Packages */,
 				F05C406B7B8F414DFFC211A3 /* PNLightExample */,
 				827B727C65BF34F9ADC05CDD /* Products */,
 			);
@@ -56,7 +64,6 @@
 		F05C406B7B8F414DFFC211A3 /* PNLightExample */ = {
 			isa = PBXGroup;
 			children = (
-				8C63D8002FE0A1D600A93E8B /* PNLightConfig.example.swift */,
 				F8E4DA6B9E07D895D4CF92A0 /* App.swift */,
 				CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */,
 				05874CA18F4B5A2AF68AD6CC /* Info.plist */,
@@ -96,9 +103,10 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 9DAD512D71BF71FFF63C9609 /* Build configuration list for PBXProject "PNLightExample" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -108,8 +116,10 @@
 			mainGroup = EC314DE9ED9299744BAE3999;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				26F10957AB961E8148ADEC8C /* XCLocalSwiftPackageReference "../.." */,
+				2321DDDA470D6B347F3C651D /* XCLocalSwiftPackageReference "../.." */,
 			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 827B727C65BF34F9ADC05CDD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -126,7 +136,6 @@
 				DB447F78A940F286D7F84F8B /* App.swift in Sources */,
 				F4254D5FD97D2FE88630F7C1 /* ContentView.swift in Sources */,
 				0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */,
-				8C63D8012FE0A1D600A93E8B /* PNLightConfig.example.swift in Sources */,
 				0E0E9A4A4B27415E11C789A8 /* StoreManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -317,7 +326,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		26F10957AB961E8148ADEC8C /* XCLocalSwiftPackageReference "../.." */ = {
+		2321DDDA470D6B347F3C651D /* XCLocalSwiftPackageReference "../.." */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../..;
 		};
@@ -326,7 +335,6 @@
 /* Begin XCSwiftPackageProductDependency section */
 		2CA5078B7A25BC249A8FC904 /* PNLightSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 26F10957AB961E8148ADEC8C /* XCLocalSwiftPackageReference "../.." */;
 			productName = PNLightSDK;
 		};
 /* End XCSwiftPackageProductDependency section */
