@@ -114,12 +114,6 @@ public class PNLightSDK {
         PNLight.PNLightSDK.shared.reportRemoteUiCapture()
     }
 
-    /// Blocks Remote UI fetches after the SDK detects a screen capture attempt.
-    @available(*, deprecated, message: "Remote UI capture blocking is evaluated by the backend.")
-    public func markRemoteUiBlocked() {
-        PNLight.PNLightSDK.shared.markRemoteUiBlocked()
-    }
-
     /// Returns the IDFA string when ATT is already authorized, otherwise nil.
     /// Does not prompt for ATT permission — only uses existing authorization status.
     public func getIdfa() -> String? {

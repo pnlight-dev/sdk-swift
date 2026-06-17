@@ -327,9 +327,22 @@ public class PNLightRemoteUiRendererView: UIView {
         guard didHandleCaptureAttempt == false else { return }
 
         didHandleCaptureAttempt = true
+        hideAfterCaptureAttempt()
         pendingDismissAction = true
         PNLightSDK.shared.reportRemoteUiCapture()
         flushPendingDismissActionIfNeeded()
+    }
+
+    private func hideAfterCaptureAttempt() {
+        layer.removeAllAnimations()
+        containerView?.layer.removeAllAnimations()
+        contentContainer.layer.removeAllAnimations()
+
+        loadingIndicator.stopAnimating()
+        alpha = 0
+        isHidden = true
+        isUserInteractionEnabled = false
+        accessibilityElementsHidden = true
     }
 
     private func flushPendingDismissActionIfNeeded() {

@@ -20,7 +20,7 @@
 		1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
 		75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		E19704FAF862140CDEFC3466 /* sdk-swift-0.7.2 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "sdk-swift-0.7.2"; path = ../..; sourceTree = SOURCE_ROOT; };
+		E0131C11A87F63167861D96A /* SPM */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SPM; path = ../..; sourceTree = SOURCE_ROOT; };
 		F8E4DA6B9E07D895D4CF92A0 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -47,7 +47,7 @@
 		D8078531768EA57C29A02D87 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				E19704FAF862140CDEFC3466 /* sdk-swift-0.7.2 */,
+				E0131C11A87F63167861D96A /* SPM */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -103,10 +103,9 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 9DAD512D71BF71FFF63C9609 /* Build configuration list for PBXProject "PNLightExample" */;
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -119,7 +118,6 @@
 				2321DDDA470D6B347F3C651D /* XCLocalSwiftPackageReference "../.." */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 827B727C65BF34F9ADC05CDD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
