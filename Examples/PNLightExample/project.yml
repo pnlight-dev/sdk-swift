@@ -18,6 +18,11 @@ targets:
       - path: PNLightExample
         excludes:
           - PNLightConfig.example.swift
+          - Products.storekit
+      # StoreKit Testing config: kept in the project for editing, but in no build
+      # phase — the scheme's Run action uses it; it is never bundled into the app.
+      - path: PNLightExample/Products.storekit
+        buildPhase: none
     info:
       path: PNLightExample/Info.plist
       properties:
@@ -33,3 +38,21 @@ targets:
         CURRENT_PROJECT_VERSION: "1"
     dependencies:
       - package: PNLightSDK
+
+schemes:
+  PNLightExample:
+    build:
+      targets:
+        PNLightExample: all
+    run:
+      config: Debug
+      # Resolve products locally on the simulator (no App Store Connect / sandbox).
+      storeKitConfiguration: PNLightExample/Products.storekit
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

@@ -22,7 +22,7 @@ Or add it directly in Xcode:
 
 ## Requirements
 
-- iOS 13.0+
+- iOS 15.0+
 - Swift 5.7+
 
 ---
@@ -32,7 +32,6 @@ Or add it directly in Xcode:
 Make sure the host iOS app links the frameworks required by PNLight:
 
 - StoreKit.framework
-- CoreMotion.framework
 - AdSupport.framework
 - AppTrackingTransparency.framework
 
@@ -194,6 +193,44 @@ import PNLightSDK
 await PNLightSDK.shared.updateIdfa()
 ```
 
+### In-App Purchases
+
+PNLight wraps StoreKit 2 for fetching products (price, offers, trial info),
+purchasing, restoring, and checking entitlements. The product ids are configured
+on the backend — `fetchProducts` resolves them against the App Store. The model
+types (`PNLightProduct`, `PNLightSubscriptionOffer`, …) are re-exported, so only
+`import PNLightSDK` is needed.
+
+```swift
+import PNLightSDK
+
+// Load the configured products with their App Store price/offer info.
+let products = try await PNLightSDK.shared.fetchProducts()
+for product in products {
+    print("\(product.displayName): \(product.displayPrice)")
+
+    if let offer = product.subscription?.introductoryOffer,
+       product.subscription?.isEligibleForIntroOffer == true {
+        // e.g. pay-as-you-go: "$0.99/month for 6 months"
+        print("Offer: \(offer.displayPrice) (\(offer.paymentMode), "
+            + "\(offer.periodCount) × \(offer.period.value) \(offer.period.unit))")
+    }
+}
+
+// Purchase.
+let result = try await PNLightSDK.shared.purchase("your.product.id")
+if result == .success {
+    // Unlock content.
+}
+
+// Entitlement checks (local StoreKit entitlements, work offline).
+let premium = await PNLightSDK.shared.isPremium()
+let eligible = await PNLightSDK.shared.isEligibleForTrial(productId: "your.product.id")
+
+// Restore previous purchases.
+try await PNLightSDK.shared.restorePurchases()
+```
+
 ---
 
 ## RemoteUiView - Server-driven UI
@@ -298,6 +335,13 @@ PNLightSDK.shared.clearUIConfigCache()
 | `prefetchUIConfig(placement:)` | Prefetch a UI config into the in-memory cache |
 | `getUIConfig(placement:attributionRequired:) async -> UIConfig?` | Fetch a UI config; waits for attribution by default |
 | `clearUIConfigCache()` | Clear the in-memory UI config cache |
+| `fetchProducts() async throws -> [PNLightProduct]` | Load configured products with App Store price/offer/trial info |
+| `purchase(_:) async throws -> PNLightPurchaseResult` | Purchase a product |
+| `restorePurchases() async throws` | Restore previous purchases by syncing with the App Store |
+| `isPremium() async -> Bool` | Whether the user has an active entitlement to any configured product |
+| `isPurchased(_:) async -> Bool` | Whether the user has an active entitlement to a specific product |
+| `isEligibleForTrial(productId:) async -> Bool` | Whether the user is eligible for a product's introductory offer |
+| `getAppleReceipt() async -> String?` | Base64 App Store receipt for server-side validation, or `nil` if absent |
 
 ### `RemoteUiView` (SwiftUI, iOS 14+)
 

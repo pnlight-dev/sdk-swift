@@ -3,3 +3,6 @@
 .swiftpm/
 Package.resolved
 xcuserdata/
+
+# Released as a GitHub Release asset, not committed. Built locally for PNLIGHT_LOCAL=1.
+PNLight.xcframework

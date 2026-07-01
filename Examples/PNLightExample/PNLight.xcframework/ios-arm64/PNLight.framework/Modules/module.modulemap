@@ -1,4 +1,0 @@
-framework module PNLight {
-  header "PNLight-Swift.h"
-  requires objc
-}

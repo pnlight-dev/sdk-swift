@@ -9,17 +9,24 @@
 /* Begin PBXBuildFile section */
 		0E0E9A4A4B27415E11C789A8 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */; };
 		0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */; };
+		1522A7D14B14BEEDD766E83A /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8325D174A595C98C76A0FFF9 /* DiagnosticsView.swift */; };
+		536D002E95D0061C2DE53A62 /* StoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A581C9EFA557636260CAE1C5 /* StoreScreen.swift */; };
 		939750532F2ECAC5B31DAFD0 /* PNLightSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 2CA5078B7A25BC249A8FC904 /* PNLightSDK */; };
 		DB447F78A940F286D7F84F8B /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4DA6B9E07D895D4CF92A0 /* App.swift */; };
 		F4254D5FD97D2FE88630F7C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */; };
+		FDB210BE4B5AF0737E422B66 /* PNLightConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00739F9CC27D656992081DED /* PNLightExample.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PNLightExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05874CA18F4B5A2AF68AD6CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallScreen.swift; sourceTree = "<group>"; };
+		2F2D5A15B95F8A60ADC43128 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
 		75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		8325D174A595C98C76A0FFF9 /* DiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsView.swift; sourceTree = "<group>"; };
+		A581C9EFA557636260CAE1C5 /* StoreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScreen.swift; sourceTree = "<group>"; };
 		CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNLightConfig.swift; sourceTree = "<group>"; };
 		E0131C11A87F63167861D96A /* SPM */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SPM; path = ../..; sourceTree = SOURCE_ROOT; };
 		F8E4DA6B9E07D895D4CF92A0 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -66,9 +73,13 @@
 			children = (
 				F8E4DA6B9E07D895D4CF92A0 /* App.swift */,
 				CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */,
+				8325D174A595C98C76A0FFF9 /* DiagnosticsView.swift */,
 				05874CA18F4B5A2AF68AD6CC /* Info.plist */,
 				1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */,
+				D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */,
+				2F2D5A15B95F8A60ADC43128 /* Products.storekit */,
 				75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */,
+				A581C9EFA557636260CAE1C5 /* StoreScreen.swift */,
 			);
 			path = PNLightExample;
 			sourceTree = "<group>";
@@ -133,8 +144,11 @@
 			files = (
 				DB447F78A940F286D7F84F8B /* App.swift in Sources */,
 				F4254D5FD97D2FE88630F7C1 /* ContentView.swift in Sources */,
+				1522A7D14B14BEEDD766E83A /* DiagnosticsView.swift in Sources */,
+				FDB210BE4B5AF0737E422B66 /* PNLightConfig.swift in Sources */,
 				0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */,
 				0E0E9A4A4B27415E11C789A8 /* StoreManager.swift in Sources */,
+				536D002E95D0061C2DE53A62 /* StoreScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

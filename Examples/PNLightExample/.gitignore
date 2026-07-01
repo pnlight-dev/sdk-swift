@@ -22,6 +22,9 @@ xcuserdata/
 .build/
 .swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
 
+## Binary framework — resolved via the PNLightSDK package, never lives here
+PNLight.xcframework
+
 ## CocoaPods
 Pods/
 Podfile.lock

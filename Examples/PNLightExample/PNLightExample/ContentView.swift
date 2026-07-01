@@ -55,6 +55,26 @@ struct ContentView: View {
                     }
                 }
 
+                // In-app purchases section
+                Section("In-App Purchases") {
+                    NavigationLink {
+                        StoreScreen()
+                            .environmentObject(store)
+                    } label: {
+                        Label("Products & Receipt", systemImage: "cart")
+                    }
+                }
+
+                // Diagnostics section
+                Section("Diagnostics") {
+                    NavigationLink {
+                        DiagnosticsView()
+                            .environmentObject(store)
+                    } label: {
+                        Label("SDK & IAP Diagnostics", systemImage: "stethoscope")
+                    }
+                }
+
                 // Actions section
                 Section("Actions") {
                     Button {
@@ -104,6 +124,7 @@ struct ContentView: View {
             }
             .task {
                 refreshIdfa()
+                await store.refreshEntitlements()
             }
         }
     }

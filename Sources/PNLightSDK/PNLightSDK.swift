@@ -38,13 +38,6 @@ public class PNLightSDK {
         await PNLight.PNLightSDK.shared.initialize(apiKey: apiKey, config: nextConfig)
     }
 
-    /// Validate a purchase with anti-bot protection
-    /// - Parameter captcha: Whether to show a math CAPTCHA challenge if the purchase is blocked (default: true)
-    /// - Returns: True if purchase is allowed, false if blocked
-    public func validatePurchase(captcha: Bool = true) async -> Bool {
-        return await PNLight.PNLightSDK.shared.validatePurchase(captcha: captcha)
-    }
-
     /// Log a custom event to PNLight
     /// - Parameters:
     ///   - eventName: Name of the event
@@ -128,4 +121,54 @@ public class PNLightSDK {
         return await PNLight.PNLightSDK.shared.updateIdfa()
     }
 
+    // MARK: - In-App Purchases (StoreKit 2, iOS 15+)
+
+    /// Fetches the configured products with their App Store price/offer/trial info.
+    /// - Returns: The resolved products, or an empty array if none are configured.
+    public func fetchProducts() async throws -> [PNLightProduct] {
+        return try await PNLight.PNLightSDK.shared.fetchProducts()
+    }
+
+    /// Purchases the product with the given id: runs the StoreKit 2 purchase,
+    /// verifies the transaction, reports the receipt, and finishes it.
+    public func purchase(_ productId: String) async throws -> PNLightPurchaseResult {
+        return try await PNLight.PNLightSDK.shared.purchase(productId)
+    }
+
+    /// Restores previous purchases by syncing with the App Store.
+    public func restorePurchases() async throws {
+        try await PNLight.PNLightSDK.shared.restorePurchases()
+    }
+
+    /// Whether the user currently has an active entitlement to any configured
+    /// product. Uses local StoreKit entitlements — works offline.
+    public func isPremium() async -> Bool {
+        return await PNLight.PNLightSDK.shared.isPremium()
+    }
+
+    /// Whether the user currently has an active entitlement to a specific product.
+    public func isPurchased(_ productId: String) async -> Bool {
+        return await PNLight.PNLightSDK.shared.isPurchased(productId)
+    }
+
+    /// Whether the user is eligible for a product's introductory offer (e.g. trial).
+    public func isEligibleForTrial(productId: String) async -> Bool {
+        return await PNLight.PNLightSDK.shared.isEligibleForTrial(productId: productId)
+    }
+
+    /// Returns the base64-encoded App Store receipt, or `nil` if none is present
+    /// on device. Useful for server-side receipt validation.
+    public func getAppleReceipt() async -> String? {
+        return await PNLight.PNLightSDK.shared.getAppleReceipt()
+    }
+
 }
+
+// MARK: - In-App Purchase types (re-exported from PNLight)
+
+public typealias PNLightProduct = PNLight.PNLightProduct
+public typealias PNLightSubscriptionInfo = PNLight.PNLightSubscriptionInfo
+public typealias PNLightSubscriptionPeriod = PNLight.PNLightSubscriptionPeriod
+public typealias PNLightSubscriptionOffer = PNLight.PNLightSubscriptionOffer
+public typealias PNLightProductType = PNLight.PNLightProductType
+public typealias PNLightPurchaseResult = PNLight.PNLightPurchaseResult

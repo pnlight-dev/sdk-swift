@@ -1,0 +1,94 @@
+{
+  "identifier" : "42ABA62F-1EED-4E8A-AA39-C280E4D39333",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "19.99",
+      "familyShareable" : false,
+      "internalID" : "E7AC4787-12C8-481A-B16D-E5D86EA4E8A7",
+      "localizations" : [
+        {
+          "description" : "Unlock all premium features forever.",
+          "displayName" : "Premium Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.example.pnlight.premium.lifetime",
+      "referenceName" : "Premium Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "DDD056D6-1B27-4C32-9027-4BF79522BB6F",
+      "localizations" : [
+
+      ],
+      "name" : "Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "61FBAA73-F653-4A07-9EF1-ED53D921742C",
+          "introductoryOffer" : {
+            "internalID" : "B966F4BD-E4EA-4C15-B1F7-25BCD13875ED",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Premium, billed monthly. Includes a 1-week free trial.",
+              "displayName" : "Premium Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.example.pnlight.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "DDD056D6-1B27-4C32-9027-4BF79522BB6F",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "8D3ED77C-5A89-4EF8-A34F-C0084F970A8C",
+          "localizations" : [
+            {
+              "description" : "Premium, billed yearly. Best value.",
+              "displayName" : "Premium Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.example.pnlight.premium.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Yearly",
+          "subscriptionGroupID" : "DDD056D6-1B27-4C32-9027-4BF79522BB6F",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
