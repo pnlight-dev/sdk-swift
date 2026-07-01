@@ -6,7 +6,7 @@ import Foundation
 // at release time; the .xcframework itself is not committed — it is attached as
 // a zip asset to the matching GitHub Release and fetched here by checksum.
 let releaseVersion = "0.8.0"
-let releaseChecksum = "42c3e4e03143a611da8e64b6af9fe9bf9853dd0e61730bdd4ea1ed4e0f75806b"
+let releaseChecksum = "ce28fead33f6af40c7a5da27e8930ff6ac70f903cdcd429985e9986aea7d2822"
 
 // Local development: when the xcframework is present next to this manifest,
 // resolve against the on-disk copy instead of the published release.
