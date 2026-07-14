@@ -83,6 +83,12 @@ struct ContentView: View {
                         Label("Open Paywall (RemoteUI)", systemImage: "creditcard")
                     }
 
+                    NavigationLink {
+                        CircularLoaderExampleScreen()
+                    } label: {
+                        Label("Native Circular Loader", systemImage: "arrow.triangle.2.circlepath")
+                    }
+
                     Button {
                         Task {
                             await PNLightSDK.shared.logEvent("home_screen_viewed")

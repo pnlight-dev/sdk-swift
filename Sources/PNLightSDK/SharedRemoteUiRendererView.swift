@@ -1,6 +1,99 @@
 import UIKit
 import DivKit
+import LayoutKit
 import PNLight
+
+private final class CircularLoaderBlockFactory: DivCustomBlockFactory {
+    private enum Constants {
+        static let customType = "pnlight.circular_loader"
+        static let defaultAccessibilityLabel = "Loading"
+    }
+
+    func makeBlock(data: DivCustomData, context: DivBlockModelingContext) -> Block {
+        guard data.name == Constants.customType else {
+            context.addError(
+                message: "Unsupported PNLight custom type '\(data.name)'; expected '\(Constants.customType)'"
+            )
+            return EmptyBlock.zeroSized
+        }
+
+        let style = activityIndicatorStyle(from: data.data["style"])
+        let indicator = UIActivityIndicatorView(style: style)
+        indicator.color = color(from: data.data["color"]) ?? .label
+        indicator.hidesWhenStopped = false
+        indicator.accessibilityLabel = string(from: data.data["accessibility_label"])
+            ?? Constants.defaultAccessibilityLabel
+        indicator.isAccessibilityElement = true
+        indicator.startAnimating()
+
+        let intrinsicSize = indicator.intrinsicContentSize
+        return GenericViewBlock(
+            content: .view(indicator),
+            width: blockTrait(from: data.widthTrait, intrinsicSize: intrinsicSize.width),
+            height: blockTrait(from: data.heightTrait, intrinsicSize: intrinsicSize.height)
+        )
+    }
+
+    private func activityIndicatorStyle(from value: Any?) -> UIActivityIndicatorView.Style {
+        switch string(from: value)?.lowercased() {
+        case "large": return .large
+        default: return .medium
+        }
+    }
+
+    private func blockTrait(
+        from trait: LayoutTrait,
+        intrinsicSize: CGFloat
+    ) -> GenericViewBlock.Trait {
+        switch trait {
+        case let .fixed(value): return .fixed(value)
+        case .intrinsic: return .fixed(intrinsicSize)
+        case .weighted: return .resizable
+        }
+    }
+
+    private func string(from value: Any?) -> String? {
+        guard let value = value as? String, !value.isEmpty else { return nil }
+        return value
+    }
+
+    /// Accepts DivKit's `#AARRGGBB` colors and the common `#RRGGBB` shorthand.
+    private func color(from value: Any?) -> UIColor? {
+        guard var hex = string(from: value) else { return nil }
+        if hex.hasPrefix("#") {
+            hex.removeFirst()
+        }
+
+        let alpha: UInt64
+        let red: UInt64
+        let green: UInt64
+        let blue: UInt64
+
+        switch hex.count {
+        case 6:
+            alpha = 255
+            guard let rgb = UInt64(hex, radix: 16) else { return nil }
+            red = (rgb >> 16) & 0xFF
+            green = (rgb >> 8) & 0xFF
+            blue = rgb & 0xFF
+        case 8:
+            guard let argb = UInt64(hex, radix: 16) else { return nil }
+            alpha = (argb >> 24) & 0xFF
+            red = (argb >> 16) & 0xFF
+            green = (argb >> 8) & 0xFF
+            blue = argb & 0xFF
+        default:
+            return nil
+        }
+
+        return UIColor(
+            red: CGFloat(red) / 255,
+            green: CGFloat(green) / 255,
+            blue: CGFloat(blue) / 255,
+            alpha: CGFloat(alpha) / 255
+        )
+    }
+}
 
 struct RemoteUiActionPayload {
     let url: String
@@ -115,7 +208,10 @@ public class PNLightRemoteUiRendererView: UIView {
         secure = true
         preventRecording = true
         urlHandler = UrlHandler()
-        let divKitComponents = DivKitComponents(urlHandler: urlHandler)
+        let divKitComponents = DivKitComponents(
+            divCustomBlockFactory: CircularLoaderBlockFactory(),
+            urlHandler: urlHandler
+        )
         divView = DivView(divKitComponents: divKitComponents)
         loadingIndicator = UIActivityIndicatorView(style: .large)
         errorLabel = UILabel()
@@ -133,7 +229,10 @@ public class PNLightRemoteUiRendererView: UIView {
         self.secure = secure
         self.preventRecording = preventRecording
         urlHandler = UrlHandler()
-        let divKitComponents = DivKitComponents(urlHandler: urlHandler)
+        let divKitComponents = DivKitComponents(
+            divCustomBlockFactory: CircularLoaderBlockFactory(),
+            urlHandler: urlHandler
+        )
         divView = DivView(divKitComponents: divKitComponents)
         loadingIndicator = UIActivityIndicatorView(style: .large)
         errorLabel = UILabel()

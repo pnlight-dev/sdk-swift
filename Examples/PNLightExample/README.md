@@ -50,6 +50,7 @@ The StoreKit file is referenced only by the scheme's Run action and is never bun
 PNLightExample/
 ├── App.swift            # @main entry – SDK init + prefetch
 ├── ContentView.swift    # Home screen (logEvent, attribution, userId, IDFA)
+├── CircularLoaderExampleScreen.swift # Local DivKit markup with a native iOS loader
 ├── PaywallScreen.swift  # RemoteUiView paywall sheet
 ├── StoreScreen.swift    # In-app purchase UI (catalog, buy, restore, receipt)
 ├── StoreManager.swift   # StoreKit 2 IAP harness over the PNLight IAP API
@@ -65,6 +66,7 @@ project.yml              # xcodegen spec (SPM dep + scheme/StoreKit config)
 |------|--------------|
 | `App.swift` | `PNLightSDK.shared.initialize` + `prefetchUIConfig` |
 | `PaywallScreen.swift` | `RemoteUiView(placement:cardId:onAction:)` |
+| `CircularLoaderExampleScreen.swift` | `pnlight.circular_loader` rendered from local DivKit markup |
 | `StoreScreen.swift` | IAP catalog UI driven by `StoreManager` |
 | `StoreManager.swift` | `fetchProducts`, `purchase`, `restorePurchases`, `isPremium`, `getAppleReceipt` |
 | `DiagnosticsView.swift` | API key, user id, products received, and a live StoreKit-config probe |

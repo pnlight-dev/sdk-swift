@@ -298,6 +298,26 @@ final class PaywallViewController: UIViewController {
 }
 ```
 
+### Native iOS circular loader
+
+Use DivKit's custom element to render a native `UIActivityIndicatorView` inside Remote UI markup:
+
+```json
+{
+  "type": "custom",
+  "custom_type": "pnlight.circular_loader",
+  "width": { "type": "fixed", "value": 48 },
+  "height": { "type": "fixed", "value": 48 },
+  "custom_props": {
+    "style": "large",
+    "color": "#FF007AFF",
+    "accessibility_label": "Loading"
+  }
+}
+```
+
+`style` accepts `"medium"` (the default) or `"large"`. `color` accepts `#RRGGBB` or DivKit-style `#AARRGGBB` and defaults to the adaptive iOS label color. `accessibility_label` defaults to `"Loading"`. Standard DivKit `width` and `height` fields control the element's layout; set a dimension to `{ "type": "wrap_content" }` to use the native indicator's intrinsic size for that dimension.
+
 ### Manual Config Fetching
 
 Use `getUIConfig` if you need to fetch the placement configuration yourself. When `attributionRequired` is `true` (the default), the SDK waits for attribution data internally before returning:

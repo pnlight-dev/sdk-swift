@@ -5,8 +5,8 @@ import Foundation
 // Released binary artifact. Both lines are rewritten by scripts/publish_spm.sh
 // at release time; the .xcframework itself is not committed — it is attached as
 // a zip asset to the matching GitHub Release and fetched here by checksum.
-let releaseVersion = "0.8.2"
-let releaseChecksum = "6f0f20033f7d3ab0a8ff93033d02d362f784931f33de8e68cca17850305e4940"
+let releaseVersion = "0.8.3"
+let releaseChecksum = "d9ad00ca244e6c39b2eb7853e7d1b8fc2affbdde955b2fa4ff3c8774073e6956"
 
 // Local development: when the xcframework is present next to this manifest,
 // resolve against the on-disk copy instead of the published release.
@@ -45,6 +45,9 @@ let package = Package(
             name: "PNLightSDK",
             dependencies: [
                 "PNLight",
+                // The renderer imports LayoutKit for DivCustomBlockFactory. divkit-ios does not
+                // expose LayoutKit as a standalone SwiftPM product, so it is supplied through
+                // the public DivKit product's target dependencies and cannot be listed directly.
                 .product(name: "DivKit", package: "divkit-ios"),
             ]
         ),
