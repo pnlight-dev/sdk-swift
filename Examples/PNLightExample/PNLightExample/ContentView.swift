@@ -89,6 +89,30 @@ struct ContentView: View {
                         Label("Native Circular Loader", systemImage: "arrow.triangle.2.circlepath")
                     }
 
+                    NavigationLink {
+                        CTAButtonExampleScreen()
+                    } label: {
+                        Label("Native CTA Button", systemImage: "hand.tap")
+                    }
+
+                    NavigationLink {
+                        FlowNavigationExampleScreen()
+                    } label: {
+                        Label("Native Remote UI Flow", systemImage: "rectangle.stack")
+                    }
+
+                    NavigationLink {
+                        HapticsExampleScreen()
+                    } label: {
+                        Label("Remote UI Haptics", systemImage: "waveform")
+                    }
+
+                    NavigationLink {
+                        LottieExampleScreen()
+                    } label: {
+                        Label("Remote UI Lottie", systemImage: "sparkles.rectangle.stack")
+                    }
+
                     Button {
                         Task {
                             await PNLightSDK.shared.logEvent("home_screen_viewed")

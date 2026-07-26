@@ -51,6 +51,9 @@ PNLightExample/
 ├── App.swift            # @main entry – SDK init + prefetch
 ├── ContentView.swift    # Home screen (logEvent, attribution, userId, IDFA)
 ├── CircularLoaderExampleScreen.swift # Local DivKit markup with a native iOS loader
+├── FlowNavigationExampleScreen.swift # Embedded stack + server-driven native page sheet
+├── HapticsExampleScreen.swift # UIKit feedback + looping Core Haptics from markup
+├── LottieExampleScreen.swift # Inline Lottie rendered by DivKit with no host setup
 ├── PaywallScreen.swift  # RemoteUiView paywall sheet
 ├── StoreScreen.swift    # In-app purchase UI (catalog, buy, restore, receipt)
 ├── StoreManager.swift   # StoreKit 2 IAP harness over the PNLight IAP API
@@ -67,6 +70,9 @@ project.yml              # xcodegen spec (SPM dep + scheme/StoreKit config)
 | `App.swift` | `PNLightSDK.shared.initialize` + `prefetchUIConfig` |
 | `PaywallScreen.swift` | `RemoteUiView(placement:cardId:onAction:)` |
 | `CircularLoaderExampleScreen.swift` | `pnlight.circular_loader` rendered from local DivKit markup |
+| `FlowNavigationExampleScreen.swift` | One renderer driving an embedded native stack and a native page sheet |
+| `HapticsExampleScreen.swift` | `pnlight://haptic/...` actions and a named looping Core Haptics pattern |
+| `LottieExampleScreen.swift` | DivKit's `lottie` extension with a self-contained inline animation |
 | `StoreScreen.swift` | IAP catalog UI driven by `StoreManager` |
 | `StoreManager.swift` | `fetchProducts`, `purchase`, `restorePurchases`, `isPremium`, `getAppleReceipt` |
 | `DiagnosticsView.swift` | API key, user id, products received, and a live StoreKit-config probe |

@@ -5,8 +5,8 @@ import Foundation
 // Released binary artifact. Both lines are rewritten by scripts/publish_spm.sh
 // at release time; the .xcframework itself is not committed — it is attached as
 // a zip asset to the matching GitHub Release and fetched here by checksum.
-let releaseVersion = "0.8.5"
-let releaseChecksum = "e8d780e693139122f7b141e5798a8af9cdaa5333257523f35398d617637c02c8"
+let releaseVersion = "0.9.0"
+let releaseChecksum = "1e2d19f49a118ea7247802ec415eb496403c75207724ba23f5d4dc895187451b"
 
 // Local development: when the xcframework is present next to this manifest,
 // resolve against the on-disk copy instead of the published release.
@@ -38,6 +38,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/divkit/divkit-ios", from: "32.32.0"),
+        // Airbnb's lightweight SPM mirror avoids cloning the large lottie-ios
+        // development repository into every host application's package graph.
+        // 4.5.2 is built with Swift 5.9 and keeps PNLightSDK compatible with
+        // the package's Xcode 15 / Swift 5.9 baseline.
+        .package(url: "https://github.com/airbnb/lottie-spm", exact: "4.5.2"),
     ],
     targets: [
         binaryTarget,
@@ -49,6 +54,8 @@ let package = Package(
                 // expose LayoutKit as a standalone SwiftPM product, so it is supplied through
                 // the public DivKit product's target dependencies and cannot be listed directly.
                 .product(name: "DivKit", package: "divkit-ios"),
+                .product(name: "DivKitExtensions", package: "divkit-ios"),
+                .product(name: "Lottie", package: "lottie-spm"),
             ]
         ),
     ]
