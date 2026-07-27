@@ -25,7 +25,7 @@ private struct HapticsMarkupView: UIViewRepresentable {
       "type": "flow",
       "initial_route": "haptics",
       "haptics": {
-        "scanning": {
+        "ambient_pulse": {
           "events": [
             {
               "type": "continuous",
@@ -126,13 +126,13 @@ private struct HapticsMarkupView: UIViewRepresentable {
                       },
                       {
                         "type": "button",
-                        "title": "Start scanning pattern",
-                        "url": "pnlight://haptic/start?pattern=scanning"
+                        "title": "Start ambient pattern",
+                        "url": "pnlight://haptic/start?pattern=ambient_pulse"
                       },
                       {
                         "type": "button",
-                        "title": "Stop scanning pattern",
-                        "url": "pnlight://haptic/stop?pattern=scanning"
+                        "title": "Stop ambient pattern",
+                        "url": "pnlight://haptic/stop?pattern=ambient_pulse"
                       },
                       {
                         "type": "text",

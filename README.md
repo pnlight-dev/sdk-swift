@@ -533,13 +533,15 @@ A presented route can push more routes; those pushes stay inside that modal's
 own stack. Dismissing it reveals the embedded stack with its existing view
 controllers, DivKit variables, and scroll state intact.
 
-All declared routes are parsed and built through DivKit's preloader when the
-flow is received. Pushes and presentations therefore reuse a prepared native
-controller instead of showing a DivKit loader. The actual view tree is attached
-in `viewWillAppear`, so visibility actions, transitions, timers started by
-visibility actions, and PNLight component animations begin only when the route
-becomes visible. After a prepared route is consumed, the SDK warms another
-instance for a later visit.
+All declared routes, including the initial route, are parsed and built through
+DivKit's preloader when the flow is received. Pushes and presentations therefore
+reuse a prepared native controller instead of showing a DivKit loader. PNLight
+builds and lays out the prepared destination in `viewWillAppear` with zero
+visible bounds, then publishes its real bounds in `viewDidAppear`. Navigation
+therefore starts with an already-rendered destination while one-shot visibility
+actions, timers started by visibility actions, and visibility transitions still
+begin only when the route is actually visible. After a prepared route is
+consumed, the SDK warms another instance for a later visit.
 
 `presentation.style` accepts `sheet` (the default) or `full_screen`. Sheets
 use the native page-sheet controller and give the presenting app a receding,
@@ -632,9 +634,9 @@ Flows may also declare named Core Haptics patterns at the top level:
 {
   "schemaVersion": 2,
   "type": "flow",
-  "initial_route": "scan",
+  "initial_route": "main",
   "haptics": {
-    "scanning": {
+    "ambient_pulse": {
       "events": [
         {
           "type": "continuous",
@@ -655,17 +657,17 @@ Flows may also declare named Core Haptics patterns at the top level:
     }
   },
   "routes": {
-    "scan": {
+    "main": {
       "divkit": {
         "templates": {},
         "card": {
-          "log_id": "scan",
+          "log_id": "main",
           "states": [
             {
               "state_id": 0,
               "div": {
                 "type": "text",
-                "text": "Scan",
+                "text": "Haptic demo",
                 "width": { "type": "match_parent" },
                 "height": { "type": "wrap_content" }
               }
@@ -678,8 +680,8 @@ Flows may also declare named Core Haptics patterns at the top level:
 }
 ```
 
-Use `pnlight://haptic/start?pattern=scanning` to start a named pattern and
-`pnlight://haptic/stop?pattern=scanning` to stop it. Calling `stop` without a
+Use `pnlight://haptic/start?pattern=ambient_pulse` to start a named pattern and
+`pnlight://haptic/stop?pattern=ambient_pulse` to stop it. Calling `stop` without a
 pattern stops every active player owned by the current route.
 
 Patterns accept 1–128 transient or continuous events. Times and durations are
@@ -767,6 +769,98 @@ Use DivKit's custom element to render a native `UIActivityIndicatorView` inside 
 
 `style` accepts `"medium"` (the default) or `"large"`. `color` accepts `#RRGGBB` or DivKit-style `#AARRGGBB` and defaults to the adaptive iOS label color. `accessibility_label` defaults to `"Loading"`. Standard DivKit `width` and `height` fields control the element's layout; set a dimension to `{ "type": "wrap_content" }` to use the native indicator's intrinsic size for that dimension.
 
+### Native iOS animated prepend list
+
+`pnlight.animated_prepend_list` is a persistent native UIKit list. Increasing
+`count` by one fades and slides the newly revealed item into the beginning of
+the list while the existing rows move down. It can be used for activity feeds,
+progressive results, notifications, logs, or any other incrementally revealed
+content. Row height is always calculated from its title and body; there is
+intentionally no `row_height` or `line_height` prop.
+
+```json
+{
+  "type": "custom",
+  "custom_type": "pnlight.animated_prepend_list",
+  "width": { "type": "match_parent" },
+  "height": { "type": "match_parent" },
+  "custom_props": {
+    "instance_id": "activity_feed",
+    "count": 0,
+    "count_variable": "visible_item_count",
+    "reduced_motion": "@{reduce_motion}",
+    "status_text": "New",
+    "animation_duration": 0.5,
+    "slide_distance": 12,
+    "fade": true,
+    "slide": true,
+    "items": [
+      {
+        "title": "New message",
+        "body": "A teammate sent you an update",
+        "icon_preview": "data:image/png;base64,..."
+      },
+      {
+        "title": "File uploaded",
+        "body": "The latest document is ready to review",
+        "icon_preview": "data:image/png;base64,..."
+      }
+    ]
+  }
+}
+```
+
+`items` stays in discovery order: item `0` appears when `count` becomes `1`,
+item `1` appears when it becomes `2`, and so on. The native view displays the
+newest visible item first. A one-step increase is animated; resetting the count,
+changing the item data/style, or jumping by several items is applied
+immediately. Give every simultaneously rendered list a stable, unique
+`instance_id`; that identity lets the native view keep its animation state
+across DivKit variable updates.
+
+Use `count_variable` for a variable-driven list so the same JSON is reactive in
+both the native and web renderers. Other props support DivKit expressions.
+Colors accept `#RRGGBB` or DivKit-style `#AARRGGBB`.
+
+| Prop | Default | Description |
+| --- | --- | --- |
+| `instance_id` | fallback shared ID | Stable identity for retaining list state; set this explicitly. |
+| `count` | `0` | Number of discovered items to display, clamped to `0...items.count`. |
+| `count_variable` | `""` | Optional DivKit variable name that drives `count` reactively across native and web renderers. |
+| `items` | required | Discovery-ordered array of `title`, `body`, and Base64 `icon_preview` values. |
+| `reduced_motion` | `false` | Applies count changes immediately without fade or movement. |
+| `status_text` | `""` | Optional trailing text shown on every row. |
+| `card_background_color` | `#FFFEFEFE` | Row fill. |
+| `title_color` | `#FF1C1C1E` | Title color. |
+| `body_color` | `#FF3A3A3C` | Body color. |
+| `status_color` | iOS `systemRed` | Status color. |
+| `corner_radius` | `20` | Continuous row corner radius in points. |
+| `title_font_size` | `14` | Title point size. |
+| `title_font_weight` | `bold` | `ultralight`/`thin`/`light`/`regular`/`medium`/`semibold`/`bold`/`heavy`/`black`. |
+| `body_font_size` | `12` | Body point size. |
+| `body_font_weight` | `light` | Same weight values as the title. |
+| `status_font_size` | `12` | Status point size. |
+| `status_font_weight` | `semibold` | Same weight values as the title. |
+| `list_horizontal_padding` | `4` | Inset between the list bounds and each row. |
+| `row_spacing` | `15` | Vertical gap between rows. |
+| `bottom_padding` | `20` | Scrollable space after the last row. |
+| `row_horizontal_padding` | `16` | Leading and trailing content inset inside a row. |
+| `row_vertical_padding` | `16` | Top and bottom content inset; content still determines final height. |
+| `icon_size` | `20` | Square icon size. |
+| `icon_text_spacing` | `13` | Gap from the icon to the text column. |
+| `text_status_spacing` | `13` | Minimum gap from text to the status. |
+| `animation_duration` | `0.36` | Fade/slide duration in seconds. |
+| `slide_distance` | `8` | New row's upward starting offset in points. |
+| `fade` | `true` | Enables the new-row opacity transition. |
+| `slide` | `true` | Enables the new-row movement transition. |
+| `shows_scroll_indicator` | `false` | Shows the native vertical scroll indicator. |
+
+The outer list size is still controlled by the standard DivKit `width` and
+`height` fields. Only the rows use intrinsic content sizing. The component is
+implemented by PNLightSDK on iOS and by `@pnlight/sdk-react` on the web. A host
+using DivKit directly, without either PNLight wrapper, must register the same
+`custom_type` itself.
+
 ### Native iOS CTA button
 
 Render a native, animated call-to-action button with a repeating shimmer streak,
@@ -781,7 +875,7 @@ decoded from `url`.
   "width": { "type": "match_parent" },
   "height": { "type": "fixed", "value": 58 },
   "custom_props": {
-    "title": "Remove threats now",
+    "title": "Continue",
     "background_color": "#FF007AFF",
     "title_color": "#FFFFFFFF",
     "corner_radius": 16,
@@ -789,7 +883,7 @@ decoded from `url`.
     "font_weight": "bold",
     "shimmer": true,
     "bounce": true,
-    "url": "pnlight://cta?id=remove_threats"
+    "url": "pnlight://cta?id=continue"
   }
 }
 ```
@@ -899,9 +993,9 @@ variable and flipped while the card is on screen:
       "type": "custom",
       "custom_type": "pnlight.cta_button",
       "custom_props": {
-        "title": "Start scan",
+        "title": "Submit",
         "loading": "@{is_busy}",
-        "url": "pnlight://cta?id=start_scan"
+        "url": "pnlight://cta?id=submit"
       }
     }}]
   }
@@ -927,8 +1021,8 @@ Handle the tap in `onAction` just like any other action:
 
 ```swift
 RemoteUiView(placement: "paywall", cardId: "paywall_card") { action in
-    if action.params["id"] == "remove_threats" {
-        // start the flow
+    if action.params["id"] == "continue" {
+        // continue the flow
     }
 }
 ```

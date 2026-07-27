@@ -1091,6 +1091,473 @@ private final class NativeGlassButtonView: UIView {
     }
 }
 
+private struct NativePrependListItem: Equatable {
+    let title: String
+    let body: String
+    let iconPreview: String
+
+    var image: UIImage? {
+        guard let comma = iconPreview.firstIndex(of: ","),
+              iconPreview[..<comma].contains(";base64"),
+              let data = Data(base64Encoded: String(iconPreview[iconPreview.index(after: comma)...])) else {
+            return nil
+        }
+        return UIImage(data: data)
+    }
+}
+
+private struct NativePrependListStyle: Equatable {
+    var statusText = ""
+    var cardBackgroundColor = UIColor(
+        red: 254.0 / 255.0,
+        green: 254.0 / 255.0,
+        blue: 254.0 / 255.0,
+        alpha: 1
+    )
+    var titleColor = UIColor(red: 28.0 / 255.0, green: 28.0 / 255.0, blue: 30.0 / 255.0, alpha: 1)
+    var bodyColor = UIColor(red: 58.0 / 255.0, green: 58.0 / 255.0, blue: 60.0 / 255.0, alpha: 1)
+    var statusColor = UIColor.systemRed
+    var cornerRadius: CGFloat = 20
+    var titleFontSize: CGFloat = 14
+    var titleFontWeight = UIFont.Weight.bold
+    var bodyFontSize: CGFloat = 12
+    var bodyFontWeight = UIFont.Weight.light
+    var statusFontSize: CGFloat = 12
+    var statusFontWeight = UIFont.Weight.semibold
+    var listHorizontalPadding: CGFloat = 4
+    var rowSpacing: CGFloat = 15
+    var bottomPadding: CGFloat = 20
+    var rowHorizontalPadding: CGFloat = 16
+    var rowVerticalPadding: CGFloat = 16
+    var iconSize: CGFloat = 20
+    var iconTextSpacing: CGFloat = 13
+    var textStatusSpacing: CGFloat = 13
+    var animationDuration: TimeInterval = 0.36
+    var slideDistance: CGFloat = 8
+    var fadesNewRows = true
+    var slidesNewRows = true
+    var showsScrollIndicator = false
+
+    static func make(from props: [String: Any]) -> NativePrependListStyle {
+        var style = NativePrependListStyle()
+        style.statusText = props["status_text"] as? String ?? style.statusText
+        style.cardBackgroundColor = CustomPropReader.color(props["card_background_color"])
+            ?? style.cardBackgroundColor
+        style.titleColor = CustomPropReader.color(props["title_color"]) ?? style.titleColor
+        style.bodyColor = CustomPropReader.color(props["body_color"]) ?? style.bodyColor
+        style.statusColor = CustomPropReader.color(props["status_color"]) ?? style.statusColor
+        style.cornerRadius = nonnegative(props["corner_radius"], default: style.cornerRadius)
+        style.titleFontSize = positive(props["title_font_size"], default: style.titleFontSize)
+        style.titleFontWeight = fontWeight(props["title_font_weight"], default: style.titleFontWeight)
+        style.bodyFontSize = positive(props["body_font_size"], default: style.bodyFontSize)
+        style.bodyFontWeight = fontWeight(props["body_font_weight"], default: style.bodyFontWeight)
+        style.statusFontSize = positive(props["status_font_size"], default: style.statusFontSize)
+        style.statusFontWeight = fontWeight(props["status_font_weight"], default: style.statusFontWeight)
+        style.listHorizontalPadding = nonnegative(
+            props["list_horizontal_padding"],
+            default: style.listHorizontalPadding
+        )
+        style.rowSpacing = nonnegative(props["row_spacing"], default: style.rowSpacing)
+        style.bottomPadding = nonnegative(props["bottom_padding"], default: style.bottomPadding)
+        style.rowHorizontalPadding = nonnegative(
+            props["row_horizontal_padding"],
+            default: style.rowHorizontalPadding
+        )
+        style.rowVerticalPadding = nonnegative(
+            props["row_vertical_padding"],
+            default: style.rowVerticalPadding
+        )
+        style.iconSize = nonnegative(props["icon_size"], default: style.iconSize)
+        style.iconTextSpacing = nonnegative(props["icon_text_spacing"], default: style.iconTextSpacing)
+        style.textStatusSpacing = nonnegative(
+            props["text_status_spacing"],
+            default: style.textStatusSpacing
+        )
+        style.animationDuration = max(
+            0,
+            CustomPropReader.double(props["animation_duration"]) ?? style.animationDuration
+        )
+        style.slideDistance = nonnegative(props["slide_distance"], default: style.slideDistance)
+        style.fadesNewRows = CustomPropReader.bool(props["fade"]) ?? style.fadesNewRows
+        style.slidesNewRows = CustomPropReader.bool(props["slide"]) ?? style.slidesNewRows
+        style.showsScrollIndicator = CustomPropReader.bool(props["shows_scroll_indicator"])
+            ?? style.showsScrollIndicator
+        return style
+    }
+
+    private static func positive(_ value: Any?, default defaultValue: CGFloat) -> CGFloat {
+        max(1, CustomPropReader.cgFloat(value) ?? defaultValue)
+    }
+
+    private static func nonnegative(_ value: Any?, default defaultValue: CGFloat) -> CGFloat {
+        max(0, CustomPropReader.cgFloat(value) ?? defaultValue)
+    }
+
+    private static func fontWeight(_ value: Any?, default defaultWeight: UIFont.Weight) -> UIFont.Weight {
+        switch CustomPropReader.string(value)?.lowercased() {
+        case "ultralight": return .ultraLight
+        case "thin": return .thin
+        case "light": return .light
+        case "regular": return .regular
+        case "medium": return .medium
+        case "semibold": return .semibold
+        case "bold": return .bold
+        case "heavy": return .heavy
+        case "black": return .black
+        default: return defaultWeight
+        }
+    }
+}
+
+private final class NativePrependListRowView: UIView {
+    private static let unconstrainedSize = CGSize(
+        width: CGFloat.greatestFiniteMagnitude,
+        height: CGFloat.greatestFiniteMagnitude
+    )
+
+    private let iconView = UIImageView()
+    private let titleLabel = UILabel()
+    private let bodyLabel = UILabel()
+    private let statusLabel = UILabel()
+
+    private let style: NativePrependListStyle
+
+    init(item: NativePrependListItem, style: NativePrependListStyle) {
+        self.style = style
+        super.init(frame: .zero)
+
+        backgroundColor = style.cardBackgroundColor
+        layer.cornerRadius = style.cornerRadius
+        layer.cornerCurve = .continuous
+        clipsToBounds = true
+
+        iconView.image = item.image
+        iconView.contentMode = .scaleAspectFit
+        iconView.tintColor = .secondaryLabel
+
+        titleLabel.text = item.title
+        titleLabel.font = .systemFont(ofSize: style.titleFontSize, weight: style.titleFontWeight)
+        titleLabel.textColor = style.titleColor
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+
+        bodyLabel.text = item.body
+        bodyLabel.font = .systemFont(ofSize: style.bodyFontSize, weight: style.bodyFontWeight)
+        bodyLabel.textColor = style.bodyColor
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
+
+        statusLabel.text = style.statusText
+        statusLabel.font = .systemFont(ofSize: style.statusFontSize, weight: style.statusFontWeight)
+        statusLabel.textColor = style.statusColor
+        statusLabel.numberOfLines = 1
+
+        [iconView, titleLabel, bodyLabel, statusLabel].forEach(addSubview)
+
+        isAccessibilityElement = true
+        accessibilityLabel = [item.title, item.body, style.statusText]
+            .filter { !$0.isEmpty }
+            .joined(separator: ". ")
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func fittingHeight(for width: CGFloat) -> CGFloat {
+        let statusWidth = ceil(statusLabel.sizeThatFits(Self.unconstrainedSize).width)
+        let textWidth = max(
+            0,
+            width
+                - style.rowHorizontalPadding
+                - style.iconSize
+                - style.iconTextSpacing
+                - style.textStatusSpacing
+                - statusWidth
+                - style.rowHorizontalPadding
+        )
+        let constraint = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+        let titleHeight = ceil(titleLabel.sizeThatFits(constraint).height)
+        let bodyHeight = ceil(bodyLabel.sizeThatFits(constraint).height)
+        let contentHeight = max(
+            style.iconSize,
+            titleHeight + bodyHeight,
+            ceil(statusLabel.intrinsicContentSize.height)
+        )
+        return contentHeight + style.rowVerticalPadding * 2
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let statusSize = statusLabel.sizeThatFits(Self.unconstrainedSize)
+        let statusWidth = ceil(statusSize.width)
+        let statusHeight = ceil(statusSize.height)
+        let statusX = bounds.width - style.rowHorizontalPadding - statusWidth
+        let textX = style.rowHorizontalPadding + style.iconSize + style.iconTextSpacing
+        let textWidth = max(0, statusX - style.textStatusSpacing - textX)
+        let constraint = CGSize(width: textWidth, height: .greatestFiniteMagnitude)
+        let titleHeight = ceil(titleLabel.sizeThatFits(constraint).height)
+        let bodyHeight = ceil(bodyLabel.sizeThatFits(constraint).height)
+        let textHeight = titleHeight + bodyHeight
+        let textY = floor((bounds.height - textHeight) / 2)
+
+        iconView.frame = CGRect(
+            x: style.rowHorizontalPadding,
+            y: floor((bounds.height - style.iconSize) / 2),
+            width: style.iconSize,
+            height: style.iconSize
+        )
+        titleLabel.frame = CGRect(x: textX, y: textY, width: textWidth, height: titleHeight)
+        bodyLabel.frame = CGRect(
+            x: textX,
+            y: textY + titleHeight,
+            width: textWidth,
+            height: bodyHeight
+        )
+        statusLabel.frame = CGRect(
+            x: statusX,
+            y: floor((bounds.height - statusHeight) / 2),
+            width: statusWidth,
+            height: statusHeight
+        )
+    }
+}
+
+/// A persistent UIKit list used when DivKit gallery cells cannot retain enough
+/// identity to animate variable-driven prepends on iOS.
+private final class NativePrependListView: UIView {
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    private var rows: [NativePrependListRowView] = []
+    private var items: [NativePrependListItem] = []
+    private var targetCount = 0
+    private var displayedCount = 0
+    private var reducedMotion = false
+    private var style = NativePrependListStyle()
+    private var hasCompletedInitialLayout = false
+    private var lastLayoutWidth: CGFloat = 0
+    private var isAnimatingRows = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backgroundColor = .clear
+        clipsToBounds = true
+        scrollView.backgroundColor = .clear
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.alwaysBounceVertical = false
+        scrollView.contentInsetAdjustmentBehavior = .never
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+
+        isAccessibilityElement = false
+        accessibilityElementsHidden = false
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func update(
+        count: Int,
+        items: [NativePrependListItem],
+        reducedMotion: Bool,
+        style: NativePrependListStyle
+    ) {
+        let itemsChanged = self.items != items
+        let styleChanged = self.style != style
+        self.items = items
+        self.reducedMotion = reducedMotion
+        self.style = style
+        scrollView.showsVerticalScrollIndicator = style.showsScrollIndicator
+        targetCount = min(max(count, 0), items.count)
+
+        guard hasCompletedInitialLayout, bounds.width > 0, window != nil else {
+            setNeedsLayout()
+            return
+        }
+
+        if itemsChanged || styleChanged || targetCount < displayedCount || targetCount - displayedCount > 1 {
+            rebuildRows(count: targetCount)
+            layoutRowsImmediately()
+        } else if targetCount > displayedCount {
+            prependNextRow(animated: !reducedMotion)
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        scrollView.frame = bounds
+
+        let widthChanged = abs(lastLayoutWidth - bounds.width) > 0.5
+        guard !isAnimatingRows || widthChanged else { return }
+
+        if !hasCompletedInitialLayout || widthChanged {
+            rebuildRows(count: targetCount)
+            hasCompletedInitialLayout = true
+            lastLayoutWidth = bounds.width
+        }
+        layoutRowsImmediately()
+    }
+
+    private func rebuildRows(count: Int) {
+        rows.forEach { $0.removeFromSuperview() }
+        displayedCount = min(max(count, 0), items.count)
+        rows = (0..<displayedCount).reversed().map { itemIndex in
+            let row = NativePrependListRowView(item: items[itemIndex], style: style)
+            contentView.addSubview(row)
+            return row
+        }
+    }
+
+    private func prependNextRow(animated: Bool) {
+        guard displayedCount < targetCount, displayedCount < items.count else { return }
+
+        let newRow = NativePrependListRowView(item: items[displayedCount], style: style)
+        displayedCount += 1
+        rows.insert(newRow, at: 0)
+        contentView.addSubview(newRow)
+
+        let finalFrames = calculatedFrames()
+        updateContentGeometry(frames: finalFrames)
+
+        newRow.frame = finalFrames[0]
+        newRow.alpha = animated && style.fadesNewRows ? 0 : 1
+        newRow.transform = animated && style.slidesNewRows
+            ? CGAffineTransform(translationX: 0, y: -style.slideDistance)
+            : .identity
+        newRow.layoutIfNeeded()
+
+        guard animated else {
+            apply(frames: finalFrames)
+            return
+        }
+
+        isAnimatingRows = true
+        UIView.animate(
+            withDuration: style.animationDuration,
+            delay: 0,
+            options: [.curveEaseInOut, .beginFromCurrentState, .allowUserInteraction]
+        ) {
+            self.apply(frames: finalFrames)
+            newRow.alpha = 1
+            newRow.transform = .identity
+        } completion: { [weak self] _ in
+            self?.isAnimatingRows = false
+        }
+    }
+
+    private func layoutRowsImmediately() {
+        let frames = calculatedFrames()
+        updateContentGeometry(frames: frames)
+        apply(frames: frames)
+    }
+
+    private func calculatedFrames() -> [CGRect] {
+        let rowWidth = max(0, bounds.width - style.listHorizontalPadding * 2)
+        var y: CGFloat = 0
+        return rows.map { row in
+            let height = row.fittingHeight(for: rowWidth)
+            let frame = CGRect(x: style.listHorizontalPadding, y: y, width: rowWidth, height: height)
+            y += height + style.rowSpacing
+            return frame
+        }
+    }
+
+    private func updateContentGeometry(frames: [CGRect]) {
+        let lastMaxY = frames.last?.maxY ?? 0
+        let contentHeight = max(bounds.height, lastMaxY + style.bottomPadding)
+        contentView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: contentHeight)
+        scrollView.contentSize = CGSize(width: bounds.width, height: contentHeight)
+        if scrollView.contentOffset.y != 0 {
+            scrollView.setContentOffset(.zero, animated: false)
+        }
+    }
+
+    private func apply(frames: [CGRect]) {
+        for (row, frame) in zip(rows, frames) {
+            row.frame = frame
+            row.layoutIfNeeded()
+        }
+    }
+}
+
+private final class NativePrependListBlockFactory {
+    static let customType = "pnlight.animated_prepend_list"
+    static let legacyCustomType = "pnlight.animated_threat_list"
+    private static let maxCachedViewCount = 32
+
+    // The factory lives for the renderer's lifetime. Keeping these views strongly
+    // guarantees that DivKit remodelling cannot discard the row animation state
+    // between two count-variable updates. The bounded LRU order prevents remote
+    // payloads with varying instance IDs from retaining views without limit.
+    private var cachedViews: [String: NativePrependListView] = [:]
+    private var cachedViewOrder: [String] = []
+
+    private func view(for instanceId: String) -> NativePrependListView {
+        if let cached = cachedViews[instanceId] {
+            cachedViewOrder.removeAll { $0 == instanceId }
+            cachedViewOrder.append(instanceId)
+            return cached
+        }
+
+        let view = NativePrependListView()
+        cachedViews[instanceId] = view
+        cachedViewOrder.append(instanceId)
+
+        if cachedViewOrder.count > Self.maxCachedViewCount {
+            let evictedId = cachedViewOrder.removeFirst()
+            cachedViews.removeValue(forKey: evictedId)
+        }
+
+        return view
+    }
+
+    func makeBlock(
+        props: [String: Any],
+        data: DivCustomData,
+        context: DivBlockModelingContext
+    ) -> Block {
+        let instanceId = CustomPropReader.string(props["instance_id"])
+            ?? "pnlight.animated_prepend_list.default"
+        if props["instance_id"] == nil {
+            context.addWarning(message: "pnlight.animated_prepend_list should provide instance_id")
+        }
+
+        let rawItems = props["items"] as? [Any] ?? []
+        let items = rawItems.compactMap { value -> NativePrependListItem? in
+            guard let item = value as? [String: Any],
+                  let title = CustomPropReader.string(item["title"]),
+                  let body = CustomPropReader.string(item["body"]),
+                  let iconPreview = CustomPropReader.string(item["icon_preview"]) else {
+                return nil
+            }
+            return NativePrependListItem(title: title, body: body, iconPreview: iconPreview)
+        }
+        if items.isEmpty {
+            context.addError(message: "pnlight.animated_prepend_list requires non-empty items")
+        } else if items.count != rawItems.count {
+            context.addError(message: "pnlight.animated_prepend_list contains an invalid item")
+        }
+
+        let view = view(for: instanceId)
+
+        let count = Int(CustomPropReader.double(props["count"]) ?? 0)
+        let reducedMotion = CustomPropReader.bool(props["reduced_motion"]) ?? false
+        let style = NativePrependListStyle.make(from: props)
+        view.update(count: count, items: items, reducedMotion: reducedMotion, style: style)
+
+        return GenericViewBlock(
+            content: .view(view),
+            width: blockTrait(from: data.widthTrait, intrinsicSize: 0),
+            height: blockTrait(from: data.heightTrait, intrinsicSize: 0)
+        )
+    }
+}
+
 /// Renders `pnlight.cta_button` and `pnlight.icon_button`, forwarding taps to
 /// `onTap`.
 private final class NativeOverflowContainerView: UIView {
@@ -1220,10 +1687,21 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
 
     private let circularLoaderFactory = CircularLoaderBlockFactory()
     private let buttonFactory = NativeButtonBlockFactory()
+    private let prependListFactory = NativePrependListBlockFactory()
 
     func makeBlock(data: DivCustomData, context: DivBlockModelingContext) -> Block {
+        var rawProps = data.data
+        if data.name == NativePrependListBlockFactory.customType ||
+            data.name == NativePrependListBlockFactory.legacyCustomType,
+           let countVariable = CustomPropReader.string(rawProps["count_variable"]) {
+            // Keep the cross-platform contract compatible with DivKit Web,
+            // where expressions embedded directly in custom_props are not
+            // reactive. Resolving the named variable here also registers the
+            // dependency that makes native DivKit remodel on each increment.
+            rawProps["count"] = "@{\(countVariable)}"
+        }
         let props = CustomPropReader.resolvingExpressions(
-            data.data,
+            rawProps,
             with: context.expressionResolver
         )
 
@@ -1234,6 +1712,9 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
             return buttonFactory.makeBlock(kind: .cta, props: props, data: data, context: context)
         case NativeButtonBlockFactory.iconCustomType:
             return buttonFactory.makeBlock(kind: .icon, props: props, data: data, context: context)
+        case NativePrependListBlockFactory.customType,
+             NativePrependListBlockFactory.legacyCustomType:
+            return prependListFactory.makeBlock(props: props, data: data, context: context)
         default:
             context.addError(message: "Unsupported PNLight custom type '\(data.name)'")
             return EmptyBlock.zeroSized
@@ -2130,6 +2611,9 @@ private final class PNLightFlowRouteViewController: UIViewController {
     let renderer = PNLightRemoteUiRendererView()
     private var preloadedCardId: String?
     private var isPrepared = false
+    private var isRouteAppearing = false
+    private var isRouteVisible = false
+    private var needsVisibilityActivation = false
     private var preparationCallbacks: [() -> Void] = []
 
     override func loadView() {
@@ -2138,10 +2622,26 @@ private final class PNLightFlowRouteViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let preloadedCardId {
-            renderer.displayPreloadedConfig(cardId: preloadedCardId)
-            self.preloadedCardId = nil
+        isRouteAppearing = true
+        isRouteVisible = false
+        displayPreloadedConfigIfReady(activateVisibility: false)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        isRouteAppearing = false
+        isRouteVisible = true
+        let displayedNow = displayPreloadedConfigIfReady(activateVisibility: true)
+        if displayedNow == false, needsVisibilityActivation {
+            renderer.activatePreloadedConfigVisibility()
+            needsVisibilityActivation = false
         }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        isRouteAppearing = false
+        isRouteVisible = false
     }
 
     func prepare(configJson: String, cardId: String) {
@@ -2151,6 +2651,11 @@ private final class PNLightFlowRouteViewController: UIViewController {
             guard let self else { return }
             await renderer.preloadConfig(configJson: configJson, cardId: cardId)
             isPrepared = true
+            if isRouteVisible {
+                displayPreloadedConfigIfReady(activateVisibility: true)
+            } else if isRouteAppearing {
+                displayPreloadedConfigIfReady(activateVisibility: false)
+            }
             let callbacks = preparationCallbacks
             preparationCallbacks.removeAll()
             callbacks.forEach { $0() }
@@ -2163,6 +2668,21 @@ private final class PNLightFlowRouteViewController: UIViewController {
         } else {
             preparationCallbacks.append(callback)
         }
+    }
+
+    @discardableResult
+    private func displayPreloadedConfigIfReady(activateVisibility: Bool) -> Bool {
+        guard isPrepared, (isRouteAppearing || isRouteVisible),
+              let preloadedCardId else {
+            return false
+        }
+        renderer.displayPreloadedConfig(
+            cardId: preloadedCardId,
+            activateVisibility: activateVisibility
+        )
+        needsVisibilityActivation = !activateVisibility
+        self.preloadedCardId = nil
+        return true
     }
 }
 
@@ -2208,7 +2728,7 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
         self.owner = owner
         super.init()
 
-        let root = makeRouteViewController(routeId: definition.initialRoute, preloadOnly: false)
+        let root = makeRouteViewController(routeId: definition.initialRoute, preloadOnly: true)
         navigationController = PNLightFlowNavigationController(
             rootViewController: root,
             isModalFlowContext: false
@@ -2880,10 +3400,39 @@ public class PNLightRemoteUiRendererView: UIView {
         await divViewPreloader.setSource(source)
     }
 
-    fileprivate func displayPreloadedConfig(cardId: String) {
+    fileprivate func displayPreloadedConfig(
+        cardId: String,
+        activateVisibility: Bool
+    ) {
         currentCardId = cardId
+        if activateVisibility == false {
+            // DivView treats its current bounds as visible even while detached
+            // from a window. Show the prepared card with zero bounds first so
+            // UIKit can build and lay out the destination without consuming
+            // one-shot visibility actions before the route is onscreen.
+            let frame = divView.frame
+            divView.frame = CGRect(origin: frame.origin, size: .zero)
+            divView.showCardId(DivCardID(rawValue: cardId))
+            divView.frame = frame
+            divView.onVisibleBoundsChanged(to: .zero)
+            divView.setNeedsLayout()
+            divView.layoutIfNeeded()
+            loadingIndicator.stopAnimating()
+            loadingIndicator.alpha = 0
+            errorLabel.alpha = 0
+            divView.alpha = 1
+            return
+        }
+
         divView.showCardId(DivCardID(rawValue: cardId))
         showContent()
+    }
+
+    fileprivate func activatePreloadedConfigVisibility() {
+        guard window != nil else { return }
+        divView.onVisibleBoundsChanged(to: divView.bounds)
+        divView.setNeedsLayout()
+        divView.layoutIfNeeded()
     }
 
     fileprivate func setHapticPatterns(

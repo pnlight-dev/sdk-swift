@@ -102,6 +102,12 @@ struct ContentView: View {
                     }
 
                     NavigationLink {
+                        FileRemoteUiExampleScreen()
+                    } label: {
+                        Label("Remote UI from File", systemImage: "doc.text")
+                    }
+
+                    NavigationLink {
                         HapticsExampleScreen()
                     } label: {
                         Label("Remote UI Haptics", systemImage: "waveform")

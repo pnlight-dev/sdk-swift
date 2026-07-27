@@ -1,0 +1,2772 @@
+{
+  "schemaVersion": 2,
+  "type": "flow",
+  "referenceSize": {
+    "width": 375,
+    "height": 812
+  },
+  "safe_area": {
+    "mode": "content",
+    "edges": [
+      "top",
+      "bottom"
+    ]
+  },
+  "initial_route": "trip_intro",
+  "routes": {
+    "trip_intro": {
+      "divkit": {
+        "templates": {},
+        "card": {
+          "log_id": "sample_trip_intro",
+          "states": [
+            {
+              "state_id": 0,
+              "div": {
+                "type": "container",
+                "orientation": "vertical",
+                "items": [
+                  {
+                    "type": "gallery",
+                    "id": "warning_body",
+                    "orientation": "vertical",
+                    "width": {
+                      "type": "match_parent"
+                    },
+                    "height": {
+                      "type": "match_parent",
+                      "weight": 1
+                    },
+                    "scrollbar": "none",
+                    "item_spacing": 0,
+                    "paddings": {
+                      "left": 17,
+                      "right": 16,
+                      "top": 96
+                    },
+                    "items": [
+                      {
+                        "type": "container",
+                        "orientation": "overlap",
+                        "items": [
+                          {
+                            "type": "image",
+                            "image_url": "empty://",
+                            "preview": "data:image/png;base64,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",
+                            "width": {
+                              "type": "fixed",
+                              "value": 87,
+                              "unit": "dp"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 87,
+                              "unit": "dp"
+                            },
+                            "scale": "fit",
+                            "accessibility": {
+                              "description": "Trip planning map",
+                              "type": "image",
+                              "mode": "default"
+                            },
+                            "alignment_horizontal": "left",
+                            "alignment_vertical": "bottom",
+                            "description": "Trip planning map"
+                          },
+                          {
+                            "type": "text",
+                            "text": "14",
+                            "width": {
+                              "type": "fixed",
+                              "value": 25,
+                              "unit": "dp"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 25,
+                              "unit": "dp"
+                            },
+                            "font_family": "text",
+                            "font_weight": "bold",
+                            "font_size": 13,
+                            "text_color": "#FFFFFFFF",
+                            "alignment_horizontal": "right",
+                            "alignment_vertical": "top",
+                            "text_alignment_horizontal": "center",
+                            "text_alignment_vertical": "center",
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FFFF1028"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 13
+                            },
+                            "accessibility": {
+                              "description": "14 suggested stops",
+                              "type": "text",
+                              "mode": "default"
+                            }
+                          }
+                        ],
+                        "width": {
+                          "type": "fixed",
+                          "value": 94,
+                          "unit": "dp"
+                        },
+                        "height": {
+                          "type": "fixed",
+                          "value": 94,
+                          "unit": "dp"
+                        },
+                        "alignment_horizontal": "center",
+                        "clip_to_bounds": 0
+                      },
+                      {
+                        "type": "text",
+                        "text": "Your trip plan is ready!",
+                        "width": {
+                          "type": "fixed",
+                          "value": 220,
+                          "unit": "dp"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "font_family": "display",
+                        "font_weight": "regular",
+                        "font_size": 24,
+                        "text_color": "#FF000000",
+                        "alignment_horizontal": "center",
+                        "text_alignment_horizontal": "center",
+                        "margins": {
+                          "top": 17
+                        },
+                        "accessibility": {
+                          "description": "Trip plan ready",
+                          "type": "header",
+                          "mode": "default"
+                        }
+                      },
+                      {
+                        "type": "container",
+                        "orientation": "horizontal",
+                        "items": [
+                          {
+                            "type": "text",
+                            "text": "Suggested Stops",
+                            "width": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "regular",
+                            "font_size": 15,
+                            "text_color": "#FF000000"
+                          },
+                          {
+                            "type": "text",
+                            "text": "14",
+                            "width": {
+                              "type": "fixed",
+                              "value": 20,
+                              "unit": "dp"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 20,
+                              "unit": "dp"
+                            },
+                            "font_family": "text",
+                            "font_weight": "bold",
+                            "font_size": 12,
+                            "text_color": "#FFFFFFFF",
+                            "text_alignment_horizontal": "center",
+                            "text_alignment_vertical": "center",
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FFFF1028"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 10
+                            }
+                          }
+                        ],
+                        "width": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "alignment_horizontal": "center",
+                        "content_alignment_vertical": "center",
+                        "item_spacing": 9,
+                        "margins": {
+                          "top": 27
+                        }
+                      },
+                      {
+                        "type": "container",
+                        "orientation": "vertical",
+                        "items": [
+                          {
+                            "type": "container",
+                            "orientation": "horizontal",
+                            "items": [
+                              {
+                                "type": "image",
+                                "image_url": "empty://",
+                                "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAD1ElEQVR4nO2abYhVRRjHfx036VXEJLDcQQpJBftkLxRkRCAMhWD4QSJYItIPig9qCYFRIUHQy0glIZFfpKKQYqExsz5UX0QhKDUWIagxJXuRQg3SdOWB2ZDb3b1nzt5z79l7zw8Oy955njnnPzNn5nlmDtTU1NTUVJcr2lWRdeEu4FlgWvzpOPCqF3OECpG1sa6bVTewLF6PA/tjQ/Sk4GHgp4bfrgM+sS4spNcEezH/AtuaFN0AfGZdGKTHelh5G/iL/zM3ip5NLwn2Yk4DO8YpXqAm1gUd5j3Tw8RhfZ7m3AF8ZF2YTq8I9mJ0OXp/ApMHgV3WhTIauyVZSfW+0qJ8JfAmvSLYi/kW+LyF2Rrrwgt0mKzEul/OYbPFurCOqRhaNsO68B2wmIkZBR71Yt6j24KtC+8CdwI/Axu8mG9SKrcuDAE7c5jqrP6wF7OXLg/pVcCtwFLgwwLLiTbYiRx2VwK7rQt3U6F3+BadaFIq92LOAa/nNL82xt2LqNCktcW6MCPR5y3gTE7bWcBe64KhIoJnA5tTHLyYP4F3ElxKjbuzAj5iXbgp0ec14EKC/W3AnjLi7qyAzzVAUsDgxfyok1LifZZojm1d0Pt1bFkaHadIe+t2L+b7cfy0IecAg/HSd/J+4KECz3gM+BI4m8P2YrT7FdBn+ypmcJMWrOiauT2KGWy4dLtngO5zDvgY2OrFHJqs4KnEeeApL2ZbvwgeY3lXctIusqbfBF/fb4KH+0nwMOAms3T8AOxrWJZmUj1+AV4E3vBiRicjWPNjbbX/iKHgWKBx+bqs/8+Pf4vwR84ERAOPv2PgcRj4AvjUi/lnzKDosvS1F3NfyhNbF14Cnk7xiQdyK7yYA7SJgYJ+SQ8ee/7JxHv8rlu6XswIbSQr4LPbi9mf6PNE4vutw9e2W2wRwXpg9kyKg3VBz4vXJ8a/OowPUgJZov0OL+Zooo9uus/LaauTzmNejM7+dFvwmdQ8OLIxwXadF/MBJZK1KNfEfSzbEC/mZErl1oWlMZHPw3NejKabpTLQolxP7nVv6bfL17IENuW02+7FPM9UPnmwLiyIuw6t7qFDeJUXo+9v6WQl1r0hh9h9cZLqiNjSeti6cGP8wOWqCcx02XnAi8m7Z13pHl7bQuxIDCw6KraUHrYuXA2EONk1Qw/m7vFidDey42Ql1Dk0gdhT+tFat8S2vYfjfvRITAUbORuTgdQ4vNI9vHwcsRq4PNJtsWUIbhZGak491InD7o4Kti7olwL3Nila78XowXglyNpYl2ZEFxt2K1Z7MXkPxGtqampq+p5LdhsRWxuU770AAAAASUVORK5CYII=",
+                                "width": {
+                                  "type": "fixed",
+                                  "value": 22,
+                                  "unit": "dp"
+                                },
+                                "height": {
+                                  "type": "fixed",
+                                  "value": 22,
+                                  "unit": "dp"
+                                },
+                                "scale": "fit",
+                                "accessibility": {
+                                  "description": "",
+                                  "type": "image",
+                                  "mode": "exclude"
+                                }
+                              },
+                              {
+                                "type": "text",
+                                "text": "A scenic route is available",
+                                "width": {
+                                  "type": "match_parent",
+                                  "weight": 1
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "regular",
+                                "font_size": 15,
+                                "text_color": "#FF3A3A3C",
+                                "text_alignment_vertical": "center"
+                              }
+                            ],
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "content_alignment_vertical": "center",
+                            "paddings": {
+                              "left": 21,
+                              "right": 15,
+                              "top": 12,
+                              "bottom": 12
+                            },
+                            "item_spacing": 17
+                          },
+                          {
+                            "type": "separator",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 1,
+                              "unit": "dp"
+                            },
+                            "margins": {
+                              "left": 62
+                            },
+                            "delimiter_style": {
+                              "color": "#FFE7E7EA",
+                              "orientation": "horizontal"
+                            },
+                            "accessibility": {
+                              "mode": "exclude"
+                            }
+                          },
+                          {
+                            "type": "container",
+                            "orientation": "horizontal",
+                            "items": [
+                              {
+                                "type": "image",
+                                "image_url": "empty://",
+                                "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAACt0lEQVR4nO3avWsWMRzA8W9ioRoUxDdqobqoIFKkICqIf4HiIg6KoBkUnRSHKjjo5FAHJxcRMuh/oF0EXQQRwaLYQRCFan0ZpL7VYH2LRPPAGXyeno9X+xzJZ3ruLslzv1ySO5JAlmVZlmWzRcz0HzijFgCLga4Syb8Ab4S272sVsDOqGzgGaGB1G0U8AS4DQ0Lbjx0dsPv1RG8AGyoo7gGwVWj7jopIqjdUUbBeP3CGTn3CzigFTAC+SXujwEFgRGg7VSK/z7cRuAisCactsFBo6/v3P+uiWgOFYL0DQtvbZTOHSrnpjDoMXA+nfSWuA+51YpNeFh2PtFnO3eh4KRWRVKs7emKf2yxnqlW5M96knVGLgE1ALzC/Rd8fiPIdrei+djijVjVJ+x34ADwF7ght/e/2Bi1nlA/wHLATmEPn+wQY4HizwEWznM6oPl9jQA/1cx/Y8qePllZ9+HxNg/XWAydLP+HQlMcL1/2XziAwLLR9HtLsD82nYbnQ9tVM3H34v+3AlcKpfqHtqDPKd7WVwL4QZKPrvfZvDaGtKzNobY4qY1Boe4EOJLT9Fr69Tzmj/GvxULi0BPAD3aMyTTpuyleph+HouCdO0CzgedHxS+rhZ3crUGUD/q1vx/2gg7npxihJYiSJkSRGkhhJYiSJkSRGkhhJYiSJkSRGkhhJYiSJkSRGkhhJYiSJkWWmSpxRdamY+D7ddAka4hl7vwpRB35+umiybMDx7N8e6mF3dDweJ2g2EX8L+Fq4fjrs3fDz0y8KE91Ffc6oucyceO251xk1GVYaVgB+JWRX4fozoe3Y3yymXQL2Ul9+teRsfLLVYHQEeEg9XQvLvJQOWGg7ERbBfca31IMfe04A24S2vku2t4snvJbWhh0A6n/s4PsLfgeA78tjQtvHs30zWZZlWZZlNPwAUFGfq+QhSYsAAAAASUVORK5CYII=",
+                                "width": {
+                                  "type": "fixed",
+                                  "value": 22,
+                                  "unit": "dp"
+                                },
+                                "height": {
+                                  "type": "fixed",
+                                  "value": 22,
+                                  "unit": "dp"
+                                },
+                                "scale": "fit",
+                                "accessibility": {
+                                  "description": "",
+                                  "type": "image",
+                                  "mode": "exclude"
+                                }
+                              },
+                              {
+                                "type": "text",
+                                "text": "Local favorites are ready",
+                                "width": {
+                                  "type": "match_parent",
+                                  "weight": 1
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "regular",
+                                "font_size": 15,
+                                "text_color": "#FF3A3A3C",
+                                "text_alignment_vertical": "center"
+                              }
+                            ],
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "content_alignment_vertical": "center",
+                            "paddings": {
+                              "left": 21,
+                              "right": 15,
+                              "top": 12,
+                              "bottom": 12
+                            },
+                            "item_spacing": 17
+                          },
+                          {
+                            "type": "separator",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 1,
+                              "unit": "dp"
+                            },
+                            "margins": {
+                              "left": 62
+                            },
+                            "delimiter_style": {
+                              "color": "#FFE7E7EA",
+                              "orientation": "horizontal"
+                            },
+                            "accessibility": {
+                              "mode": "exclude"
+                            }
+                          },
+                          {
+                            "type": "container",
+                            "orientation": "horizontal",
+                            "items": [
+                              {
+                                "type": "image",
+                                "image_url": "empty://",
+                                "preview": "data:image/png;base64,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",
+                                "width": {
+                                  "type": "fixed",
+                                  "value": 22,
+                                  "unit": "dp"
+                                },
+                                "height": {
+                                  "type": "fixed",
+                                  "value": 22,
+                                  "unit": "dp"
+                                },
+                                "scale": "fit",
+                                "accessibility": {
+                                  "description": "",
+                                  "type": "image",
+                                  "mode": "exclude"
+                                }
+                              },
+                              {
+                                "type": "text",
+                                "text": "Travel time can be optimized",
+                                "width": {
+                                  "type": "match_parent",
+                                  "weight": 1
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "regular",
+                                "font_size": 15,
+                                "text_color": "#FF3A3A3C",
+                                "text_alignment_vertical": "center"
+                              }
+                            ],
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "content_alignment_vertical": "center",
+                            "paddings": {
+                              "left": 21,
+                              "right": 15,
+                              "top": 12,
+                              "bottom": 12
+                            },
+                            "item_spacing": 17
+                          }
+                        ],
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "background": [
+                          {
+                            "type": "solid",
+                            "color": "#FFFEFEFE"
+                          }
+                        ],
+                        "border": {
+                          "corner_radius": 8
+                        },
+                        "clip_to_bounds": 1,
+                        "margins": {
+                          "top": 44
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "text": "PERSONALIZED ITINERARY",
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "font_family": "text",
+                        "font_weight": "regular",
+                        "font_size": 15,
+                        "text_color": "#FFFF0000",
+                        "text_alignment_horizontal": "center",
+                        "margins": {
+                          "top": 84,
+                          "bottom": 34
+                        },
+                        "accessibility": {
+                          "description": "Personalized itinerary",
+                          "type": "text",
+                          "mode": "default"
+                        }
+                      }
+                    ],
+                    "accessibility": {
+                      "description": "Trip planning overview",
+                      "type": "list",
+                      "mode": "merge"
+                    }
+                  },
+                  {
+                    "type": "container",
+                    "orientation": "vertical",
+                    "items": [
+                      {
+                        "type": "text",
+                        "text": "Build my itinerary",
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "font_family": "text",
+                        "font_weight": "medium",
+                        "font_size": 16,
+                        "text_color": "#FFFFFFFF",
+                        "text_alignment_horizontal": "center",
+                        "text_alignment_vertical": "center",
+                        "paddings": {
+                          "top": 17,
+                          "bottom": 17
+                        },
+                        "background": [
+                          {
+                            "type": "solid",
+                            "color": "#FF007AFF"
+                          }
+                        ],
+                        "border": {
+                          "corner_radius": 8,
+                          "has_shadow": true,
+                          "shadow": {
+                            "alpha": 0.1,
+                            "blur": 20,
+                            "color": "#FF000000",
+                            "offset": {
+                              "x": {
+                                "value": 0
+                              },
+                              "y": {
+                                "value": 8
+                              }
+                            }
+                          }
+                        },
+                        "actions": [
+                          {
+                            "log_id": "intro_build_itinerary",
+                            "url": "pnlight://navigation/push?route=itinerary_builder"
+                          }
+                        ],
+                        "action_animation": {
+                          "name": "set",
+                          "items": [
+                            {
+                              "name": "fade",
+                              "start_value": 1,
+                              "end_value": 0.82,
+                              "duration": 120,
+                              "interpolator": "ease_out"
+                            },
+                            {
+                              "name": "scale",
+                              "start_value": 1,
+                              "end_value": 0.985,
+                              "duration": 120,
+                              "interpolator": "ease_out"
+                            }
+                          ]
+                        },
+                        "accessibility": {
+                          "description": "Build my itinerary",
+                          "hint": "Activates the primary action",
+                          "type": "button",
+                          "mode": "default"
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "text": " Designed for iPhone.",
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "font_family": "text",
+                        "font_weight": "regular",
+                        "font_size": 12,
+                        "text_color": "#FF8E8E93",
+                        "text_alignment_horizontal": "center",
+                        "paddings": {
+                          "top": 11,
+                          "bottom": 1
+                        },
+                        "accessibility": {
+                          "description": "Designed for iPhone",
+                          "type": "text",
+                          "mode": "default"
+                        }
+                      }
+                    ],
+                    "width": {
+                      "type": "match_parent"
+                    },
+                    "height": {
+                      "type": "wrap_content",
+                      "constrained": true
+                    },
+                    "paddings": {
+                      "left": 17,
+                      "right": 16,
+                      "bottom": 15
+                    }
+                  }
+                ],
+                "width": {
+                  "type": "match_parent"
+                },
+                "height": {
+                  "type": "match_parent"
+                },
+                "background": [
+                  {
+                    "type": "solid",
+                    "color": "#FFF2F2F6"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "itinerary_builder": {
+      "divkit": {
+        "templates": {},
+        "card": {
+          "log_id": "sample_itinerary_builder",
+          "variables": [
+            {
+              "type": "integer",
+              "name": "stop_count",
+              "value": 0
+            },
+            {
+              "type": "integer",
+              "name": "itinerary_completion_elapsed_ms",
+              "value": 0
+            },
+            {
+              "type": "integer",
+              "name": "itinerary_completion_reduced_elapsed_ms",
+              "value": 0
+            },
+            {
+              "type": "boolean",
+              "name": "reduced_motion",
+              "value": false
+            }
+          ],
+          "timers": [
+            {
+              "id": "itinerary_completion_timer",
+              "duration": 5400,
+              "tick_interval": 100,
+              "value_variable": "itinerary_completion_elapsed_ms",
+              "end_actions": [
+                {
+                  "log_id": "itinerary_complete",
+                  "url": "pnlight://navigation/replace?route=itinerary_summary"
+                }
+              ]
+            },
+            {
+              "id": "itinerary_completion_reduced_timer",
+              "duration": 300,
+              "tick_interval": 100,
+              "value_variable": "itinerary_completion_reduced_elapsed_ms",
+              "end_actions": [
+                {
+                  "log_id": "itinerary_complete_reduced",
+                  "url": "pnlight://navigation/replace?route=itinerary_summary"
+                }
+              ]
+            }
+          ],
+          "states": [
+            {
+              "state_id": 0,
+              "div": {
+                "type": "container",
+                "orientation": "vertical",
+                "items": [
+                  {
+                    "type": "container",
+                    "orientation": "vertical",
+                    "items": [
+                      {
+                        "type": "container",
+                        "orientation": "overlap",
+                        "items": [
+                          {
+                            "type": "image",
+                            "image_url": "empty://",
+                            "preview": "data:image/png;base64,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",
+                            "width": {
+                              "type": "fixed",
+                              "value": 87,
+                              "unit": "dp"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 87,
+                              "unit": "dp"
+                            },
+                            "scale": "fit",
+                            "accessibility": {
+                              "description": "Trip planning map",
+                              "type": "image",
+                              "mode": "default"
+                            },
+                            "alignment_horizontal": "left",
+                            "alignment_vertical": "bottom",
+                            "description": "Trip planning map"
+                          },
+                          {
+                            "type": "text",
+                            "text": "@{stop_count}",
+                            "width": {
+                              "type": "fixed",
+                              "value": 25,
+                              "unit": "dp"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 25,
+                              "unit": "dp"
+                            },
+                            "font_family": "text",
+                            "font_weight": "bold",
+                            "font_size": 13,
+                            "text_color": "#FFFFFFFF",
+                            "alignment_horizontal": "right",
+                            "alignment_vertical": "top",
+                            "text_alignment_horizontal": "center",
+                            "text_alignment_vertical": "center",
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FFFF1028"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 13
+                            },
+                            "accessibility": {
+                              "description": "@{stop_count} planned stops",
+                              "type": "text",
+                              "mode": "default"
+                            }
+                          }
+                        ],
+                        "width": {
+                          "type": "fixed",
+                          "value": 94,
+                          "unit": "dp"
+                        },
+                        "height": {
+                          "type": "fixed",
+                          "value": 94,
+                          "unit": "dp"
+                        },
+                        "alignment_horizontal": "center",
+                        "clip_to_bounds": 0
+                      },
+                      {
+                        "type": "text",
+                        "text": "Building a balanced itinerary…",
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "font_family": "text",
+                        "font_weight": "regular",
+                        "font_size": 14,
+                        "text_color": "#FF000000",
+                        "text_alignment_horizontal": "center",
+                        "margins": {
+                          "top": 21,
+                          "bottom": 9
+                        }
+                      },
+                      {
+                        "type": "container",
+                        "orientation": "overlap",
+                        "items": [
+                          {
+                            "type": "container",
+                            "orientation": "vertical",
+                            "items": [],
+                            "width": {
+                              "type": "fixed",
+                              "value": "@{323 * stop_count / 14}",
+                              "unit": "dp"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 4,
+                              "unit": "dp"
+                            },
+                            "id": "itinerary_progress_fill",
+                            "alignment_horizontal": "left",
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FF007AFF"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 2
+                            },
+                            "transition_change": {
+                              "type": "change_bounds",
+                              "duration": "@{reduced_motion ? 1 : 220}",
+                              "interpolator": "ease_in_out"
+                            },
+                            "transition_triggers": [
+                              "data_change"
+                            ]
+                          }
+                        ],
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "fixed",
+                          "value": 4,
+                          "unit": "dp"
+                        },
+                        "margins": {
+                          "left": 14,
+                          "right": 6
+                        },
+                        "background": [
+                          {
+                            "type": "solid",
+                            "color": "#29787880"
+                          }
+                        ],
+                        "border": {
+                          "corner_radius": 2
+                        },
+                        "clip_to_bounds": 1
+                      },
+                      {
+                        "type": "text",
+                        "text": "Planned stops: @{stop_count}",
+                        "width": {
+                          "type": "fixed",
+                          "value": 219,
+                          "unit": "dp"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "font_family": "text",
+                        "font_weight": "medium",
+                        "font_size": 14,
+                        "text_color": "#FFFFFFFF",
+                        "alignment_horizontal": "center",
+                        "text_alignment_horizontal": "center",
+                        "text_alignment_vertical": "center",
+                        "background": [
+                          {
+                            "type": "solid",
+                            "color": "#FFFF3B30"
+                          }
+                        ],
+                        "border": {
+                          "corner_radius": 8
+                        },
+                        "paddings": {
+                          "top": 15,
+                          "bottom": 15
+                        },
+                        "margins": {
+                          "top": 24,
+                          "bottom": 23
+                        },
+                        "accessibility": {
+                          "description": "@{stop_count} planned stops",
+                          "type": "text",
+                          "mode": "default"
+                        }
+                      }
+                    ],
+                    "width": {
+                      "type": "match_parent"
+                    },
+                    "height": {
+                      "type": "wrap_content",
+                      "constrained": true
+                    },
+                    "paddings": {
+                      "left": 14,
+                      "right": 6,
+                      "top": 42
+                    },
+                    "visibility_actions": [
+                      {
+                        "log_id": "reset_stop_count_on_visible",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 0
+                          }
+                        },
+                        "visibility_percentage": 1,
+                        "visibility_duration": 0
+                      },
+                      {
+                        "log_id": "start_itinerary_completion_timer",
+                        "typed": {
+                          "type": "timer",
+                          "id": "itinerary_completion_timer",
+                          "action": "start"
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 0
+                      },
+                      {
+                        "log_id": "start_itinerary_completion_reduced_timer",
+                        "typed": {
+                          "type": "timer",
+                          "id": "itinerary_completion_reduced_timer",
+                          "action": "start"
+                        },
+                        "is_enabled": "@{reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 0
+                      },
+                      {
+                        "log_id": "set_reduced_stop_count",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 14
+                          }
+                        },
+                        "is_enabled": "@{reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 0
+                      },
+                      {
+                        "log_id": "stop_reveal_1",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 1
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 250
+                      },
+                      {
+                        "log_id": "stop_reveal_2",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 2
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 770
+                      },
+                      {
+                        "log_id": "stop_reveal_3",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 3
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 1250
+                      },
+                      {
+                        "log_id": "stop_reveal_4",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 4
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 1690
+                      },
+                      {
+                        "log_id": "stop_reveal_5",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 5
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 2090
+                      },
+                      {
+                        "log_id": "stop_reveal_6",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 6
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 2470
+                      },
+                      {
+                        "log_id": "stop_reveal_7",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 7
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 2830
+                      },
+                      {
+                        "log_id": "stop_reveal_8",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 8
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 3170
+                      },
+                      {
+                        "log_id": "stop_reveal_9",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 9
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 3490
+                      },
+                      {
+                        "log_id": "stop_reveal_10",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 10
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 3790
+                      },
+                      {
+                        "log_id": "stop_reveal_11",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 11
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 4080
+                      },
+                      {
+                        "log_id": "stop_reveal_12",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 12
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 4360
+                      },
+                      {
+                        "log_id": "stop_reveal_13",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 13
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 4630
+                      },
+                      {
+                        "log_id": "stop_reveal_14",
+                        "typed": {
+                          "type": "set_variable",
+                          "variable_name": "stop_count",
+                          "value": {
+                            "type": "integer",
+                            "value": 14
+                          }
+                        },
+                        "is_enabled": "@{!reduced_motion}",
+                        "visibility_percentage": 1,
+                        "visibility_duration": 4890
+                      }
+                    ]
+                  },
+                  {
+                    "type": "custom",
+                    "custom_type": "pnlight.animated_prepend_list",
+                    "width": {
+                      "type": "match_parent"
+                    },
+                    "height": {
+                      "type": "match_parent",
+                      "weight": 1
+                    },
+                    "custom_props": {
+                      "instance_id": "sample_itinerary_stop_list",
+                      "count": "@{stop_count}",
+                      "reduced_motion": "@{reduced_motion}",
+                      "status_text": "Added",
+                      "animation_duration": 0.24,
+                      "items": [
+                        {
+                          "title": "Airport Transfer",
+                          "body": "A smooth route from the airport to your hotel.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAACt0lEQVR4nO3avWsWMRzA8W9ioRoUxDdqobqoIFKkICqIf4HiIg6KoBkUnRSHKjjo5FAHJxcRMuh/oF0EXQQRwaLYQRCFan0ZpL7VYH2LRPPAGXyeno9X+xzJZ3ruLslzv1ySO5JAlmVZlmWzRcz0HzijFgCLga4Syb8Ab4S272sVsDOqGzgGaGB1G0U8AS4DQ0Lbjx0dsPv1RG8AGyoo7gGwVWj7jopIqjdUUbBeP3CGTn3CzigFTAC+SXujwEFgRGg7VSK/z7cRuAisCactsFBo6/v3P+uiWgOFYL0DQtvbZTOHSrnpjDoMXA+nfSWuA+51YpNeFh2PtFnO3eh4KRWRVKs7emKf2yxnqlW5M96knVGLgE1ALzC/Rd8fiPIdrei+djijVjVJ+x34ADwF7ght/e/2Bi1nlA/wHLATmEPn+wQY4HizwEWznM6oPl9jQA/1cx/Y8qePllZ9+HxNg/XWAydLP+HQlMcL1/2XziAwLLR9HtLsD82nYbnQ9tVM3H34v+3AlcKpfqHtqDPKd7WVwL4QZKPrvfZvDaGtKzNobY4qY1Boe4EOJLT9Fr69Tzmj/GvxULi0BPAD3aMyTTpuyleph+HouCdO0CzgedHxS+rhZ3crUGUD/q1vx/2gg7npxihJYiSJkSRGkhhJYiSJkSRGkhhJYiSJkSRGkhhJYiSJkSRGkhhJYiSJkWWmSpxRdamY+D7ddAka4hl7vwpRB35+umiybMDx7N8e6mF3dDweJ2g2EX8L+Fq4fjrs3fDz0y8KE91Ffc6oucyceO251xk1GVYaVgB+JWRX4fozoe3Y3yymXQL2Ul9+teRsfLLVYHQEeEg9XQvLvJQOWGg7ERbBfca31IMfe04A24S2vku2t4snvJbWhh0A6n/s4PsLfgeA78tjQtvHs30zWZZlWZZlNPwAUFGfq+QhSYsAAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Neighborhood Walk",
+                          "body": "A relaxed walk through a lively local neighborhood.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAD9UlEQVR4nO2aaYgcRRTHf29sV0SNIn5QkUQRNYpCIeKqhQYRFQUPUFFERURB8T6iX/zukUQSTDCCeIEEFA8CMeIXD6yIFxRe4IFKUBFMxINVosmWPLdaKkP3bM9Oz+xO0z+YnZ7qV9X1r9f96lXXQktLS0tLS0vLiBDGjGDNkcB1wInAL8Aj4vxHjRMcrDkJuBe4BOgkp/4AjhPnv6/STsYCJ1hzThR6VonJfsAFwGNjKzhYswdwGXAfYCpU2VW17YwFRLBm7/h83g0cUSLsRWASWJKUbRorwcGaA4FbgFuBgwpM/gSe0gAF6KB8kpx7QZz/YSwEB2sWA3cB1wP7FJj8DKwD1orz22OdZ7qC7cP9XFOYB4I1J8RAdEXJoH8dvfm0OP9XUu8w4Btgz1j0ujh/bj/XzhghwZplMRCdV2LyPrACeEmcny44f2ciVnmw3z4IQyZYo3PmxdGjk0UmwKsqVJx/q0c7BwBb4zSkfCDOn9xvfzKGRLBmL+BqYDlwdIHJ38BzwEpx/vMKTd6UiFUemku/MmomWLM/cCNwO3BIgclvwOPAGnH+xz4G77ak6Cvg5XkVHKw5NIpUsYsKTDT1W6NixXlNB/vhGuDg5PeKkmd8+IKDNcfE21Zv34kCE50zVwIbxPl/5tC+xEQk5yfg2bn2N5trxWDNKTHiXlQS/N6IntjMYGjA00HNWS3O7xiJ4DAz2ufHiHtGj9RPhX5IPejdk/M7sH6QxrKqhsGay4H7geNLUr8n49r020E61HXN04FTk6L14rwGveEKDtasBW4uSf303Lo89asZvZPSaWz1oA3KbAbBmqOALwtOvRe9uiO204kfKflOj7XzG8X5rT2ueyzwWdLHJ8T5GwZSSzUP6yuVIiZLMqeq3AMcPot3c7HTMdIPTKeCjQO2UT9LgjWLeszpVyZFr4jzX4xEsMwkCfqa5W1gKo52XWgeTckiYWLQNLL2xUOcptJnteh3enxtV+DZV5yfKkhN9dnOvf+mOH8mNZENUlmcVw+Fql4P1vzaVVRUrzs1rc27VZ9hhngL7yY4WDPRtUj4WJx/bZwFzzYAmo9rwBqKdxeUh2M80Kkq5zvg+cYKBi4Elia/V4nzOxslWHZf06Zp5LaYxdVOh/njf/HBmtMA/eQ8Ks7rgoQmeXg6OdZ1dc5UXJDQNMHhvz/WLI2bYSSLBN0GpakeXp5kfDvjC/ih0WH+mA7W6FvNq5KyDb2WjE3w8B3JIiH0u080boInYt6cs0mc/7TJgrNhLhIWaqaV8644/w4NFLy9pLzvXcBxEbwlbrmkbBbnNzZSsMzsGJyt/6YQ94IfAC4dZR9aWlpaWlpaWloYEv8C3uIcQbicXdoAAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Local Café",
+                          "body": "A highly rated café for a quiet morning break.",
+                          "icon_preview": "data:image/png;base64,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"
+                        },
+                        {
+                          "title": "Art Museum",
+                          "body": "A curated museum visit with time for the main collection.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAC/0lEQVR4nO2aTcgNURjHf2fM8HLfd0lkK8lG8lFsbKwoURZEyIY6bywohY2VjyLR2FCSshfWSq+djxBlwYZQyldiwetoxrl1mjszd+aeGXdm7vw2M/PMPGfOf85/zj3n3IGWlpaWGiFsC1A+i4EjwJSQXDXit4F1wKSQXNOxNcA+4IqQTOW4xxhwHdgAnBeSY4PW18Gek8Be4LLy6egKzgc2AuPATuPaU8Bu4GLOe5wDtgJzgEM2lXWwZ6HeztAVCphtnDf3J/R2QdbClc9aYL8RmjVswR1jf1pvXSPmxpw3cxJRfvjKXSri1Ru6YC2mH5uAZRSIMyTBwrB/GkcpGKeAMoKOKSrIM2JezPloXg/KD1t2NVUSrP7Z0uyUfvdp4e75voKBPZSAY5kf2FIMYOnUjks/yG1UUHDHPBCSPzkEp7XwSgh/yysteNrYtxUcjKioouDxBDG2ndZ6SsKpWgsrP3xAgaUbJ7iTUOZyCCcLlResMlhaZbD0KkrEtcyfaexPKJ9dwH1ghxEfUz7bgRcQTg/jck2WUmHBPyLH4bw3hhsxsZ8J1y6hRBzL/JcWua8S4sGCQjUFCxlW+sEAqd+AuwkjrFIGHEVOHoIx78cc1yu97BOIjjK3gNesXMFC8hxYAdzMcPm7YI4rZLg+Fcc8SsYpohAheSMkm7XwxwmXnQUWCRku7iXRXQKqtuAuQvIIOEAvb4XksJCJPXOX0gYcpQjWfI6Jvc+Ya7VANyzBbsZY1txaCvYy5n6nhoK9jLE4ngK/GBVLC8kn4AwjZGmE5DhwMGWs3ShLhwjJBT1N/ECTLR0zgjtN0y0dIc8Yvb6WLnPk5VTV0mWNvJyKW7oWgr24+yh/oHvV1tKD2roWLewmxL1RE+w2VbCXM97Yd9hragu7OeO1F+zljKfRWtoWh+JpLa1pLd2UTutLzngaXzPGhir4TuTThoBnwOsByroVE0v7q+b/L3wLyUPlh99KT+o/x54AJ4TseQhZ8PV2i/5i4J7+PrulpaWFkeAvSxSHoAqiVQIAAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Riverside Route",
+                          "body": "A scenic route along the river and city bridges.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAFI0lEQVR4nO2ae4hVRRjAf3u5lZlZmpltJTYhvaCS6GFSYISgUTaT/REV/RP00DLNtSSJwggqCCyLHv9Eb0lnkOwharURGbUQZG9iSqO0srWS3rYbH8yJ4Xj23r3nnrt7F84PLsyZe+Y7851vHt/3zYGSkpKSkpKSkiGio5XCnfEnAWcA44Bqndv/BHYC3dqqH0eUws74ScDTwAU5mv8DPADcrq36t+0VdsYfDbwFHNukqBeBy4tWulKkMGf8BGBjAcoKlwFPOOMLNUpHUYKc8UcCrwKnRtUyF28FXgF2DWQtZ/woYDJwDXBLyhCPAfOLsnRHHSUmAtOBo4CDB7hfFqNjgkVkcUr4DpiprfqikQ45468Ankop/VF4mbuB/oxmfcAvwNfAu9oqKWeSqbAzvhN4ENA5h7107Fxt1cc52srzrwUezdMW+At4EujSVu2pq7AzXqz5PiBDNA8/A3O0VVtytk/6sRS4twkRHwLnaKt+iyuzrPdQDmVlK/kWeBY4s1llBW3VfcCFwOthxMiwbYRTgDtqWtgZfwSwI6oXZ+Au4AVgu7aq0YcOCc74/QAlixtwY/TXbmBC3O+09zM99RLu1FY1M6yGBG2VjLDPgZuc8YcCV4W/xgEnAJ8MpHB6KK8uqlPO+PHA2cDJwPjwYn8KndmireptQNbxYRvr0VaJFWOejxQWOmspPDp1vZ0mccbPBJYAs2r403ud8eKw3K+teqOOvBXA8nDZ64y/SFv1TnTLtlSTg+KLaq053cycDY6IbC0XD+J26cds+Tnj1wHXa6t2DGDZRFnCSHkEOC2q66ulU4UW4IyXDvRkKNsf5lo38CbwWUYH50pbZ/y0DNFTMupksRo0VQomWGETcFjK67pHAgJt1Q+p+w8HLpXoCJDAI5l3m5zxM7RV8lISesI+LwtTwobhDB5GATal7HPAVG3Vw2llBYl9tVUy9KcGlzIermuDzOReWeQuAbYC4kWtAa4bTgsvAyToT1iprbp5MA21VbLnX+2M3wUsDtUi6zbZHqP7uoNTkYsKBRH2v0VR1cao443QlRqmi5zxh1AQlaIEAfNCRCXsFScgzyof2iwMMoSxYY63ncKzo/Lm1GLTENoqWck3R1VzaEOFp0Xl1wqQF8vI2qKGXeFJNbydPMQyJKhpO4UrUfn3AuT9EZX3pw0V/r5gi8Qy0gFCWyj8TVSWqKhZzorKuRfAVios7mTCXGd87mEY2opPnfA2bajwuqjcmco8NMr8IKPwuLxSlCBt1QcpD2mFM17OlRrCGX86cHdUtUFbJQm5QqhQLF2Rh3QgsN4ZP+j5HF7Q+igR8XeQSVsqrK3aGoZjgiTyu53xy53xYwZq54wf7YxfFs6k4v18aZBZGFUKRlv1uDN+cohvBVmAJC2z2Bn/cliAdoZkgCg3I6Rj45CSkO5ZWXT/qrQAbZVY9MuQ4jkgyiBeGX71Tg6WaKtWtaJvFVqEtkqOOyTVs3aQTcTiL0mbVimbZeH+dII75HxzESKmec74E0N+a1Y4Sp0Ynt0bUqgyd1eHKKlZ0vt/Xy2F92QkyJruhLbqU0B+Q5HUPy51/WutIZ2OchYw8lhQS6eO+MIZPzYEAf8nzoBnkrOlAc5m24FqdLZ0flS/TVs1pd5x6arUXjqSWaitknPumqu0fKLwHiMf2R32We33UTgcIJ8XzlblzHekIYvsDfIJhs5IItb9qMUZL3NAvgoY0+oP2ZqgL+wwX2mrxIsrKSkpKSkpKWHY+Q/I/X8rP+CtOwAAAABJRU5ErkJggg=="
+                        },
+                        {
+                          "title": "Historic Landmark",
+                          "body": "A guided stop at one of the city’s best-known landmarks.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAD70lEQVR4nO2ae6hnUxTHP3e7yGPSIPKKoUyRR+IP5XqVkMc/hMnwDxHTNiwmwxR55b0YW0QoMZEoeQ3/DOWRRo0/TCmPP0Z5TIjQyAyuVtavTqd9fo87987cM/t8/jt7rd85+7t/a7/W3tDR0dHRMXsZ25IfU01zgcuA47xoNfCMSPxlmxKsmrYHFgO3AHNq5j+AO4CHReLG1gtWTWeYGGD+ANcvgOtE4lutFKyaDgYeAs4d8advAteKxK9aIVg17QLcDFwP7FgzTwLPA3cBm4AbgcuBUPPb6I11p0i0kJ+dglXTRcD9wP4Z8yfANSLx49pvjgYeASYyv/nOGkUkWiPNHsGq6Siv9IkZ8w/ATcCzInFyQGPdBxyQMX8ERJG4ZqsKVk27+wh7JbBdJiyXm10k/j7k+3b2MF8C7FQz/ws8BSwTiT9tUcGqycRdYX0MMNF13vARd0oDj2o6EHgAOD9jtjn7VuAxkfjPjAtWTdbXEmBhXOdzF/rOqO9t+NbJHiVHZsxrfUx4d0YEq6b9fEBakDH/CtxuDSES/x6lAiNEk3WdPTIuL9uMIBK/mRbBqmkH4AafamzKqferp71f/cjML0utUa/KjBd/AvcA94rEv6YsWDWZfRVgodUGPrCZot9sEAa8YM8WiTVOAKzrMSXB8n+Yvk17sGj8tp/D+BAvOctHyV2Z3dgS9LN+4VwkY8M4qaZ5wIfAPhmzjdQrROKl7nsq8Gpm34tvGJaIxOXue7VvEmwmyP1jF4jEle77pCcPct1wva3FReKXg7QEhuOYBrG9d9iet8dEg1jDEgGnV55PaxCLd6FTKs9n9qnv3pUsCpvbh3vD/Xsuel6lktayP/vk3+N14GwXXd30rwN+A56rlK0ADnHfg2rJAFt/v1Ipexy4GJhbaXxb5Hzt9bD6zcjSci1wuD/aDubRBr9xD+Eex9e3hrUt4qeVojlN+2DVtLDSaOtEYrWhmK6Q3mYIFEagMAKFESiMQGEECiNQGIHCCBRGoDAChREojEBhBAojUBiBwhgbxkk17QW8COzbkOJ5SSTe5r6W/3qiT4rnbpH4gvue5yeBuRSP+S4SiavddylwSUOKx86gF4jE76frH57whNr8WtLNkmeHWcUqZecAx2YusdgR6BFe6R4LvayepjnU31E9Ll3k36omE8f9OyfVEn6bLXgN0NR6k7XTCUvnNt3L2OSnAz1W1fJeVTYA71eeV3pKOMd6v1LRMerpoYWvXUNoExv6XXAbazKopsV+AG7J8zZhA9lSkfjgqH14WQvF9gYyu+KYpZ9guyrUVmzgzNLvqOVCvza4G+3C5u/XtnYlOjo6Ojo6GMx/0xENiLerX9IAAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Market Lunch",
+                          "body": "Time to explore local dishes at the central market.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAFn0lEQVR4nO2aa6hUVRTHfzN3fFTmozR7WPZQ0t6h3UqxgiizoJAetNkmUUbRh0BMooLMoIIgKIoo+1ARu10aFdwCS/rQk5KkooKyd2b0sHz0umlqrLnr2HKcmXvPzJwzF69/OLDm3HP3Xv/9WmuvtWAPdm8UWtZSDCOAU4BjgAOBMcBIQN7vDQwFBgEd+mwDtgJbgL/12QRsANYBPwGfAStx/pf+QziGScBi4CJgCK2HDMoKYBHOr2wv4RhuAO4FSmSP7cA9wC04L6ujIZQa7j6GRcDt5s2fwIvAe8Aa4EdgvS7Rv4BuYLPOmChc1EeW+V76jNRHtsQhwEnAhcB+Ojk3AQcAV+U7wzHI8n3BvHkcuBHnf21UkTp9yf6XwV1o9J2P8/flQzgGmYkvgIP1zQM4L0s7W8RwLfCw/pIVczTOf5/Hkr7SkF1VntnaSl4DdKYYWDmN78Z5Oa13hvOPEMN04Ao99ecDC/IinOBmnJd9uStikEFZQnrI/n+oxt9uFeqq91xiWJj2ACumUiWGMWprBWuBV3uZrXdStQ8/A2/X/Kvza9RECUYDp2U9w6eb5fl83dF1fot+32osB2apPKPuADU9w3Cqkd+lPbCrRs6HTGe408hib6sjBnEjhwPD1KUUD2ywupRF41om7uW/aqf/0RN4I87/UaP1j/R/OtROZ2iWYhAfd3/g97KP7Px2fX+B2snx6jQIyWaxVff0Wt0+dxk9Pi2bpR7vaxjOyyC1eEnHMFLJClYbsjKTS4EzgcNbRBadwYOAqcCdxCAeVwK5VCQTNjGrPTzRyF8aebraxaxxrpFXG3lCVoQnGFk8rQQnkA9ONPLXRj4iK8LjjPyNkVMtqSZgB/w7I8slIxPCY4wsh0mCw8gHY4lhcJX+5faUOeF1OymSDwqmL4mGZE54tJFtyGUU+UEsRSXhsVkRHm7kDTXeZ40R6rZ2awws9YAXU3yb7B+BvSFlEcfqiw7djfRfTPHtkBqEJUSTFwblSXiwkcXntR5RXihV0WFoVoQ7dkjOi5/bDhSqELYT0VLCBXYDFBlgKDLAUGxBG8lpmQf6fO/NkvAK8sFvGhZuCqUWKHI5MAeYpNGO0ep9ybOPplCSME+SOUyQhHg260rp1lmUiMpGJSlu5LfAMpyXd20m7MrhlXTx5xh6YlpJ1CRHlGgH2mfHGXCndKklrcQgYZYHgWkaZbwD55c20d6x2t5UjZ9JSmVF/5jhWN6PXcD5el8VZZ/WxFcj7e2r2YWzNK4tsawuYpjcX5b0ZCVZ6YZe0mB7MyriZ+gJP5ucCW/bIcVg/WrJIVVD9axi75AsRDVU9pPosD0rwhuMbKMMn5crbXZV7ikawxvapoWkXZZVvJMyCLSsIhPCa4wsh0kPejKIUgLxpMarXytn95z/MI0ipj0J3ZwDPKvhYEnJno3z/4eGYxhvYmxWr5ae0q8Dl6l8HfCKUVIKWObSKjgvntWldb6Q/u2KyGSGnzHO+2xiuJ52IIaZFWUWT2SZPVwM3GbeyLJ7VJ369c3UT9Xps6B++fGAB+aZlfkczl+cJeEOtblJBr6dkAziNJyXC0ZGdtiVfWA5oO6vYz7ywEvlrGVKss3FqWI4Uq+G0zWPe3LFF1/VsdG9YZxeLW3yTFzMD8rbyPlUdR2tD8zFMEfNUoL3gSkNX/9imKdnQ4LlOD+rv/jSo7TA1GJhk3fdx4BPzO/ziCExiW0vH14CSMVdgo8rfjeKmRXFqz+U/fZqVXo5lg9PA97MMWbddF1noeH/jKGke/U48oPY+U6cX9WOPbwgZ7KJvlJkWsw34hHD2AqPS2zyDJxPW1vZl75Ex7dMUdwU4OqKU7zPKDaoxlEVpUqLMiErcF4GU8zephoVPbnt4ZnAoeXrmfMvN9xOOkfnDI1jd+G8vZ/vwR4MVPwH/ppcFlSGdckAAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Scenic Viewpoint",
+                          "body": "A short climb to a panoramic view of the city.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAA2CAYAAACMRWrdAAADLklEQVR4nO2ZW6hNQRiAP9siL2dQKCUPRMijawlDeVB0kjxMHohEXjwcSS5PUkSKB7dEqXlAcklRMg8ueZBL4cE9EnLLOOV+aJhzGss652x7rb3Xbre+Wu3pX/P/M/+emX9m/gUFBQUFBQUFdUePcisaZV3dnuRLm9SiLRPHjLIl4ACwEIjIlzbgDLBAavG5q4qu092xDFhUB045XH/nAOtSjZhRtj9wDxhAffEZGCO1ePzfjvk1dQKYG0yDmcAT8mMNsNyXrwLTpBZfy3bMKOuCxC5gRSA+ILVYSo4YZQcDj4A+XnTcrX2pxadu15hRdjRwPubUQ2A1OSO1eAGsD0TzgCtG2UldjphRdiWwA+gViJ8Ds6QWd32dYcCEGgeTVuCcGxm/RI4A84P3P4EtUou1nTlmgaZAdBZYLLV4GTh1J5gKteSC1GJmsAVtBVYFe6tzbpDU4g3hv26UjWJONUstTsaMT8zJKcf09oLfpFuMsgeB28Eg9QP+diyBWwmy8OTRJLVoNcq6jfuwb7Dsk0wSSbaMsi4K7k6KB1KLO0a5SVbZBp2Ic4raUFE7JRqUqFJFo2x7VBqfXXeysx+laPtoCt2q2y/RoJRS6Db5p1rHrFT2o7RR0Sj7pVIb1bRfokGJKlU0yk7xxZHZdSc7+1GKti+m0K26/RINSimF7gj/tGTYn8zsR5W2KrV44H6Nsq8qtVFN+yUalKhSRZ9C+Aj0D2RDUvYnydbQrB2bZZTdL7VwN9N2vgXl36mCGM/Ijrit7/EKRtmOy2enU1Fq4RTDW9te4JpRdngguwS8Ix9OtReMsr2NsodcMXjvBuB9ZzkPd1vdGUvmvPXJnOu+jpsuY2ucx3fHqxtSix8+33EamB1zarPUoiOD9c9V3ig7xl/Fpwbip8A4qcVrcsYo69LbmwLRTZcqlFq4BGoHSXkEt3ZmAHsCsVvA28kZ8yegbAxEx4DJcafKSXG7TGtzMNyzc05xtwBLfPmyGwepRRjQyv4o0Re4DwykvvgEjJJauCXy/xu01OIDsIH6Y1tXTpV78tjnP/wlftWoMT8Al8TdnHdHCgoKCgoKCgro4Belzfpvb1JGawAAAABJRU5ErkJggg=="
+                        },
+                        {
+                          "title": "Evening Show",
+                          "body": "An evening performance selected for your schedule.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABCCAYAAADjVADoAAAFNklEQVR4nO2Ze4xfQxTHP3RbShuPhHjTkmjjzSBDUDQhypZQDGkiKQnlD7bxTkhEJB4RQbqJIiGtSdoqRUrQkiLjMR4l6v1qrUc9oqX1WG3lbM9tJjf72/V77a/pzif5ZWfunTtz99yZM99zBjKZTCaTyWQymUwmk2k2W9TykAluKHA48EW0/mc2A7as9gET3NbAG8DrwDIT3HkMRkMAZwGHaXk48JgJ7lIGoSFsL310muAeNMHtzGDxESa454BTtPobsH1yexUwB5gPvAOsiNZ3m+BknB2A3YA9gX30txewq94bAqwGfgA+ByKwKFr/I5uoId4HDtLqWOAK4PI+HvkT2KrG2bcOeBW4G3gqWr+eJlHLy+2YlLui9WKIk4DnK7QfXuM4xfsdDzwJLDXBtbMJzYhfdSoLbdH6tcm9McCpahgpi88YqbNCnvseWA58CXytv+/03jptu4fOtHHAeL2WMh2YFq3/ixYbYlXxctH6mnRIFWNtC1wI3ADsndwKYqRo/ZpGjVXLlP2nJKyaRrR+dbT+AZ1dtwPrk51rjgmurZWG+KO0/puOLINo/XXAJOBfvXwacGsrDfF7Ui58xYAQrX8cmJJcusoEt1+rDPFLUhbHVhETXIcJbiINJFr/KDBTq8OAO1tliE+T8qh+2spanm2CO5HGIsuk2DUmmuBEnA24IT5Jyof20/Y+/WoLTHAX0CCi9V3APK3KznV2KwzxYVI2fTWM1i8GHgYkYp1lgptvgjuSxiD+oqDuGVfL9vOaem559hgT3MhofepAy1ymavRMQJRhuwlOZpUHFgJvR+tFcFXLW0lZBFhLEjOLgeO0OilaP7ef9jLOVOAmVZsp3cASDdLeA96Uv6lirdDnEH1W+ha9MYIWGOJ64DatPh2tb68iqXMRcCWwfx9NJQp9SXyL+IJKEagJ7m/1QWuj9W2tMMTuwDcaOsuXGxWtX15lH+JoT9d4wuo/1BvS/wvAvdH6Z0vyuxB3K6P1aTqgamqOFUxw8zRbJXRG66fW0Zco1GPVKBOAAys0lRxFR7T+FQ3wPtLrS6P1B9AiQ5wAvJzEHwdH69OttWZULTpVkWmwhcYbsi1/rJGoMCdaf249Y9YVPZrgJBNV+AdxoOMamTwxwcn2LvrjDs1kpYijLIK+qdH6znrGqjVhUtABiMNCEyg300Ci9eui9TPVsd5ful0YQbZy+SB1UXc+wQQ3DbhLqzIbJkfrZ9Xb7/8Yq2BhtF58S100JLFigputIXLh5adE6x9pRN+9jDUDuLi0RI6O1r+7KRhihKrEo5LL9wDXRus3JnIaMM4ZKq3LCaEPgCMkY94qH9FDtF728/HqMAtENC0xwZ1MnYiKNMFJxPlEL0ZAs+rX1DNGQ3OOZoMemKF5xnJ8IjPkmWqSrirNRVfckpyuoZJ8vkr2AolXxkTrl9Xy7k1JvprgnO7xZbW3EnhRZ84SPcjpOQTS54bqoY+II9Ep52g9ZYEaWnxRVynLPTNaP7mWd25aFtoEt5NOV1Gc2/TTvFvT+XIQVAk5VbtRVWyPVjHBSWL3kqSN9DE2Wp8mjwbOR/RGtP6naP3VmsWSdHxfXn1oH0b4VpfA6Gj99JJgm9vL/yMHTlXT1HOJMia40Sq8JOA6BJDgbTv9SQC3Rg+BPtN8wyLxL5XUqglumOZQ0xB8BbBLtQp3QA3RDErBX8G+0Xo5TWv90hhANobm9XzgzcEQC5ITMHQn+mrQGSJuyGg/pFUxwPkSrDFYMcEN6KlbJpPJZDKZTCaTyWQyVM1/jF+VtoeD+g8AAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Garden Break",
+                          "body": "A peaceful break in the botanical garden.",
+                          "icon_preview": "data:image/png;base64,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"
+                        },
+                        {
+                          "title": "Dinner Reservation",
+                          "body": "A dinner reservation near your final afternoon stop.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAD+ElEQVR4nO2aaahWRRjHf75aQYumrbRoJC0kwvQhukNFK1RkNUWBioEUgYhGBK22fGhfPgQRqRT3UwSZMFYfSgxaHfxQPRREtEAU4tJ2k8powXhy3hiG8/q+3vt6Oud0/vBy5zyznPnPzDPzzP9caNGiRYsWLSqDSWW+zPgwDVgInAKMAevE2Q8bSdj4cCbwMnBklvWYOHt7owib3TP7WQHZLq4XZ0fL6EunjJfEZdyLrOLmkvpBWYRP7ZOvPt0owmMTzK8d4XV98n2jCIuzHwCP98j+EriHhs0w4uxtwA3AR8DvwHZgNTAizn5bVj/+d5hUxkuMD5OB2cBRwBZx9guaSNj4oO0vA24Fjk+yPgYWR99uBmHjw3TgJeCCHkV+BOaKs5spEZ190ajxYRawcQ9kFTogyykZU4bdoPHhJOCNbAn3whmUjM4wGzM+zAHeHpCsYnKsd0kcqPoQNj4Y4E3g6L2oNpbE2huMDzOpA2Hjg96EXgMOT8waTGzpU/WHxJ9nRtJ7M2D/mQ/fFM/YLlTFuBQ4B1gzAOFD419d1u8aHyQrp5HZO8BKcXZXFQiPJOlfgfPE2R3x4s8AhKcmttnxl2MBsAN4vgo+fGyS3qZkY/qIAQk/AHwzwHuOYYLoMBykvru9h70I/1waxFm9MZ0NrAd2FpT7I26Iz020o1Mm2oDxQQdtRmJKbz6H9an+b5Qlzn4NXMw+RmcIbczI2kln+IA+dT+nZHSG0Ea+MW1N0l1fLsJX4uz31JDwVuCn5FkjrS70KOkF9VdqR1ic/QU4H3g0XvleT7JfjBJOEdbSRAHA+HAW8FY3bk5wrjibroZmaFri7HvA3QVZo8aHQ2gSYePDFcaHqeLsIwVL+ETgKRom8awB9gOuAg4CNgGnZcWuEWfXNmVJjwBXAveKsz9H4vlRtSretupN2Pigce9x8fE+48Pl4qx+QVwE7MqisV4ifa1m2Gau86AmxNlXgIezsouMD/0+uFVaxJsOPJSZ0/P5/jSOjv0o2smrT9j4oJuUbkInJ+a/9BjqPoizv+mX/6zqfONDWqc2M/x0jLxS3CHOfpLZVmcSkAYmK6iZankLcGNmHhVnn8jL9pjlhcaHIrWjkqrlvILdVkPHJXuotkoVkux+fhc1UC3nAi9k7eml4WpxVgW4QoizOwsG6TrjwwlUlbDxQdXKV4GDM7153oD33WcylUQ3vTup8Aw/GzXlLv4ErhVnPx2ksjirKmfu44uND/30sPIJGx8OBC7LzMvF2Q3j2Nm/S573B06naoRl9+y8n5ieFGdXjlNEWJHJt7kYX5klfWHciVUo12NpXBBn9Vy+CFiqQUv7fx8tWrRo0aIFjcPfoFoJ+vroSOwAAAAASUVORK5CYII="
+                        },
+                        {
+                          "title": "Night Market",
+                          "body": "An open evening slot for food stalls and local shops.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA5CAYAAACMGIOFAAAFL0lEQVR4nO2YW7CWUxiAn34RQ0JyPl445jDD5DCTxAWD4aLaTlOxaVzIil1rzcQg52gtidUwxqkLW+wwGTNMjGMTUjKEhEHhQpjJ3tXktDNvvV+z+vzt/9+/9rHvufrX+631ft+71ntaPxQUFBQUFBQUFPQC+tCNMN4eBtwPnAtsAF4FbHRhZa8w0nh7FDAfGJR7tAoYGl34ukcbabztDywCxNByfAGcEl1YW4v+Et2DJxIDxU2nAvclz48FHqtVeYkuxnh7PVCXiO6KLtwUXZgMhER+mfF2fI8z0nh7GuAT0evAbcn4RuCdZDzdeHtqj4lJ4+3ewMfAQSr6ATgpuvBrbt6+wBLgABWt1Hm/deuTNN7KexsTA/8ERuUNFKILPwMXA3+p6BBZqzqqom87M+CdwKXArsDbwKTowle0nynAOcm4Ibrw4dYmRxcWGG8dMENFUkdvAW7fZu5qvN0TeAs4Mffod+Cs6IK4XVUYb+UDX0m8qDG6MLrKtbN1k4VW4PzowrxK6yoeufFWTvv5MgYKA4CXNW6q+ciD1U2z934GXEP1jNOamX17o+psk2r8Wtqss5Px08DkJEYOBOYYb3dsS4k+bwIGqqgZGBldWEeVaDMwAmhR0UB99041x6Tx9kpgQiJ6CRgbXdhgvF0DzFT5GcADwHVtqJsOSMnIuCofz8bbfYBLJHtqU/CRbEx04ZfE0OXG23r1LkFKihyEaXdMaj2SGtVPRcu1tWpO5swCrkiW1UcXZpXRJR/+bCKaH10YljzfAZDEciuwS275Ok0wIbrQmqx5Vzc34/LowuyqjTTe7g8sTmpTixr4ZW7ezsAC3Xlhvbw4urA4mXO09qW75V4zQ7PsYPWCtMiv0FBK4+19YKLGpDQMDTl9a4Eh0YVlFY003vbT8pC5lrjNiOjC3K1syKG6IVLcs6J+sriY8VZKzUI1RFgNfJtsSh6pieOjCy+o7joNCXHjcsh7jwR21/EyPQwJpTYTzyO52Ll7awYK0YUVmtb/UZHsfpNm5UcTA2WzxgJnArN0TNIMSAM+ODNQdc/R9Y/rnAxZ+xQwHJC8kXFMuUZ+i5M03kqSeTARST27MIsF4+0e6lZy2kujC98layWmpiVrxUWHJOOp0ngn8w/XE5VQ+CCN9XIYbwfou6UpWZJ79zSN6c2i6MLM/xhpvJUyMS/JuN+oj6823u6l1x/ZtTRdS2KaEF34VHU8py1Ynjelw4kuZKe9TTGbEtcb6iXoqQ+LLizcbKTu6qKkhgkP6y3gAk3/+6m8WTNeNpZ6eY/GjmS7F3Pf8JM21HLD7zDMpoZEOi9Jmls0/H00ObwHnFBBz996mlM1i0ocPpQknHLIBgyPLoj+Dsd4O1Tbz8wbXwPOEyMluEclc8WINdrV9Nejlz+UpkQXPskpFQNvBkbnvCDjhuhCGuMdjvF2ojYHGXeIkWmWm6vlQjoaSS7iAquiC+srKJYsXZcr+NKpSBPQ6RhvpRsaqcPWtK1bCowRA2UQXfhDL6jVMEgLeoY0DVfTddQDx2sNLWV1UnrDi/JFtBq0HjYlAb+xia5F17YiutCijfzGf/dKmhzkNvB9jTrvlXSdjMeVa606m+jC59k1Toy8Nrogf+q2G+OtJKxJqe7oQhqXXUp04RkphaXogrRM7UYb7ydzDXRqcHehoaZ/6zQOpfAel8S0FN4f6YaUalw3JjGwVe9y3dLA/2Pk6clvuTrVFNOdRZ9cM9ArKbEdUGI7oC9wRFd/REFBQUFBQUFBQQGV+RdsR71VNmH11AAAAABJRU5ErkJggg=="
+                        },
+                        {
+                          "title": "Sunset Cruise",
+                          "body": "A sunset cruise timed to finish before dinner.",
+                          "icon_preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA5CAYAAACMGIOFAAAFVUlEQVR4nO2ZaYwURRTHfzuL64FXeYAGFa9gNB5RMBHUeKDRGEUtRZCw+0FFPqzGhKgYNd4QQ+KVqKwfvEEFQ0XF+yDGI0SNGA0SCRivFW9LBQ9kAfN6Xktt71y7TM+04/w/zHRVV1X3q3f96zU00UQTWUILWYLzOWB/4FOsWV+tZXNkC88Dy4HFOD+o8YR0/hjgFG0dCexVraUHUSs4vxWwsz7zN+AXrNkYjGgPrr8Fvsi2kC7yrTHAOOBwYASwZyIGrMX5T4D3gdeB8cG9x6rpky1UE87vDlyhWtllM1YahTUifIaEdH4H4BZgCrBliZEbgB6grcyKK4FrgCcTJl2nwOP8ccBHwCUJAb8H7gEmAQcAg7GmFWtkzFDgqRKrShqZB7yD86Pqq0nnxTRvTWyWmNlNUTqwpqfAHCO/wPHasw7oAj4Dbi/wlLVAJ9bcX3shnZ8BXB30/ABcCswvamLOi58uAg7RnqXAZKz5UPPil4D49d+6cWFgvC+ylkIbl4q5On9DQkB58cOwZl4JAQcDLwYCPgeMjgQU5F/+mWDGCYBE3xhTgbk435q+kM6fC1wX9gCnYs03ZWY+AozUa/HHs7FmTWLMm/rfpmZ8BPB0cP884K50hXR+H+DhwMyfBSZgzboy8y4UXWnrrRJzJIDFGIk1fwLnAA8F/Z04HxKHsuivJmcD2+j151E+LOcjzg8H7tDWqkhYa8TnCuHr4Hqn6DdPCi4CXgvu3a05ucpCOn9WwC3jnLcc54W5dOP8fJw/U9lOCImc2+n1BVgjAaowrPk5aMWbGQs6AejWnu2Bm9PQ5JWJ9r7AEPWfYUrLxNfexvm9oxHOHx356yaq9lI/nrd1r5Y1PwGXBz0dOL9b9YR0XgLG6Apf7qiIizovG3Cj9v0FXFXBc0Iy0dekJXrLJuaxhUbcsqhUk8JAQiyOoiPsqGtIWrg3eLHhejYcq+0HsearCp4jTChGaLohQsIgNLIsKj2FvBBRrLyJXh/5We98uFSjnoT7hWrCcboQDMH5d4E9lMGsAMR0H8AaH4zLm3kexY5akkslXUngGYbzB2ONPL+G5Q/nbwOmVTh6deTr1nTp3M4ocm5KIUuKPEPYz8XamoY1cfSuWWVA0kylkKg7G+e7cF42PCbjou1S2nkjuC4bK6ovpDUrlYPG+BUQ7Z4MnFFk1lQNTELlBO+VyKWC8Ky5X73KH2JOM9TvJDeuUjMTfw5NdaEexdC8F/PSZTg/RQPY78AHUcS2RqJ0XB6pWMgW0oLzQ7Hmu0TfiiBSC1UTuvcKcGIFK/4IzIqiq5AD53v+3RRrWrJRd3V+TJDjBGOxZhHOH6T+V+m7vKpEPU4xG7Eml5WSZEdw3a3FK9HCMk1PJEx5DnAtcGfCx08CHg/apQ8HNStJOt+mux9jDtZsCEcoUxLMBS5TGhfPn66UTvycBIcuSzJqVXc9HZCyRwzRUgjJjdtGRy1rFvSZnY+0M/XALKWVEOLnmRAyNNUlWPNxr7v5c2MYeYthlh67wuq6RF7q65POS9X8tKDn0QGvZY2QhCcKUE7qHXgm6olBsD4RNAYC8VmCfCmHhboLGZYqXu6TO/sLa6REMl2LYhMrqd61kCacH6Gf4mJMwprN1WS/kauhFlcnKm8NIKSLThWTg54FWPMHdUAuxbWPTRyCBx5VMyxke0Ea1zBCuuir8vgSNK4hNDkOkG+WxWhcQwjZXpLG/eeFdH7XoKBc14CTpibPD4h/NWhcJoXsqCqNy5yQzh+YKCrX3VTT0GQmaFzaQh6aBRqXtpDy0WeNfqCdScPC+VYl50000UQT/1/8A0bldnzkm+6fAAAAAElFTkSuQmCC"
+                        },
+                        {
+                          "title": "Return Transfer",
+                          "body": "A comfortable route back to your hotel.",
+                          "icon_preview": "data:image/png;base64,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"
+                        }
+                      ]
+                    },
+                    "accessibility": {
+                      "description": "Planned itinerary stops",
+                      "type": "list",
+                      "mode": "default"
+                    }
+                  }
+                ],
+                "width": {
+                  "type": "match_parent"
+                },
+                "height": {
+                  "type": "match_parent"
+                },
+                "background": [
+                  {
+                    "type": "solid",
+                    "color": "#FFF2F2F6"
+                  }
+                ],
+                "paddings": {
+                  "left": 16,
+                  "right": 16
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "itinerary_summary": {
+      "divkit": {
+        "templates": {},
+        "card": {
+          "log_id": "sample_itinerary_summary",
+          "variables": [
+            {
+              "type": "boolean",
+              "name": "tooltip_visible",
+              "value": false
+            },
+            {
+              "type": "boolean",
+              "name": "dialog_visible",
+              "value": false
+            },
+            {
+              "type": "boolean",
+              "name": "reduced_motion",
+              "value": false
+            },
+            {
+              "type": "integer",
+              "name": "tooltip_hide_elapsed_ms",
+              "value": 0
+            }
+          ],
+          "timers": [
+            {
+              "id": "tooltip_hide_timer",
+              "duration": 2750,
+              "tick_interval": 100,
+              "value_variable": "tooltip_hide_elapsed_ms",
+              "end_actions": [
+                {
+                  "log_id": "hide_itinerary_tooltip",
+                  "typed": {
+                    "type": "set_variable",
+                    "variable_name": "tooltip_visible",
+                    "value": {
+                      "type": "boolean",
+                      "value": false
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "states": [
+            {
+              "state_id": 0,
+              "div": {
+                "type": "container",
+                "orientation": "overlap",
+                "items": [
+                  {
+                    "type": "container",
+                    "orientation": "vertical",
+                    "items": [
+                      {
+                        "type": "gallery",
+                        "id": "summary_body",
+                        "orientation": "vertical",
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "match_parent",
+                          "weight": 1
+                        },
+                        "scrollbar": "none",
+                        "item_spacing": 0,
+                        "paddings": {
+                          "top": 18
+                        },
+                        "items": [
+                          {
+                            "type": "text",
+                            "text": "Trip Planner",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "regular",
+                            "font_size": 16,
+                            "text_color": "#FF000000",
+                            "text_alignment_horizontal": "center",
+                            "margins": {
+                              "bottom": 23
+                            },
+                            "accessibility": {
+                              "description": "Trip Planner",
+                              "type": "header",
+                              "mode": "default"
+                            },
+                            "visibility_actions": [
+                              {
+                                "log_id": "hide_tooltip_on_entry",
+                                "typed": {
+                                  "type": "set_variable",
+                                  "variable_name": "tooltip_visible",
+                                  "value": {
+                                    "type": "boolean",
+                                    "value": false
+                                  }
+                                },
+                                "visibility_percentage": 1,
+                                "visibility_duration": 0
+                              },
+                              {
+                                "log_id": "hide_dialog_on_entry",
+                                "typed": {
+                                  "type": "set_variable",
+                                  "variable_name": "dialog_visible",
+                                  "value": {
+                                    "type": "boolean",
+                                    "value": false
+                                  }
+                                },
+                                "visibility_percentage": 1,
+                                "visibility_duration": 0
+                              },
+                              {
+                                "log_id": "start_tooltip_hide_timer",
+                                "typed": {
+                                  "type": "timer",
+                                  "id": "tooltip_hide_timer",
+                                  "action": "start"
+                                },
+                                "visibility_percentage": 1,
+                                "visibility_duration": 0
+                              },
+                              {
+                                "log_id": "show_itinerary_tooltip",
+                                "typed": {
+                                  "type": "set_variable",
+                                  "variable_name": "tooltip_visible",
+                                  "value": {
+                                    "type": "boolean",
+                                    "value": true
+                                  }
+                                },
+                                "visibility_percentage": 1,
+                                "visibility_duration": 550
+                              }
+                            ]
+                          },
+                          {
+                            "type": "container",
+                            "orientation": "vertical",
+                            "items": [
+                              {
+                                "type": "text",
+                                "text": "Itinerary Ready",
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "display",
+                                "font_weight": "regular",
+                                "font_size": 24,
+                                "text_color": "#FF000000",
+                                "text_alignment_horizontal": "center",
+                                "margins": {
+                                  "top": 20
+                                },
+                                "accessibility": {
+                                  "description": "Itinerary ready",
+                                  "type": "header",
+                                  "mode": "default"
+                                }
+                              },
+                              {
+                                "type": "text",
+                                "text": "Your personalized trip is ready to explore.",
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "regular",
+                                "font_size": 12,
+                                "text_color": "#FF3A3A3C",
+                                "text_alignment_horizontal": "center",
+                                "margins": {
+                                  "top": 3,
+                                  "bottom": 25
+                                }
+                              },
+                              {
+                                "type": "container",
+                                "orientation": "overlap",
+                                "items": [
+                                  {
+                                    "type": "image",
+                                    "image_url": "empty://",
+                                    "preview": "data:image/png;base64,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",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 87,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 87,
+                                      "unit": "dp"
+                                    },
+                                    "scale": "fit",
+                                    "accessibility": {
+                                      "description": "Trip planning map",
+                                      "type": "image",
+                                      "mode": "default"
+                                    },
+                                    "alignment_horizontal": "left",
+                                    "alignment_vertical": "bottom",
+                                    "description": "Trip planning map"
+                                  },
+                                  {
+                                    "type": "text",
+                                    "text": "14",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 25,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 25,
+                                      "unit": "dp"
+                                    },
+                                    "font_family": "text",
+                                    "font_weight": "bold",
+                                    "font_size": 13,
+                                    "text_color": "#FFFFFFFF",
+                                    "alignment_horizontal": "right",
+                                    "alignment_vertical": "top",
+                                    "text_alignment_horizontal": "center",
+                                    "text_alignment_vertical": "center",
+                                    "background": [
+                                      {
+                                        "type": "solid",
+                                        "color": "#FFFF1028"
+                                      }
+                                    ],
+                                    "border": {
+                                      "corner_radius": 13
+                                    },
+                                    "accessibility": {
+                                      "description": "14 suggested stops",
+                                      "type": "text",
+                                      "mode": "default"
+                                    }
+                                  }
+                                ],
+                                "width": {
+                                  "type": "fixed",
+                                  "value": 94,
+                                  "unit": "dp"
+                                },
+                                "height": {
+                                  "type": "fixed",
+                                  "value": 94,
+                                  "unit": "dp"
+                                },
+                                "alignment_horizontal": "center",
+                                "clip_to_bounds": 0
+                              },
+                              {
+                                "type": "text",
+                                "text": "14 Stops Planned",
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "medium",
+                                "font_size": 14,
+                                "text_color": "#FF000000",
+                                "text_alignment_horizontal": "center",
+                                "margins": {
+                                  "top": 9,
+                                  "bottom": 11
+                                },
+                                "ranges": [
+                                  {
+                                    "start": 0,
+                                    "end": 2,
+                                    "font_weight": "bold",
+                                    "text_color": "#FFFF3B30"
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "separator",
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "fixed",
+                                  "value": 1,
+                                  "unit": "dp"
+                                },
+                                "margins": {
+                                  "left": 0
+                                },
+                                "delimiter_style": {
+                                  "color": "#FFE7E7EA",
+                                  "orientation": "horizontal"
+                                },
+                                "accessibility": {
+                                  "mode": "exclude"
+                                }
+                              },
+                              {
+                                "type": "container",
+                                "orientation": "horizontal",
+                                "items": [
+                                  {
+                                    "type": "image",
+                                    "image_url": "empty://",
+                                    "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAADIUlEQVR4nO2aSWsUQRiGn2pahI6iEffEjWg04oJEBRG8C+Ilv6AugiJexOUkghfRgyf12P/AP+BJL4JRNDEh7sG4EESMTpLCBdNSUgNl40wyPTWZiqkHGqb766+6Xmqq3q5vBgKBQCAQCAQCjUHUcnOWJvuBY8BBoA1Y3KB+Ve0GUALeAneBm0KqAeeCszS5ApzBP6aA80Kqq84EZ2lyAriO3/QIqW7VLThLkwXACLAavxkQUu2c7qZoBg11zwGxmh1Zmqx3IbiLucN2F4KXMHdY6kJwzNwhdiH4vyKuw/zfAZ9pDquKLqRxgZxB43nPaCJZmuwFtO+uqyUvKvCsk80WqxFSPQDO1ZoXFXhWL/7Q23DBQqpJ/GGi1oSYBpOlyUag3+yshoEOIVVmYgnw2ixCY8A2IdVHK3dIXzPCuoVUz+vtT0Tjabe2kZuAhVZsmRGraQXW5nK1WM0iYNrXRl8ET1ifvwM/rXM9Pf6MtmG8Sm4+VoiYBiOkepylyR4zSqNCql9WbCxLE/3+uxz4IqR6lUvfbUZ9Ukj1yEV/YmYBLbpK7GmVmJ7f+nBGxDwjYp4Ru2gkSxO9mj4EtM28EFJ1WrEOoA9oAd7oldqypRZjVSuAr8aWRq1cbUNbAGVsqeLXf7ZHuN2IxXTQZo0Rq9mQs6VWI7a8785vCMptJeYZ+CK4VMU+7PNvwI+cLU1VaCefm481T7CQ6r4pr+zLl4SEVH3mmo51CqmmbFsCNlux/IpczttunuGPLQmphgpaj57DwxVi7wF9OCNinhExz4h9tqVGEHluS86JZsGWSnXYknMiF40Yy9gFHNA/eeRi/eaajnX9w5a2WjGnG4Wic9jer1ZESPWkSmywSuwloA8XZC5GePyvFtOkXKHwgXyFpORC8Eju/Cj+0DNNXwt9pe+Z0kx5db2WpclK4I6uUtAc9Mp+BDhlXfsEVJxWtf4D4AZwHL+5IKS65GqVPutZAT7PbeDyTG6MZnKTkEpXDw8BF4EP+IN+SzsNHBZS2dVQN39byhXX20wlslAbdVqPdo4RIZX+BTMQCAQCgUAggA/8BqI784ElamT9AAAAAElFTkSuQmCC",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 18,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 18,
+                                      "unit": "dp"
+                                    },
+                                    "scale": "fit",
+                                    "accessibility": {
+                                      "description": "",
+                                      "type": "image",
+                                      "mode": "exclude"
+                                    }
+                                  },
+                                  {
+                                    "type": "text",
+                                    "text": "Your 14-stop itinerary is ready",
+                                    "width": {
+                                      "type": "wrap_content",
+                                      "constrained": true
+                                    },
+                                    "height": {
+                                      "type": "wrap_content",
+                                      "constrained": true
+                                    },
+                                    "font_family": "text",
+                                    "font_weight": "medium",
+                                    "font_size": 14,
+                                    "text_color": "#FFFF0000"
+                                  }
+                                ],
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "content_alignment_horizontal": "center",
+                                "content_alignment_vertical": "center",
+                                "item_spacing": 12,
+                                "paddings": {
+                                  "top": 19,
+                                  "bottom": 19
+                                }
+                              }
+                            ],
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FFFEFEFE"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 10
+                            },
+                            "clip_to_bounds": 1
+                          },
+                          {
+                            "type": "text",
+                            "text": "TRIP HIGHLIGHTS",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "regular",
+                            "font_size": 12,
+                            "text_color": "#FF8E8E93",
+                            "margins": {
+                              "left": 18,
+                              "top": 33,
+                              "bottom": 12
+                            }
+                          },
+                          {
+                            "type": "container",
+                            "orientation": "vertical",
+                            "items": [
+                              {
+                                "type": "container",
+                                "orientation": "horizontal",
+                                "items": [
+                                  {
+                                    "type": "image",
+                                    "image_url": "empty://",
+                                    "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAADm0lEQVR4nO3cW6hVRRzH8a95GKMMKousHnqJCoqSHgzBLnQRulAUFcFQQvUiJqJhkg2GMRV0UaMLRUgmTEQvBdVjFBUIFRIR2INQUBJSdCWUyUsMjrHd1jn7nD37v8/Z/D5ve6+1Z//5rVlrzct/QERERERERERERERERGYgH/Ksrs9jPuSlPuQ5jIixYRfgQ74LWA5c3lXXVuBRH/KKFN37xjVdDVwF7APeS9F91e+YR80kSz7khcBmYBGwJ0U3v+PY8cDejtPfBlam6L4fcE3XAk8DCzq+3g/ckaJ7Z0bNaB/yWcCTwN2TuNC3Akt8yBuATSm6/Y1rurAGfP3/ZPQYMDOC9odn6YPAw8CJUxii/OYpoDy7l6XoPmlQ0xk1xPuA2eOcen6//2UStA/5zhrSOQ2GK7PvYx/y68CaFN1PU6jnBGA1sBaY28NPHNM5aB/ypcBzwOIBDL8UuNmHXO6QV1N0B3uo5zjgHiACZ2Oo/HFzPuT5PuQtwOcDCvmIU4CXge31ok70otsBvGYdcvMZXde9q4B1wEnYWQh85kN+CQgpuj86ajq33lU3METNZrQP+TLg67qisAz5iPIyWwF8w9FuH3bIzWa0D/ki4IMpriZaO5NpqNWM3jBNQp62WgV9RaNxRlaroE9rNM7IGsjyTo6loI0oaCMK2oiCNqKgjShoIwraiII2oqCNKGgjCtqIgjaioI0oaCMK2oiCNqKgjShoIwraiII2oqCNKGgjCtqIgjaioI0oaCMKujd/0ycF3Ztv6ZOC7s0b9ElBT+yj2i4ykkEfAH4fcg1/lcYj4LoUXR6FoH/tnjEpuvLyKd1UL9ZebEuHgG3AeSm6x1u1Qw9zd4O9wPMl5BTdb90HU3Q/Aw/4kF8AngFuNKjp09K+l6L7ovXAY0N6LGwD1qfofpjo5BRdaWe7yYd8DfAscMkAavqutCun6N5iQKwfHe8CF6fo7u0l5E4putJeV7pj7wd+bFTPn7X59IJBhtxyRv8CnDrO8e3AQym6cmtOWe333uJDfrM2zJfdEkoD/WQdrK3Kj6To9mBgrOES6Lb/+L7c9utSdGVjk2ZSdGVFsN6H/ArwxCT3/viw7GyQovsSQ62CXgmc3rFdz876PN2aoivP5IFI0e2u+3eUXu+NwJXjnL6r3lVNL/pQtvrxIZ8MzLG6Hbv5kG+pe3j8u6OCD7lsGzGvLBVbrIdFREREREREREREREQEI/8AVyXnCk685DYAAAAASUVORK5CYII=",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "scale": "fit",
+                                    "accessibility": {
+                                      "description": "",
+                                      "type": "image",
+                                      "mode": "exclude"
+                                    }
+                                  },
+                                  {
+                                    "type": "container",
+                                    "orientation": "vertical",
+                                    "items": [
+                                      {
+                                        "type": "container",
+                                        "orientation": "horizontal",
+                                        "items": [
+                                          {
+                                            "type": "text",
+                                            "text": "Scenic waterfront route",
+                                            "width": {
+                                              "type": "match_parent",
+                                              "weight": 1
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 12,
+                                            "text_color": "#FF1C1C1E",
+                                            "text_alignment_vertical": "center"
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "Included",
+                                            "width": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 14,
+                                            "text_color": "#FFFF453A",
+                                            "text_alignment_vertical": "center"
+                                          }
+                                        ],
+                                        "width": {
+                                          "type": "match_parent",
+                                          "weight": 1
+                                        },
+                                        "height": {
+                                          "type": "wrap_content",
+                                          "constrained": true
+                                        },
+                                        "content_alignment_vertical": "center",
+                                        "paddings": {
+                                          "right": 22
+                                        },
+                                        "item_spacing": 8
+                                      },
+                                      {
+                                        "type": "separator",
+                                        "width": {
+                                          "type": "match_parent"
+                                        },
+                                        "height": {
+                                          "type": "fixed",
+                                          "value": 1,
+                                          "unit": "dp"
+                                        },
+                                        "margins": {
+                                          "left": 0
+                                        },
+                                        "delimiter_style": {
+                                          "color": "#FFE7E7EA",
+                                          "orientation": "horizontal"
+                                        },
+                                        "accessibility": {
+                                          "mode": "exclude"
+                                        }
+                                      }
+                                    ],
+                                    "width": {
+                                      "type": "match_parent",
+                                      "weight": 1
+                                    },
+                                    "height": {
+                                      "type": "wrap_content",
+                                      "constrained": true
+                                    }
+                                  }
+                                ],
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "content_alignment_vertical": "center",
+                                "paddings": {
+                                  "left": 18,
+                                  "top": 7,
+                                  "bottom": 7
+                                },
+                                "item_spacing": 12,
+                                "accessibility": {
+                                  "description": "Scenic waterfront route. Included.",
+                                  "type": "text",
+                                  "mode": "merge"
+                                }
+                              },
+                              {
+                                "type": "container",
+                                "orientation": "horizontal",
+                                "items": [
+                                  {
+                                    "type": "image",
+                                    "image_url": "empty://",
+                                    "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAGSElEQVR4nO2cC+yWUxzHPyUmyiXLnSGTkNvmkkwum+WysGZuyaVFyjF+hLlETEYcdKRoltJktEWrjMmlRWImM0WiJnOXUi4jsd86tnfPzvP/v+/f877vef6dz/bf/u9znud9nuf7nuec3/ldHkgkEolEIpFIJBKJRCKRSCQSiUQi0W7oQMRY6/YBDgR6ArsDXf3fX8B6YC3wBfApsETErCFSohLaWrcNcBbQHzgF2KOGwzcCi4F5wEwRs5CIiEJoa90RwNXAub7HFsFnwGRgooj5mc1ZaGvd0cAo4Iw6nmYd8BgwVsT8xOYktLWuO3AfcGkDr2E1cAswScToMNO+hbbWnQ08CXRrZddvgNeBt/1k9zmwxvfQLf0Q091PlAcBJwLHAZ1b+V79vgtEzJe0R6GtdZ2AB4FrWthNx9JngCki5r02nGNrP5kO9hNqxxbOM1jEzKY9CW03WRMzgNNydvnO/wgTRMz6gs6pZuHNwCBgi8AuOnyMEDETaQ9CW+v0EX8FODbQvAFwwJ0i5pcanoy/Rcw/Ve5/GDAe6Juzy60iZgxlFtpatxUw19vEWVYC54uYRTV831BgnF+oDBQxb1V5nN7nSOAeQH+oLFfVu2fnjWFFMTlH5HnA4bWI7BkL6Di8iz4F1R6kvV/E3O8nTLU+soy31p1JGYW21g0DLgw0PQecLmK0V9bK9hX/71jrwf4JOB74KqDDVGvd3pRJaGudmlsPBZrmAheJmD9pEiJmKXBqoGfrDzfdWtexTD16gn/EK1msS2wRoxNgU/FiqxmYvRa1w3UeiF9oa52aUydkNq8HzhMxvxEJImYBcFugaYy1bqeohfam192BphtFzDLiQyfIrOXSzVsoUfdo7c3qQ67kfeBxIsTb4iPULs80DbfW1TzZNlLokTm9eSORImI+BKZlNusiS62m+IS21h3jnTuVLBIxrxE/9/oleSXqWYyyR6sjJ8vDlAARo97BlzKbD7DWhdwGTRda3Z+VqO/iRcrD1CruqblCe0+ZBk8rmSVifqc8zAKy13tybD26X44/ozSImD8Cpt6R1rrtYhK6d2DbfMrHG5nP6sfuFZPQGk6qRB/BFZSPpVXcW1OF3jfzeXm1jvnIUOujtXtrqtCV7kvle8rJD1XcW5sIRRvaQjbppcW4n7XuSr9cby1i3Wg0wp6lS0xCZ4Ofua5Qa90hmj1EnGhOXxZNbYhm6Pi1hl6wXUHnrMfw1LXKXt40oddVO66JGE1gmQSo3dpWluX4kv8vO9RL6KKGjq+BPSs+92hpZxFzBaB/sdEj596i6dFZs6h70f7cBtGzSpOvaUJ/EthWmOergWjMMGqhQ4ksJ1E+Tsp8XiViVsUk9MKA50ujzKXBWncUsFu9HGOFCO3zNDTFNus416hLWbgksO3lGB3/2biboivA6LHWdQlkVRUauChS6Bd88mElg+qZZlUgwwMpZjOKDFwUJrS/KM3kzy5fRxEx1jpdXF0faHo05nSDsYEV3+WRj9Wa8LNzZtscEfNBtEKLmG8DyTIddMntyx6iwlrX1w8blagf/a4yJDneEXD49M7JLm0a1jpN/Zoe8Dw+JWLejV5on/d8Q6BpmLVOizabjn+6ZgJ7ZZo0lfem0qTtipingecDTY/4bNOm4cs9ng1kvCpDREwoyhJ1acVQXxAfyqw3NM9enpOzah0nYtRELWWxkIbqF+QUbz4BXNuoJBtfhaBlHQcHmjUdbEA9k+QbUf7WB3gV0FrDLB9rz6/nmwisdTrZ6dwwJuca3tGCpnonyTeqoLMPMDunZ6s5NQUYLWJWFnze/r7m/NCcXdRpdI6IKSSKEkuJci8v9n45u2zw5tZEH+5q63m01w7UYUlTulrYVUuhL2tU4VKHJix3J/n3crTEcu/QUY/gQhGzuoXv7OB/vH6+pnFAK8FhXble16jS5Ga/RuJi4IHA0jePH734a33OSCcvph6/fw35IfN9lewSNpcXo9hNvXu0d6XWe3muY//tIibkyt08XvVjrdvV174MKSr9qoIl3tE1rdn1jU0X+j+sdZ19hv0gH7tra7qYpgfowmNqG2rN27/QgWWymoR9A69j29aXq63zY/YKH6n+CHhTxIQi8olEIpFIJBKJRCKRSCQSiUQikUgkEhTGv91Vv3uJ/v3/AAAAAElFTkSuQmCC",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "scale": "fit",
+                                    "accessibility": {
+                                      "description": "",
+                                      "type": "image",
+                                      "mode": "exclude"
+                                    }
+                                  },
+                                  {
+                                    "type": "container",
+                                    "orientation": "vertical",
+                                    "items": [
+                                      {
+                                        "type": "container",
+                                        "orientation": "horizontal",
+                                        "items": [
+                                          {
+                                            "type": "text",
+                                            "text": "Local dining favorites",
+                                            "width": {
+                                              "type": "match_parent",
+                                              "weight": 1
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 12,
+                                            "text_color": "#FF1C1C1E",
+                                            "text_alignment_vertical": "center"
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "Included",
+                                            "width": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 14,
+                                            "text_color": "#FFFF453A",
+                                            "text_alignment_vertical": "center"
+                                          }
+                                        ],
+                                        "width": {
+                                          "type": "match_parent",
+                                          "weight": 1
+                                        },
+                                        "height": {
+                                          "type": "wrap_content",
+                                          "constrained": true
+                                        },
+                                        "content_alignment_vertical": "center",
+                                        "paddings": {
+                                          "right": 22
+                                        },
+                                        "item_spacing": 8
+                                      },
+                                      {
+                                        "type": "separator",
+                                        "width": {
+                                          "type": "match_parent"
+                                        },
+                                        "height": {
+                                          "type": "fixed",
+                                          "value": 1,
+                                          "unit": "dp"
+                                        },
+                                        "margins": {
+                                          "left": 0
+                                        },
+                                        "delimiter_style": {
+                                          "color": "#FFE7E7EA",
+                                          "orientation": "horizontal"
+                                        },
+                                        "accessibility": {
+                                          "mode": "exclude"
+                                        }
+                                      }
+                                    ],
+                                    "width": {
+                                      "type": "match_parent",
+                                      "weight": 1
+                                    },
+                                    "height": {
+                                      "type": "wrap_content",
+                                      "constrained": true
+                                    }
+                                  }
+                                ],
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "content_alignment_vertical": "center",
+                                "paddings": {
+                                  "left": 18,
+                                  "top": 7,
+                                  "bottom": 7
+                                },
+                                "item_spacing": 12,
+                                "accessibility": {
+                                  "description": "Local dining favorites. Included.",
+                                  "type": "text",
+                                  "mode": "merge"
+                                }
+                              },
+                              {
+                                "type": "container",
+                                "orientation": "horizontal",
+                                "items": [
+                                  {
+                                    "type": "image",
+                                    "image_url": "empty://",
+                                    "preview": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAGbElEQVR4nO2beahVRRzHP9O+Z4uhLUaSQSsEyZRBe9miVhYkWo3ZYnu2gZVkokllpRaZL9um0lawBYoKbSUZspWibLGixQrbLLN94kcj3KY5z/de59577mM+/zzOnHt/557vm/Ob3/n9fgOZTCaTyWQymUwmk8lkMplMJpPJZDKZTCVRjbyY10autzcwENgT2B7oCawD/AR8DbwFPA/MVc5+0kn7mwCDgIOB3YBtgI2AP4DvgcXAq8B84Anl7C90J6G9NmsCpwAXAX07+jXgUWCCcva1VdjvBYwDTgLW66D9H4A2YIpydimtLrTXpj9wB7BzF038CUwDLlHO/p6wL+JOBTbuov1vgTHK2btpVaG9NicDM4C1SjD3IjBEOftdsC2//UbgLMrhFuBM5az8Y1tHaK/NmDDTihB3sAD4ChDxNgT6BR8uf1MsBA5Qzv7otZHH/rSCz4mvfwF4O8zYdYFe4anaFxBXluIhYFg9xK6L0F6b44B7E/Z/DbNwmnL283a+vwdwGXBUgRjPBTsxspCOBx4pEstrI4vjCOAKYIvER2YoZ8t6SuontNdGIonXgfWjU28AQ5Wziztha0jw75vGpxK//frgx3/roO2NgruQSREjs/p+Ki60hE77R8PzgaOVs8u6YG9H4Glgq6KPiJ9Wzt7cBdty/9cB50envpHQUzkrIWEprEaJeG0OT4j8UZjJnRZZUM6+AxwawrEUY7oicrDtlbMXhDCyls2AsZRIqUID8qPj2XaccrZIpA6hnBXfe2ri1O3K2Rv4/4wElkRjo702sftrvtBem60lIoiGZVF6uQz7ytkHgdtqht4Ezi7JtkQ910bDPSScpIIzelDC50+hXM4ArgLmAIcrZ1eUaFvCxfjJG1yW8TXKMhTi33hBkTi5NMKb4SXlWfyX7eVem2eBI9u5p0rM6F2i4+dksaG1eCY67hPCwEoJvW10vIjWY1EH7qvpQsdJnbpnxOpA6jfLolgNoUMaNLbVpbi5yaReUNaujNBhkZLkei2lxaANZIPE2IqquY4fo2OpnLQaPRNjy6om9MfR8a60Hrt24L6aLvR70bFUVlqN/tHxEsl9V01oFx339trsTovgtVk9FI3bu6dKCC3J+JhjaR0OBKSKvqp7arrQUpr6LBobFUK/VmB0YuyxygkdXrfjqkSvggpGpfDabJfI1C1Uzn5Y1Xy0pDHj/Mblwf9VmXGJBNusMi9QqtChGiJlp1r6heaZSuK12Qk4MZF5LLXPo+wZLVyZGJvstZHyUBW5KTGbp5ac6y5faOWs9M09Hg1vCpRRcioVr80oYL9oeMkq+lEqM6MJPXZx2X946PeoBF6bvqHVLEZaFn5uCaGDr5aSU0yb12YHmozXZp0QIUl3VC3zlLO2Htes14wWJocCapyzfthrE99go5kJSDdUnDwqajGrrtDKWWn/ElexPDolDTFzvTal5Hk7i9dmAmASp0Z3pouqSjNaxH4XOL3gdXdOo+Nrr825EtcnTrUpZ++r57XrKrSgnL2noO1gaCjxNwSvzYiCxU/yGefU+/p1FzowVpppEuMne22k962ueG2kK/XORN/J+8AxqQb3lt3D4v9Z6Z8E9kmcbgtN4H/V4bonSOtY4qXkC+nbUM6WktivyowmbMyRzp9XCjJns8vO9AWfbBMiyyv2wEaJ3FChhdBRehCQ6scbFkI/6c7/33htpCF9euKpXRp2DUjjZPfc/rYSr43E008Ae5HePiG91HFuuzMuamZBCPelbI1rtMhNE1rw2sg2tQeAI0jvQTlWOSv7UDqM10aa1ecW1Cs/AA5Rzkq/dsNpqOuoJeQTJBq4lf8ie0vmeW1SMXgSr82A8DSkRBZXNaBZIjd1RtfitbkQuKbgH3+X9EEXVaPD9ojzgKsLttnJi8iostOeLSl0zbaM2QW9bvJqfLxydkFix6xEFYckviOh4njl7CQqQGWErkldyva2VJuCbGebCEySrW1em8EhPt488VmJLEYoZ5+iIlRKaCEkm6YXVKWFBaG9VvadpHgpbF/7lApROaGj1+ZZBTOWghkvbmJivbYZd0uhBa9N71BZP4z2kdDtxNiHV4lKC70Sr83IUMfrkVjwpBZ5abOjim4htOC12TKEcMNDGCi++GLlrPzNlI3XZjOvTZ+sbCaTyWQymUwmk8lkMplMJpPJZDKZTCaToYX4G8wE3YPmpJmFAAAAAElFTkSuQmCC",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 29,
+                                      "unit": "dp"
+                                    },
+                                    "scale": "fit",
+                                    "accessibility": {
+                                      "description": "",
+                                      "type": "image",
+                                      "mode": "exclude"
+                                    }
+                                  },
+                                  {
+                                    "type": "container",
+                                    "orientation": "vertical",
+                                    "items": [
+                                      {
+                                        "type": "container",
+                                        "orientation": "horizontal",
+                                        "items": [
+                                          {
+                                            "type": "text",
+                                            "text": "Photo-friendly landmarks",
+                                            "width": {
+                                              "type": "match_parent",
+                                              "weight": 1
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 12,
+                                            "text_color": "#FF1C1C1E",
+                                            "text_alignment_vertical": "center"
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "Included",
+                                            "width": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 14,
+                                            "text_color": "#FFFF453A",
+                                            "text_alignment_vertical": "center"
+                                          }
+                                        ],
+                                        "width": {
+                                          "type": "match_parent",
+                                          "weight": 1
+                                        },
+                                        "height": {
+                                          "type": "wrap_content",
+                                          "constrained": true
+                                        },
+                                        "content_alignment_vertical": "center",
+                                        "paddings": {
+                                          "right": 22
+                                        },
+                                        "item_spacing": 8
+                                      },
+                                      {
+                                        "type": "separator",
+                                        "width": {
+                                          "type": "match_parent"
+                                        },
+                                        "height": {
+                                          "type": "fixed",
+                                          "value": 1,
+                                          "unit": "dp"
+                                        },
+                                        "margins": {
+                                          "left": 0
+                                        },
+                                        "delimiter_style": {
+                                          "color": "#FFE7E7EA",
+                                          "orientation": "horizontal"
+                                        },
+                                        "accessibility": {
+                                          "mode": "exclude"
+                                        }
+                                      }
+                                    ],
+                                    "width": {
+                                      "type": "match_parent",
+                                      "weight": 1
+                                    },
+                                    "height": {
+                                      "type": "wrap_content",
+                                      "constrained": true
+                                    }
+                                  }
+                                ],
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "content_alignment_vertical": "center",
+                                "paddings": {
+                                  "left": 18,
+                                  "top": 7,
+                                  "bottom": 7
+                                },
+                                "item_spacing": 12,
+                                "accessibility": {
+                                  "description": "Photo-friendly landmarks. Included.",
+                                  "type": "text",
+                                  "mode": "merge"
+                                }
+                              },
+                              {
+                                "type": "container",
+                                "orientation": "horizontal",
+                                "items": [
+                                  {
+                                    "type": "image",
+                                    "image_url": "empty://",
+                                    "preview": "data:image/png;base64,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",
+                                    "width": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "height": {
+                                      "type": "fixed",
+                                      "value": 30,
+                                      "unit": "dp"
+                                    },
+                                    "scale": "fit",
+                                    "accessibility": {
+                                      "description": "",
+                                      "type": "image",
+                                      "mode": "exclude"
+                                    }
+                                  },
+                                  {
+                                    "type": "container",
+                                    "orientation": "vertical",
+                                    "items": [
+                                      {
+                                        "type": "container",
+                                        "orientation": "horizontal",
+                                        "items": [
+                                          {
+                                            "type": "text",
+                                            "text": "Flexible evening plans",
+                                            "width": {
+                                              "type": "match_parent",
+                                              "weight": 1
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 12,
+                                            "text_color": "#FF1C1C1E",
+                                            "text_alignment_vertical": "center"
+                                          },
+                                          {
+                                            "type": "text",
+                                            "text": "Included",
+                                            "width": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "height": {
+                                              "type": "wrap_content",
+                                              "constrained": true
+                                            },
+                                            "font_family": "text",
+                                            "font_weight": "regular",
+                                            "font_size": 14,
+                                            "text_color": "#FFFF453A",
+                                            "text_alignment_vertical": "center"
+                                          }
+                                        ],
+                                        "width": {
+                                          "type": "match_parent",
+                                          "weight": 1
+                                        },
+                                        "height": {
+                                          "type": "wrap_content",
+                                          "constrained": true
+                                        },
+                                        "content_alignment_vertical": "center",
+                                        "paddings": {
+                                          "right": 22
+                                        },
+                                        "item_spacing": 8
+                                      }
+                                    ],
+                                    "width": {
+                                      "type": "match_parent",
+                                      "weight": 1
+                                    },
+                                    "height": {
+                                      "type": "wrap_content",
+                                      "constrained": true
+                                    }
+                                  }
+                                ],
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "content_alignment_vertical": "center",
+                                "paddings": {
+                                  "left": 18,
+                                  "top": 7,
+                                  "bottom": 7
+                                },
+                                "item_spacing": 12,
+                                "accessibility": {
+                                  "description": "Flexible evening plans. Included.",
+                                  "type": "text",
+                                  "mode": "merge"
+                                }
+                              }
+                            ],
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FFFEFEFE"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 10
+                            },
+                            "clip_to_bounds": 1
+                          },
+                          {
+                            "type": "text",
+                            "text": "Review the suggested schedule and adjust any stop to match your pace.",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "regular",
+                            "font_size": 13,
+                            "text_color": "#FF666666",
+                            "text_alignment_horizontal": "center",
+                            "margins": {
+                              "left": 4,
+                              "right": 4,
+                              "top": 26,
+                              "bottom": 18
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "container",
+                        "orientation": "vertical",
+                        "items": [
+                          {
+                            "type": "text",
+                            "text": "Review Itinerary",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "medium",
+                            "font_size": 16,
+                            "text_color": "#FFFFFFFF",
+                            "text_alignment_horizontal": "center",
+                            "text_alignment_vertical": "center",
+                            "paddings": {
+                              "top": 17,
+                              "bottom": 17
+                            },
+                            "background": [
+                              {
+                                "type": "solid",
+                                "color": "#FF007AFF"
+                              }
+                            ],
+                            "border": {
+                              "corner_radius": 8,
+                              "has_shadow": true,
+                              "shadow": {
+                                "alpha": 0.1,
+                                "blur": 20,
+                                "color": "#FF000000",
+                                "offset": {
+                                  "x": {
+                                    "value": 0
+                                  },
+                                  "y": {
+                                    "value": 8
+                                  }
+                                }
+                              }
+                            },
+                            "actions": [
+                              {
+                                "log_id": "summary_save_itinerary",
+                                "typed": {
+                                  "type": "set_variable",
+                                  "variable_name": "dialog_visible",
+                                  "value": {
+                                    "type": "boolean",
+                                    "value": true
+                                  }
+                                }
+                              }
+                            ],
+                            "action_animation": {
+                              "name": "set",
+                              "items": [
+                                {
+                                  "name": "fade",
+                                  "start_value": 1,
+                                  "end_value": 0.82,
+                                  "duration": 120,
+                                  "interpolator": "ease_out"
+                                },
+                                {
+                                  "name": "scale",
+                                  "start_value": 1,
+                                  "end_value": 0.985,
+                                  "duration": 120,
+                                  "interpolator": "ease_out"
+                                }
+                              ]
+                            },
+                            "accessibility": {
+                              "description": "Review Itinerary",
+                              "hint": "Activates the primary action",
+                              "type": "button",
+                              "mode": "default"
+                            }
+                          },
+                          {
+                            "type": "text",
+                            "text": " Designed for iPhone.",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "regular",
+                            "font_size": 12,
+                            "text_color": "#FF8E8E93",
+                            "text_alignment_horizontal": "center",
+                            "paddings": {
+                              "top": 11,
+                              "bottom": 1
+                            },
+                            "accessibility": {
+                              "description": "Designed for iPhone",
+                              "type": "text",
+                              "mode": "default"
+                            }
+                          }
+                        ],
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "paddings": {
+                          "bottom": 15
+                        }
+                      }
+                    ],
+                    "width": {
+                      "type": "match_parent"
+                    },
+                    "height": {
+                      "type": "match_parent"
+                    },
+                    "paddings": {
+                      "left": 16,
+                      "right": 16
+                    }
+                  },
+                  {
+                    "type": "container",
+                    "orientation": "horizontal",
+                    "items": [
+                      {
+                        "type": "image",
+                        "image_url": "empty://",
+                        "preview": "data:image/png;base64,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",
+                        "width": {
+                          "type": "fixed",
+                          "value": 39,
+                          "unit": "dp"
+                        },
+                        "height": {
+                          "type": "fixed",
+                          "value": 39,
+                          "unit": "dp"
+                        },
+                        "scale": "fit",
+                        "accessibility": {
+                          "description": "",
+                          "type": "image",
+                          "mode": "exclude"
+                        }
+                      },
+                      {
+                        "type": "container",
+                        "orientation": "vertical",
+                        "items": [
+                          {
+                            "type": "text",
+                            "text": "Trip Itinerary",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "bold",
+                            "font_size": 17,
+                            "text_color": "#FF000000",
+                            "text_alignment_horizontal": "center"
+                          },
+                          {
+                            "type": "text",
+                            "text": "Completed",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "regular",
+                            "font_size": 13,
+                            "text_color": "#FF000000",
+                            "text_alignment_horizontal": "center"
+                          }
+                        ],
+                        "width": {
+                          "type": "match_parent",
+                          "weight": 1
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        }
+                      }
+                    ],
+                    "width": {
+                      "type": "fixed",
+                      "value": 210,
+                      "unit": "dp"
+                    },
+                    "height": {
+                      "type": "wrap_content",
+                      "constrained": true
+                    },
+                    "alignment_horizontal": "center",
+                    "alignment_vertical": "top",
+                    "margins": {
+                      "top": 86
+                    },
+                    "paddings": {
+                      "left": 22,
+                      "right": 22,
+                      "top": 10,
+                      "bottom": 10
+                    },
+                    "item_spacing": 11,
+                    "content_alignment_vertical": "center",
+                    "background": [
+                      {
+                        "type": "solid",
+                        "color": "#FFF2F2F6"
+                      }
+                    ],
+                    "border": {
+                      "corner_radius": 32,
+                      "stroke": {
+                        "color": "#80C7C7CC",
+                        "width": 1
+                      },
+                      "has_shadow": true,
+                      "shadow": {
+                        "alpha": 0.25,
+                        "blur": 10,
+                        "color": "#FF000000",
+                        "offset": {
+                          "x": {
+                            "value": 0
+                          },
+                          "y": {
+                            "value": 3
+                          }
+                        }
+                      }
+                    },
+                    "visibility": "@{tooltip_visible ? 'visible' : 'gone'}",
+                    "transition_in": {
+                      "type": "set",
+                      "items": [
+                        {
+                          "type": "fade",
+                          "duration": "@{reduced_motion ? 1 : 220}",
+                          "interpolator": "ease_out"
+                        },
+                        {
+                          "type": "scale",
+                          "scale": 0.96,
+                          "duration": "@{reduced_motion ? 1 : 220}",
+                          "interpolator": "ease_out"
+                        }
+                      ]
+                    },
+                    "transition_out": {
+                      "type": "fade",
+                      "duration": "@{reduced_motion ? 1 : 200}",
+                      "interpolator": "ease_out"
+                    },
+                    "transition_triggers": [
+                      "visibility_change"
+                    ],
+                    "accessibility": {
+                      "description": "Trip itinerary completed",
+                      "type": "text",
+                      "mode": "merge"
+                    }
+                  },
+                  {
+                    "type": "container",
+                    "orientation": "overlap",
+                    "items": [
+                      {
+                        "type": "container",
+                        "orientation": "vertical",
+                        "items": [
+                          {
+                            "type": "container",
+                            "orientation": "vertical",
+                            "items": [
+                              {
+                                "type": "text",
+                                "text": "Save Itinerary",
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "bold",
+                                "font_size": 17,
+                                "text_color": "#FFFFFFFF",
+                                "text_alignment_horizontal": "center"
+                              },
+                              {
+                                "type": "text",
+                                "text": "Use Face ID or Touch ID to continue",
+                                "width": {
+                                  "type": "match_parent"
+                                },
+                                "height": {
+                                  "type": "wrap_content",
+                                  "constrained": true
+                                },
+                                "font_family": "text",
+                                "font_weight": "regular",
+                                "font_size": 13,
+                                "text_color": "#FFFFFFFF",
+                                "text_alignment_horizontal": "center",
+                                "margins": {
+                                  "top": 12
+                                }
+                              }
+                            ],
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "content_alignment_vertical": "center",
+                            "paddings": {
+                              "left": 16,
+                              "right": 16,
+                              "top": 28,
+                              "bottom": 28
+                            }
+                          },
+                          {
+                            "type": "separator",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "fixed",
+                              "value": 1,
+                              "unit": "dp"
+                            },
+                            "margins": {
+                              "left": 0
+                            },
+                            "delimiter_style": {
+                              "color": "#FFE7E7EA",
+                              "orientation": "horizontal"
+                            },
+                            "accessibility": {
+                              "mode": "exclude"
+                            }
+                          },
+                          {
+                            "type": "text",
+                            "text": "Continue",
+                            "width": {
+                              "type": "match_parent"
+                            },
+                            "height": {
+                              "type": "wrap_content",
+                              "constrained": true
+                            },
+                            "font_family": "text",
+                            "font_weight": "medium",
+                            "font_size": 18,
+                            "text_color": "#FF0A84FF",
+                            "text_alignment_horizontal": "center",
+                            "text_alignment_vertical": "center",
+                            "paddings": {
+                              "top": 13,
+                              "bottom": 13
+                            },
+                            "actions": [
+                              {
+                                "log_id": "save_itinerary_continue",
+                                "typed": {
+                                  "type": "custom"
+                                },
+                                "payload": {
+                                  "id": "pnlight.biometric_auth",
+                                  "params": {
+                                    "flow_id": "sample_trip_planner",
+                                    "reason": "save_itinerary",
+                                    "success_behavior": "dismiss_flow",
+                                    "failure_behavior": "keep_dialog_open"
+                                  }
+                                }
+                              }
+                            ],
+                            "action_animation": {
+                              "name": "fade",
+                              "start_value": 1,
+                              "end_value": 0.65,
+                              "duration": 120,
+                              "interpolator": "ease_out"
+                            },
+                            "accessibility": {
+                              "description": "Continue with biometric authentication",
+                              "hint": "Uses Face ID or Touch ID",
+                              "type": "button",
+                              "mode": "default"
+                            }
+                          }
+                        ],
+                        "width": {
+                          "type": "match_parent"
+                        },
+                        "height": {
+                          "type": "wrap_content",
+                          "constrained": true
+                        },
+                        "margins": {
+                          "left": 16,
+                          "right": 16
+                        },
+                        "alignment_horizontal": "center",
+                        "alignment_vertical": "center",
+                        "background": [
+                          {
+                            "type": "solid",
+                            "color": "#EA1C1C1E"
+                          }
+                        ],
+                        "border": {
+                          "corner_radius": 14
+                        },
+                        "clip_to_bounds": 1
+                      }
+                    ],
+                    "width": {
+                      "type": "match_parent"
+                    },
+                    "height": {
+                      "type": "match_parent"
+                    },
+                    "alignment_horizontal": "center",
+                    "alignment_vertical": "center",
+                    "content_alignment_horizontal": "center",
+                    "content_alignment_vertical": "center",
+                    "background": [
+                      {
+                        "type": "solid",
+                        "color": "#66000000"
+                      }
+                    ],
+                    "visibility": "@{dialog_visible ? 'visible' : 'gone'}",
+                    "transition_in": {
+                      "type": "fade",
+                      "duration": "@{reduced_motion ? 1 : 180}",
+                      "interpolator": "ease_out"
+                    },
+                    "transition_out": {
+                      "type": "fade",
+                      "duration": "@{reduced_motion ? 1 : 150}",
+                      "interpolator": "ease_out"
+                    },
+                    "transition_triggers": [
+                      "visibility_change"
+                    ],
+                    "accessibility": {
+                      "description": "Save itinerary dialog",
+                      "type": "none",
+                      "mode": "merge"
+                    }
+                  }
+                ],
+                "width": {
+                  "type": "match_parent"
+                },
+                "height": {
+                  "type": "match_parent"
+                },
+                "background": [
+                  {
+                    "type": "solid",
+                    "color": "#FFF2F2F6"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "integration_contracts": {
+    "pnlight.biometric_auth": {
+      "owner": "host_app",
+      "on_success": "dismiss the active PNLight flow",
+      "on_failure": "leave the save itinerary dialog visible"
+    }
+  }
+}

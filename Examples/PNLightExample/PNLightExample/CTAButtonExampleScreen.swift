@@ -73,7 +73,7 @@ private struct CTAButtonMarkupView: UIViewRepresentable {
                   "width": { "type": "match_parent" },
                   "height": { "type": "fixed", "value": 58 },
                   "custom_props": {
-                    "title": "Remove threats now",
+                    "title": "Continue",
                     "background_color": "#FF007AFF",
                     "title_color": "#FFFFFFFF",
                     "corner_radius": 16,
@@ -81,7 +81,7 @@ private struct CTAButtonMarkupView: UIViewRepresentable {
                     "font_weight": "bold",
                     "shimmer": true,
                     "bounce": true,
-                    "url": "pnlight://cta?id=remove_threats"
+                    "url": "pnlight://cta?id=continue"
                   }
                 },
                 {
@@ -217,14 +217,14 @@ private struct CTAButtonMarkupView: UIViewRepresentable {
                   "width": { "type": "match_parent" },
                   "height": { "type": "fixed", "value": 54 },
                   "custom_props": {
-                    "title": "Run a full scan",
-                    "icon": "shield.lefthalf.filled",
+                    "title": "Open details",
+                    "icon": "info.circle.fill",
                     "icon_size": 20,
                     "background_color": "#FF1C1C1E",
                     "corner_radius": 14,
                     "font_size": 18,
                     "shimmer": false,
-                    "url": "pnlight://cta?id=full_scan"
+                    "url": "pnlight://cta?id=open_details"
                   }
                 },
                 {
@@ -407,12 +407,12 @@ private struct CTAButtonMarkupView: UIViewRepresentable {
                   "height": { "type": "fixed", "value": 54 },
                   "margins": { "top": 8 },
                   "custom_props": {
-                    "title": "Start scan",
+                    "title": "Submit",
                     "background_color": "#FFFF9500",
                     "corner_radius": 14,
                     "font_size": 18,
                     "loading": "@{is_busy}",
-                    "url": "pnlight://cta?id=start_scan"
+                    "url": "pnlight://cta?id=submit"
                   }
                 }
               ]
@@ -440,4 +440,3 @@ private struct CTAButtonMarkupView: UIViewRepresentable {
         CTAButtonExampleScreen()
     }
 }
-
