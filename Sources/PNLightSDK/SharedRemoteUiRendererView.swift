@@ -2758,6 +2758,13 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
             navigationController.removeFromParent()
         }
 
+        // Containment has to exist *before* the flow view enters the hierarchy,
+        // otherwise UIKit never runs the child's appearance transition and the
+        // routes stay unloaded. Hosts that apply the config before mounting the
+        // renderer (React Native sets props on an unmounted view, so `applyFlow`
+        // installs the view while there is no parent controller yet) land here
+        // with the view already in place, so it is re-inserted deliberately.
+        navigationController.viewIfLoaded?.removeFromSuperview()
         parent.addChild(navigationController)
         installView(in: container)
         navigationController.didMove(toParent: parent)
@@ -2814,13 +2821,22 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
     ) -> Bool {
         switch action.operation {
         case .push:
-            guard let route = validRoute(named: action.route),
-                  let navigationController = source.navigationController else {
+            guard let route = validRoute(named: action.route) else { return true }
+            guard let navigationController = source.navigationController else {
+                NSLog(
+                    "[PNLight][RemoteUiFlow] Ignoring push to '%@': the source route is not in a flow navigation stack",
+                    route.id
+                )
                 return true
             }
+            // The destination is captured strongly on purpose:
+            // `takePreparedRouteViewController` hands over the only strong
+            // reference, so a route whose preload is still in flight would
+            // otherwise deallocate before the callback runs and the navigation
+            // would be dropped without a trace. The callback list is cleared
+            // once it fires, which releases the controller again.
             let controller = takePreparedRouteViewController(routeId: route.id)
-            controller.whenPrepared { [weak navigationController, weak controller] in
-                guard let controller else { return }
+            controller.whenPrepared { [weak navigationController] in
                 navigationController?.pushViewController(controller, animated: true)
             }
 
@@ -2828,13 +2844,17 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
             source.navigationController?.popViewController(animated: true)
 
         case .replace:
-            guard let route = validRoute(named: action.route),
-                  let navigationController = source.navigationController else {
+            guard let route = validRoute(named: action.route) else { return true }
+            guard let navigationController = source.navigationController else {
+                NSLog(
+                    "[PNLight][RemoteUiFlow] Ignoring replace with '%@': the source route is not in a flow navigation stack",
+                    route.id
+                )
                 return true
             }
             let replacement = takePreparedRouteViewController(routeId: route.id)
-            replacement.whenPrepared { [weak navigationController, weak replacement] in
-                guard let navigationController, let replacement else { return }
+            replacement.whenPrepared { [weak navigationController] in
+                guard let navigationController else { return }
                 var controllers = navigationController.viewControllers
                 if controllers.isEmpty {
                     controllers = [replacement]
@@ -2850,8 +2870,8 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
         case .present:
             guard let route = validRoute(named: action.route) else { return true }
             let controller = takePreparedRouteViewController(routeId: route.id)
-            controller.whenPrepared { [weak self, weak source, weak controller] in
-                guard let self, let source, let controller else { return }
+            controller.whenPrepared { [weak self, weak source] in
+                guard let self, let source else { return }
                 let modalNavigation = PNLightFlowNavigationController(
                     rootViewController: controller,
                     isModalFlowContext: true
@@ -3162,6 +3182,13 @@ public class PNLightRemoteUiRendererView: UIView {
         didSet {
             guard secure != oldValue else { return }
             updateContainerView()
+            // Capture blocking follows the backend `secure` flag: a non-secure
+            // placement stays visible (and unreported) while the screen is
+            // recorded or screenshotted.
+            updateCaptureMonitoring()
+            if isCaptureBlockingActive, window != nil {
+                evaluateCaptureStateIfNeeded()
+            }
         }
     }
     var preventRecording: Bool {
@@ -3630,9 +3657,15 @@ public class PNLightRemoteUiRendererView: UIView {
         updateSafeAreaLayout()
     }
 
+    /// Capture attempts are only acted on for secure placements, and only when
+    /// the host hasn't opted out (flow routes disable it explicitly).
+    private var isCaptureBlockingActive: Bool {
+        isCaptureMonitoringEnabled && secure
+    }
+
     private func updateCaptureMonitoring() {
         stopCaptureMonitoring()
-        guard isCaptureMonitoringEnabled else { return }
+        guard isCaptureBlockingActive else { return }
 
         let notificationCenter = NotificationCenter.default
 
@@ -3685,7 +3718,10 @@ public class PNLightRemoteUiRendererView: UIView {
     }
 
     private func handleCaptureAttempt() {
-        guard didHandleCaptureAttempt == false else { return }
+        // `evaluateCaptureStateIfNeeded()` also runs outside the notification
+        // observers (e.g. when `onCustomAction` is assigned), so the check has
+        // to live here too, not only in `updateCaptureMonitoring()`.
+        guard isCaptureBlockingActive, didHandleCaptureAttempt == false else { return }
 
         didHandleCaptureAttempt = true
         hideAfterCaptureAttempt()
