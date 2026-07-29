@@ -5,8 +5,8 @@ import Foundation
 // Released binary artifact. Both lines are rewritten by scripts/publish_spm.sh
 // at release time; the .xcframework itself is not committed — it is attached as
 // a zip asset to the matching GitHub Release and fetched here by checksum.
-let releaseVersion = "0.9.2"
-let releaseChecksum = "ddffc35302114cf2447a19c78e16e30615679115b4a4da85254690203563fece"
+let releaseVersion = "0.9.3"
+let releaseChecksum = "4efebf6a37b194a92e157228fa12bbb3657810745fffc659641d0373d0772c05"
 
 // Local development: when the xcframework is present next to this manifest,
 // resolve against the on-disk copy instead of the published release.

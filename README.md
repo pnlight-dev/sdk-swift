@@ -1027,6 +1027,12 @@ RemoteUiView(placement: "paywall", cardId: "paywall_card") { action in
 }
 ```
 
+Native CTA and icon buttons also support the standard DivKit `actions` array.
+Actions execute in declaration order through DivKit's normal action handler,
+including typed variable/state actions, PNLight haptics, dialogs, navigation,
+analytics, and custom URLs. A non-empty `actions` array takes precedence over
+the `custom_props.url` / `log_id` single-action shorthand.
+
 ### Native iOS icon button
 
 `pnlight.icon_button` is the same native button tuned for a small circular

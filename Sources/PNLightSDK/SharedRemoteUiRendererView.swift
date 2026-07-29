@@ -207,6 +207,69 @@ enum CustomPropReader {
     }
 }
 
+private let pnlightNativeButtonActionsKey = "__pnlight_actions"
+
+/// DivKit's custom-block API exposes `custom_props` but not the surrounding
+/// element's standard `actions` array. Preserve that array in an internal prop
+/// before parsing so PNLight's native buttons can dispatch it through the
+/// card's own `DivActionHandler`.
+private enum PNLightNativeButtonActionPreserver {
+    static func preserve(in data: Data) -> (data: Data, root: [String: Any]?) {
+        guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return (data, nil)
+        }
+
+        let (preservedValue, changed) = preserveValue(root)
+        guard let preservedRoot = preservedValue as? [String: Any] else {
+            return (data, root)
+        }
+        guard changed,
+              JSONSerialization.isValidJSONObject(preservedRoot),
+              let preservedData = try? JSONSerialization.data(withJSONObject: preservedRoot) else {
+            return (data, preservedRoot)
+        }
+        return (preservedData, preservedRoot)
+    }
+
+    private static func preserveValue(_ value: Any) -> (Any, Bool) {
+        if let dictionary = value as? [String: Any] {
+            var result: [String: Any] = [:]
+            var changed = false
+            for (key, child) in dictionary {
+                let (preservedChild, childChanged) = preserveValue(child)
+                result[key] = preservedChild
+                changed = changed || childChanged
+            }
+
+            guard CustomPropReader.string(result["type"]) == "custom",
+                  let customType = CustomPropReader.string(result["custom_type"]),
+                  customType == NativeButtonBlockFactory.ctaCustomType ||
+                    customType == NativeButtonBlockFactory.iconCustomType,
+                  let actions = result["actions"] as? [[String: Any]],
+                  actions.isEmpty == false else {
+                return (result, changed)
+            }
+
+            var props = result["custom_props"] as? [String: Any] ?? [:]
+            props[pnlightNativeButtonActionsKey] = actions
+            result["custom_props"] = props
+            return (result, true)
+        }
+
+        if let array = value as? [Any] {
+            var changed = false
+            let result = array.map { child -> Any in
+                let (preservedChild, childChanged) = preserveValue(child)
+                changed = changed || childChanged
+                return preservedChild
+            }
+            return (result, changed)
+        }
+
+        return (value, false)
+    }
+}
+
 /// Maps a DivKit layout trait onto a `GenericViewBlock.Trait`, using the native
 /// view's intrinsic size when the markup requests `wrap_content`.
 private func blockTrait(
@@ -256,6 +319,67 @@ private final class CircularLoaderBlockFactory {
 }
 
 // MARK: - Native buttons
+
+/// An ordered tap-action sequence parsed by DivKit and executed by the same
+/// handler as actions attached to ordinary DivKit elements.
+private struct NativeButtonActionSequence {
+    private let actionHandler: DivActionHandler
+    private let params: [UserInterfaceAction.DivActionParams]
+
+    static func make(
+        from value: Any?,
+        context: DivBlockModelingContext
+    ) -> NativeButtonActionSequence? {
+        guard let actionHandler = context.actionHandler,
+              let actions = value as? [[String: Any]],
+              actions.isEmpty == false else {
+            return nil
+        }
+
+        let params = actions.compactMap { action -> UserInterfaceAction.DivActionParams? in
+            let envelope: [String: Any] = [
+                "kind": "divAction",
+                "json": action,
+                "path": context.path.description,
+                "divActionSource": UserInterfaceAction.DivActionSource.tap.rawValue,
+            ]
+            guard JSONSerialization.isValidJSONObject(envelope),
+                  let data = try? JSONSerialization.data(withJSONObject: envelope),
+                  let payload = try? JSONDecoder().decode(
+                      UserInterfaceAction.Payload.self,
+                      from: data
+                  ),
+                  case let .divAction(params) = payload else {
+context.addError(message: "Invalid action on PNLight native button at \(context.path)")
+                return nil
+            }
+            return params
+        }
+
+        guard params.isEmpty == false else { return nil }
+        return NativeButtonActionSequence(actionHandler: actionHandler, params: params)
+    }
+
+    func execute(sender: AnyObject?) {
+        params.forEach {
+            actionHandler.handle(params: $0, sender: sender)
+        }
+    }
+}
+
+/// Keeps repeating native-button animations on a shared media-time phase.
+/// DivKit can recreate a custom block when an unrelated variable changes; if
+/// every new view starts at animation time zero, frequent timer ticks look like
+/// a burst of button presses.
+private func synchronizeRepeatingAnimation(
+    _ animation: CAAnimation,
+    on layer: CALayer,
+    duration: CFTimeInterval
+) {
+    guard duration > 0 else { return }
+    let localNow = layer.convertTime(CACurrentMediaTime(), from: nil)
+    animation.beginTime = localNow - localNow.truncatingRemainder(dividingBy: duration)
+}
 
 /// Fully-resolved styling and behavior for the native button components,
 /// parsed from DivKit `custom_props`. Every field has a sensible default so
@@ -593,7 +717,7 @@ private final class NativeButtonView: UIControl {
     private static let loadingAccessibilityLabel = "Loading"
 
     private let config: NativeButtonConfig
-    private let onTap: (_ url: String?, _ logId: String?) -> Void
+    private let onTap: (_ sender: UIView, _ url: String?, _ logId: String?) -> Void
 
     /// Carries the idle attention pulse, and nothing else. Keeping the transform
     /// off the custom view itself lets DivKit continue laying that view out
@@ -628,7 +752,7 @@ private final class NativeButtonView: UIControl {
 
     init(
         config: NativeButtonConfig,
-        onTap: @escaping (_ url: String?, _ logId: String?) -> Void
+        onTap: @escaping (_ sender: UIView, _ url: String?, _ logId: String?) -> Void
     ) {
         self.config = config
         self.onTap = onTap
@@ -850,6 +974,7 @@ private final class NativeButtonView: UIControl {
             ]
             animation.duration = total
             animation.repeatCount = .infinity
+            synchronizeRepeatingAnimation(animation, on: shimmerLayer, duration: total)
             shimmerLayer.removeAnimation(forKey: AnimationKey.shimmer)
             shimmerLayer.add(animation, forKey: AnimationKey.shimmer)
         }
@@ -866,6 +991,11 @@ private final class NativeButtonView: UIControl {
             ]
             animation.duration = config.idleBounce.period
             animation.repeatCount = .infinity
+            synchronizeRepeatingAnimation(
+                animation,
+                on: pulseView.layer,
+                duration: config.idleBounce.period
+            )
             pulseView.layer.removeAnimation(forKey: AnimationKey.idle)
             pulseView.layer.add(animation, forKey: AnimationKey.idle)
         }
@@ -882,7 +1012,7 @@ private final class NativeButtonView: UIControl {
 
     @objc private func handlePressUpInside() {
         animatePress(to: 1, isDown: false)
-        onTap(config.url, config.logId)
+        onTap(self, config.url, config.logId)
     }
 
     @objc private func handlePressUp() {
@@ -917,7 +1047,7 @@ private final class NativeGlassButtonView: UIView {
     private static let loadingAccessibilityLabel = "Loading"
 
     private let config: NativeButtonConfig
-    private let onTap: (_ url: String?, _ logId: String?) -> Void
+    private let onTap: (_ sender: UIView, _ url: String?, _ logId: String?) -> Void
     /// Isolates the idle transform from both DivKit's host view and UIKit's
     /// press deformation on the glass button.
     private let pulseView = UIView()
@@ -925,7 +1055,7 @@ private final class NativeGlassButtonView: UIView {
 
     init(
         config: NativeButtonConfig,
-        onTap: @escaping (_ url: String?, _ logId: String?) -> Void
+        onTap: @escaping (_ sender: UIView, _ url: String?, _ logId: String?) -> Void
     ) {
         self.config = config
         self.onTap = onTap
@@ -939,7 +1069,7 @@ private final class NativeGlassButtonView: UIView {
         button.addAction(
             UIAction { [weak self] _ in
                 guard let self else { return }
-                self.onTap(self.config.url, self.config.logId)
+                self.onTap(self, self.config.url, self.config.logId)
             },
             for: .touchUpInside
         )
@@ -1082,6 +1212,11 @@ private final class NativeGlassButtonView: UIView {
         ]
         animation.duration = config.idleBounce.period
         animation.repeatCount = .infinity
+        synchronizeRepeatingAnimation(
+            animation,
+            on: pulseView.layer,
+            duration: config.idleBounce.period
+        )
         pulseView.layer.removeAnimation(forKey: Self.idleAnimationKey)
         pulseView.layer.add(animation, forKey: Self.idleAnimationKey)
     }
@@ -1640,6 +1775,7 @@ private final class NativeButtonBlockFactory {
     func makeBlock(
         kind: NativeButtonConfig.Kind,
         props: [String: Any],
+        actionSequence: NativeButtonActionSequence?,
         data: DivCustomData,
         context: DivBlockModelingContext
     ) -> Block {
@@ -1651,8 +1787,13 @@ private final class NativeButtonBlockFactory {
             context.addError(message: "Unknown SF Symbol '\(icon)'")
         }
 
-        let forwardTap: (String?, String?) -> Void = { [weak self] url, logId in
-            self?.onTap?(url, logId)
+        let forwardTap: (UIView, String?, String?) -> Void = {
+            [weak self] sender, url, logId in
+            if let actionSequence {
+                actionSequence.execute(sender: sender)
+            } else {
+                self?.onTap?(url, logId)
+            }
         }
         let button: UIView
         if #available(iOS 26.0, *), config.glass.isEnabled {
@@ -1691,6 +1832,10 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
 
     func makeBlock(data: DivCustomData, context: DivBlockModelingContext) -> Block {
         var rawProps = data.data
+        let actionSequence = NativeButtonActionSequence.make(
+            from: rawProps.removeValue(forKey: pnlightNativeButtonActionsKey),
+            context: context
+        )
         if data.name == NativePrependListBlockFactory.customType ||
             data.name == NativePrependListBlockFactory.legacyCustomType,
            let countVariable = CustomPropReader.string(rawProps["count_variable"]) {
@@ -1709,9 +1854,21 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
         case CircularLoaderBlockFactory.customType:
             return circularLoaderFactory.makeBlock(props: props, data: data, context: context)
         case NativeButtonBlockFactory.ctaCustomType:
-            return buttonFactory.makeBlock(kind: .cta, props: props, data: data, context: context)
+            return buttonFactory.makeBlock(
+                kind: .cta,
+                props: props,
+                actionSequence: actionSequence,
+                data: data,
+                context: context
+            )
         case NativeButtonBlockFactory.iconCustomType:
-            return buttonFactory.makeBlock(kind: .icon, props: props, data: data, context: context)
+            return buttonFactory.makeBlock(
+                kind: .icon,
+                props: props,
+                actionSequence: actionSequence,
+                data: data,
+                context: context
+            )
         case NativePrependListBlockFactory.customType,
              NativePrependListBlockFactory.legacyCustomType:
             return prependListFactory.makeBlock(props: props, data: data, context: context)
@@ -3349,8 +3506,10 @@ public class PNLightRemoteUiRendererView: UIView {
         loadingIndicator.alpha = 1
         divView.alpha = 0
 
+        let preservedDocument = PNLightNativeButtonActionPreserver.preserve(in: data)
         do {
-            let rootObject = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+            let preservedData = preservedDocument.data
+            let rootObject = preservedDocument.root
             let documentSchemaVersion = try PNLightRemoteUiSchema.parse(from: rootObject)
             let effectiveSchemaVersion = schemaVersionOverride ?? documentSchemaVersion
             configureSchemaVersion(effectiveSchemaVersion)
@@ -3376,7 +3535,7 @@ public class PNLightRemoteUiRendererView: UIView {
                 )
             }
             if let flow = try PNLightFlowDefinition.parse(
-                data: data,
+                data: preservedData,
                 schemaVersion: effectiveSchemaVersion
             ) {
                 hapticController.configure(patterns: flow.haptics)
@@ -3391,7 +3550,7 @@ public class PNLightRemoteUiRendererView: UIView {
         }
 
         resetFlow()
-        applyDivKitData(data, cardId: cardId)
+        applyDivKitData(preservedDocument.data, cardId: cardId)
     }
 
     private func applyDivKitData(_ data: Data, cardId: String) {
