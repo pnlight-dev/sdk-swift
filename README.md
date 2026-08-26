@@ -106,6 +106,43 @@ let success = await PNLightSDK.shared.addAttribution(
 )
 ```
 
+### Remote Config
+
+Remote Config resolves a published, per-install JSON configuration on the
+server. Set non-sensitive application defaults locally; they are never
+uploaded. The active response is persisted, so app startup and typed reads work
+offline. Do not store credentials, API keys, or other secrets in Remote Config.
+
+Use the `PNLightSDK` facade just like the other SDK features:
+
+```swift
+import PNLightSDK
+
+let config = PNLightConfig(remoteConfigDefaults: [
+    "paywall_enabled": .boolean(false),
+    "welcome_title": .string("Welcome"),
+])
+await PNLightSDK.shared.initialize(apiKey: "your-api-key", config: config)
+
+// Waits briefly for attribution-dependent overrides by default.
+let result = await PNLightSDK.shared.fetchAndActivate()
+let isPaywallEnabled = PNLightSDK.shared.remoteConfigBoolean(
+    forKey: "paywall_enabled",
+    fallback: false
+)
+
+// Use an immediate base-only fetch during development or when required.
+let immediateResult = await PNLightSDK.shared.fetchAndActivate(
+    minimumFetchInterval: 0,
+    waitAttribution: false
+)
+```
+
+`fetchAndActivate` reports `activated`, `notModified`, `throttled`, or
+`failed`. By default it waits up to eight seconds for AppsFlyer attribution,
+which lets the backend return campaign-dependent overrides. A failed fetch
+keeps the previously active configuration unchanged.
+
 #### AppsFlyer Integration Example
 
 PNLight does not depend on the AppsFlyer initialization order — it only needs the conversion data, delivered via `addAttribution`. Make sure the conversion ("attribution success") callback is not processed before PNLight is initialized: if it can fire earlier, store the conversion data in memory and call `addAttribution` once `initialize` completes.
@@ -1107,6 +1144,8 @@ PNLightSDK.shared.clearUIConfigCache()
 | `initialize(apiKey:config:) async` | Initialize the SDK with your API key and optional config |
 | `logEvent(_:eventArgs:) async` | Log a custom event with optional arguments |
 | `addAttribution(provider:data:identifier:) async -> Bool` | Send attribution data from AppsFlyer, Firebase, or Facebook |
+| `fetchAndActivate(minimumFetchInterval:waitAttribution:) async` | Fetch Remote Config; waits for attribution by default |
+| `remoteConfigBoolean/String/Number/StringArray/JSONObject` | Read a typed Remote Config value with a fallback |
 | `getUserId() -> String` | Get or create a stable user identifier |
 | `getIdfa() -> String?` | Return IDFA if ATT is already authorized, otherwise `nil` |
 | `updateIdfa() async -> Bool` | Send the current IDFA to PNLight after the ATT prompt completes |

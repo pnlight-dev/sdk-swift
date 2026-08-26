@@ -8,7 +8,12 @@ struct PNLightExampleApp: App {
 
     init() {
         Task {
-            await PNLightSDK.shared.initialize(apiKey: PNLightConfig.apiKey)
+            // Remote Config fallbacks ship with the app, so every key reads a sane
+            // value before (and without) a successful fetch.
+            let config = SDKConfig(
+                remoteConfigDefaults: RemoteConfigDefaults.values
+            )
+            await PNLightSDK.shared.initialize(apiKey: PNLightConfig.apiKey, config: config)
             PNLightSDK.shared.prefetchUIConfig(placement: PNLightConfig.paywallPlacement)
         }
     }

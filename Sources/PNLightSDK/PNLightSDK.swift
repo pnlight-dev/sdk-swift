@@ -30,8 +30,8 @@ public class PNLightSDK {
     /// - Parameters:
     ///   - apiKey: Your PNLight API key
     ///   - config: Optional configuration object to customize SDK behavior
-    public func initialize(apiKey: String, config: PNLight.PNLightConfig? = nil) async {
-        var nextConfig = config ?? PNLight.PNLightConfig()
+    public func initialize(apiKey: String, config: PNLightConfig? = nil) async {
+        var nextConfig = config ?? PNLightConfig()
         if nextConfig.sdkPlatform == nil {
             nextConfig.sdkPlatform = "spm"
         }
@@ -66,6 +66,44 @@ public class PNLightSDK {
     @discardableResult
     public func addAttribution(provider: AttributionProvider, data: [String: Any]? = nil, identifier: String? = nil) async -> Bool {
         return await PNLight.PNLightSDK.shared.addAttribution(provider: provider.underlying, data: data, identifier: identifier)
+    }
+
+    /// Fetches and activates the Remote Config resolved for this SDK installation.
+    ///
+    /// When `waitAttribution` is true (the default), this waits briefly for
+    /// AppsFlyer attribution so the backend can return campaign-specific
+    /// overrides. Pass `false` for an immediate base-only fetch.
+    public func fetchAndActivate(
+        minimumFetchInterval: TimeInterval = 15 * 60,
+        waitAttribution: Bool = true
+    ) async -> RemoteConfigFetchResult {
+        await PNLight.PNLightSDK.shared.fetchAndActivate(
+            minimumFetchInterval: minimumFetchInterval,
+            waitAttribution: waitAttribution
+        )
+    }
+
+    public func remoteConfigBoolean(forKey key: String, fallback: Bool) -> Bool {
+        PNLight.PNLightSDK.shared.remoteConfigBoolean(forKey: key, fallback: fallback)
+    }
+
+    public func remoteConfigString(forKey key: String, fallback: String) -> String {
+        PNLight.PNLightSDK.shared.remoteConfigString(forKey: key, fallback: fallback)
+    }
+
+    public func remoteConfigNumber(forKey key: String, fallback: Double) -> Double {
+        PNLight.PNLightSDK.shared.remoteConfigNumber(forKey: key, fallback: fallback)
+    }
+
+    public func remoteConfigStringArray(forKey key: String, fallback: [String]) -> [String] {
+        PNLight.PNLightSDK.shared.remoteConfigStringArray(forKey: key, fallback: fallback)
+    }
+
+    public func remoteConfigJSONObject(
+        forKey key: String,
+        fallback: [String: RemoteConfigJSONValue]
+    ) -> [String: RemoteConfigJSONValue] {
+        PNLight.PNLightSDK.shared.remoteConfigJSONObject(forKey: key, fallback: fallback)
     }
 
     /// Prefetches UI config for a specific placement (background fetch, in-memory cache).
@@ -166,6 +204,10 @@ public class PNLightSDK {
 
 // MARK: - In-App Purchase types (re-exported from PNLight)
 
+public typealias PNLightConfig = PNLight.PNLightConfig
+public typealias RemoteConfigValue = PNLight.RemoteConfigValue
+public typealias RemoteConfigJSONValue = PNLight.RemoteConfigJSONValue
+public typealias RemoteConfigFetchResult = PNLight.RemoteConfigFetchResult
 public typealias PNLightProduct = PNLight.PNLightProduct
 public typealias PNLightSubscriptionInfo = PNLight.PNLightSubscriptionInfo
 public typealias PNLightSubscriptionPeriod = PNLight.PNLightSubscriptionPeriod

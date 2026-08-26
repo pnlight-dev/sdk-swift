@@ -77,6 +77,12 @@ struct ContentView: View {
 
                 // Actions section
                 Section("Actions") {
+                    NavigationLink {
+                        RemoteConfigExampleScreen()
+                    } label: {
+                        Label("Remote Config", systemImage: "slider.horizontal.3")
+                    }
+
                     Button {
                         showPaywall = true
                     } label: {
