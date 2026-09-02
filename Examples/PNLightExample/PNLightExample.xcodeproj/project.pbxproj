@@ -11,6 +11,7 @@
 		0EA8161214D0C679C36089A4 /* RemoteUiExample.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A295E84D851B7D7C010751A /* RemoteUiExample.json */; };
 		0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */; };
 		1522A7D14B14BEEDD766E83A /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8325D174A595C98C76A0FFF9 /* DiagnosticsView.swift */; };
+		25C572D7EB00A710BB6EC722 /* ProgressExampleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E4EFB4D5E0F95F72F5103A /* ProgressExampleScreen.swift */; };
 		398CD431BAB1848EA0FF610D /* LottieExampleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEA3F2C5EBFB8160B4637C3 /* LottieExampleScreen.swift */; };
 		536D002E95D0061C2DE53A62 /* StoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A581C9EFA557636260CAE1C5 /* StoreScreen.swift */; };
 		5CDFE9689FABB749ABC69399 /* HapticsExampleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8AB896FE9E26414969F76C6 /* HapticsExampleScreen.swift */; };
@@ -42,6 +43,7 @@
 		98257827E086F1826B683996 /* RemoteConfigExampleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigExampleScreen.swift; sourceTree = "<group>"; };
 		A581C9EFA557636260CAE1C5 /* StoreScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreScreen.swift; sourceTree = "<group>"; };
 		A9E17FBDFF5C48B9602B2019 /* CTAButtonExampleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CTAButtonExampleScreen.swift; sourceTree = "<group>"; };
+		B2E4EFB4D5E0F95F72F5103A /* ProgressExampleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressExampleScreen.swift; sourceTree = "<group>"; };
 		CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNLightConfig.swift; sourceTree = "<group>"; };
 		D8AB896FE9E26414969F76C6 /* HapticsExampleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsExampleScreen.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */,
 				D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */,
 				2F2D5A15B95F8A60ADC43128 /* Products.storekit */,
+				B2E4EFB4D5E0F95F72F5103A /* ProgressExampleScreen.swift */,
 				E2BB3C47332F8E1A3EC92F8A /* RemoteConfigDefaults.swift */,
 				98257827E086F1826B683996 /* RemoteConfigExampleScreen.swift */,
 				7A295E84D851B7D7C010751A /* RemoteUiExample.json */,
@@ -195,6 +198,7 @@
 				398CD431BAB1848EA0FF610D /* LottieExampleScreen.swift in Sources */,
 				FDB210BE4B5AF0737E422B66 /* PNLightConfig.swift in Sources */,
 				0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */,
+				25C572D7EB00A710BB6EC722 /* ProgressExampleScreen.swift in Sources */,
 				BD5E69FA6FBEC327A807E259 /* RemoteConfigDefaults.swift in Sources */,
 				A5B1A6B15F7A284E4D8E13AF /* RemoteConfigExampleScreen.swift in Sources */,
 				B0D6929F7EB71EB0D5E76A26 /* SDKConfig.swift in Sources */,

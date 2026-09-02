@@ -283,6 +283,58 @@ private func blockTrait(
     }
 }
 
+/// Parses a DivKit `custom_props` font weight name.
+private func nativeFontWeight(_ value: Any?, default defaultWeight: UIFont.Weight) -> UIFont.Weight {
+    switch CustomPropReader.string(value)?.lowercased() {
+    case "ultralight": return .ultraLight
+    case "thin": return .thin
+    case "light": return .light
+    case "regular": return .regular
+    case "medium": return .medium
+    case "semibold": return .semibold
+    case "bold": return .bold
+    case "heavy": return .heavy
+    case "black": return .black
+    default: return defaultWeight
+    }
+}
+
+/// Keeps one native view per `instance_id` for the renderer's lifetime. DivKit
+/// re-models a card on every variable change, so a component that animates
+/// between two values has to outlive the block that describes it. The bounded
+/// LRU order prevents remote payloads with varying instance IDs from retaining
+/// views without limit.
+private final class NativeViewCache<View: UIView> {
+    private let maximumCount: Int
+    private let makeView: () -> View
+    private var views: [String: View] = [:]
+    private var order: [String] = []
+
+    init(maximumCount: Int = 32, makeView: @escaping () -> View) {
+        self.maximumCount = maximumCount
+        self.makeView = makeView
+    }
+
+    func view(for instanceId: String) -> View {
+        if let cached = views[instanceId] {
+            order.removeAll { $0 == instanceId }
+            order.append(instanceId)
+            return cached
+        }
+
+        let view = makeView()
+        views[instanceId] = view
+        order.append(instanceId)
+
+        if order.count > maximumCount {
+            let evictedId = order.removeFirst()
+            views.removeValue(forKey: evictedId)
+        }
+
+        return view
+    }
+}
+
 /// Renders `pnlight.circular_loader` as a native `UIActivityIndicatorView`.
 private final class CircularLoaderBlockFactory {
     static let customType = "pnlight.circular_loader"
@@ -1329,18 +1381,7 @@ private struct NativePrependListStyle: Equatable {
     }
 
     private static func fontWeight(_ value: Any?, default defaultWeight: UIFont.Weight) -> UIFont.Weight {
-        switch CustomPropReader.string(value)?.lowercased() {
-        case "ultralight": return .ultraLight
-        case "thin": return .thin
-        case "light": return .light
-        case "regular": return .regular
-        case "medium": return .medium
-        case "semibold": return .semibold
-        case "bold": return .bold
-        case "heavy": return .heavy
-        case "black": return .black
-        default: return defaultWeight
-        }
+        nativeFontWeight(value, default: defaultWeight)
     }
 }
 
@@ -1623,33 +1664,11 @@ private final class NativePrependListView: UIView {
 private final class NativePrependListBlockFactory {
     static let customType = "pnlight.animated_prepend_list"
     static let legacyCustomType = "pnlight.animated_threat_list"
-    private static let maxCachedViewCount = 32
 
     // The factory lives for the renderer's lifetime. Keeping these views strongly
     // guarantees that DivKit remodelling cannot discard the row animation state
-    // between two count-variable updates. The bounded LRU order prevents remote
-    // payloads with varying instance IDs from retaining views without limit.
-    private var cachedViews: [String: NativePrependListView] = [:]
-    private var cachedViewOrder: [String] = []
-
-    private func view(for instanceId: String) -> NativePrependListView {
-        if let cached = cachedViews[instanceId] {
-            cachedViewOrder.removeAll { $0 == instanceId }
-            cachedViewOrder.append(instanceId)
-            return cached
-        }
-
-        let view = NativePrependListView()
-        cachedViews[instanceId] = view
-        cachedViewOrder.append(instanceId)
-
-        if cachedViewOrder.count > Self.maxCachedViewCount {
-            let evictedId = cachedViewOrder.removeFirst()
-            cachedViews.removeValue(forKey: evictedId)
-        }
-
-        return view
-    }
+    // between two count-variable updates.
+    private let views = NativeViewCache { NativePrependListView() }
 
     func makeBlock(
         props: [String: Any],
@@ -1678,7 +1697,7 @@ private final class NativePrependListBlockFactory {
             context.addError(message: "pnlight.animated_prepend_list contains an invalid item")
         }
 
-        let view = view(for: instanceId)
+        let view = views.view(for: instanceId)
 
         let count = Int(CustomPropReader.double(props["count"]) ?? 0)
         let reducedMotion = CustomPropReader.bool(props["reduced_motion"]) ?? false
@@ -1689,6 +1708,625 @@ private final class NativePrependListBlockFactory {
             content: .view(view),
             width: blockTrait(from: data.widthTrait, intrinsicSize: 0),
             height: blockTrait(from: data.heightTrait, intrinsicSize: 0)
+        )
+    }
+}
+
+// MARK: - Native progress bar
+
+/// Fully-resolved styling for `pnlight.progress_bar`, parsed from DivKit
+/// `custom_props`. The bar's thickness is the standard DivKit `height`;
+/// `trackHeight` stands in only when that height is `wrap_content`.
+private struct NativeProgressBarStyle: Equatable {
+    var trackColor = UIColor.secondarySystemFill
+    var fillColor = UIColor.systemBlue
+    /// When set, the fill is drawn as a horizontal gradient ending in this color.
+    var fillGradientEndColor: UIColor?
+    /// `nil` pills the bar to its own height.
+    var cornerRadius: CGFloat?
+    /// Inset between the track's bounds and the fill on every edge.
+    var fillInset: CGFloat = 0
+    /// Intrinsic thickness, used only for a `wrap_content` height.
+    var trackHeight: CGFloat = 8
+    /// Seconds spent travelling from the displayed value to a new one.
+    var animationDuration: TimeInterval = 0.3
+    /// Loops a sliding band and ignores `progress`, for work of unknown length.
+    var isIndeterminate = false
+    var indeterminateDuration: TimeInterval = 1.1
+    /// Band thickness as a fraction of the track width (0...1).
+    var indeterminateBandWidth: CGFloat = 0.3
+    /// Applies value changes immediately and holds the indeterminate band still.
+    var reducedMotion = false
+    var accessibilityLabel: String?
+
+    static func make(from props: [String: Any]) -> NativeProgressBarStyle {
+        var style = NativeProgressBarStyle()
+        style.trackColor = CustomPropReader.color(props["track_color"]) ?? style.trackColor
+        style.fillColor = CustomPropReader.color(props["fill_color"]) ?? style.fillColor
+        style.fillGradientEndColor = CustomPropReader.color(props["fill_color_end"])
+        style.cornerRadius = CustomPropReader.cgFloat(props["corner_radius"]).map { max(0, $0) }
+        style.fillInset = max(0, CustomPropReader.cgFloat(props["fill_inset"]) ?? style.fillInset)
+        style.trackHeight = max(1, CustomPropReader.cgFloat(props["track_height"]) ?? style.trackHeight)
+        style.animationDuration = max(
+            0,
+            CustomPropReader.double(props["animation_duration"]) ?? style.animationDuration
+        )
+        style.isIndeterminate = CustomPropReader.bool(props["indeterminate"]) ?? style.isIndeterminate
+        style.indeterminateDuration = max(
+            0.1,
+            CustomPropReader.double(props["indeterminate_duration"]) ?? style.indeterminateDuration
+        )
+        style.indeterminateBandWidth = min(
+            1,
+            max(0.05, CustomPropReader.cgFloat(props["indeterminate_band_width"]) ?? style.indeterminateBandWidth)
+        )
+        style.reducedMotion = CustomPropReader.bool(props["reduced_motion"]) ?? style.reducedMotion
+        style.accessibilityLabel = CustomPropReader.string(props["accessibility_label"])
+        return style
+    }
+}
+
+/// The moving part of `pnlight.progress_bar`. A gradient layer backs it so a
+/// two-color fill needs no extra view. A single color stays on `backgroundColor`
+/// so system colors keep adapting to light/dark; gradient colors always arrive
+/// from markup as literal hex values.
+private final class NativeProgressBarFillView: UIView {
+    override class var layerClass: AnyClass { CAGradientLayer.self }
+
+    func apply(color: UIColor, gradientEndColor: UIColor?) {
+        guard let gradientLayer = layer as? CAGradientLayer else {
+            backgroundColor = color
+            return
+        }
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        if let gradientEndColor {
+            backgroundColor = .clear
+            gradientLayer.colors = [color.cgColor, gradientEndColor.cgColor]
+        } else {
+            gradientLayer.colors = nil
+            backgroundColor = color
+        }
+    }
+}
+
+/// A persistent native progress bar. The view outlives DivKit re-modelling, so
+/// a new `progress` animates from whatever is currently on screen instead of
+/// snapping — the reason markup no longer has to fake a bar with variables and
+/// per-step DivKit animations.
+private final class NativeProgressBarView: UIView {
+    private static let indeterminateAnimationKey = "pnlight.progress_bar.indeterminate"
+    private static let defaultAccessibilityLabel = "Progress"
+    private static let percentFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.maximumFractionDigits = 0
+        return formatter
+    }()
+
+    private let fillView = NativeProgressBarFillView()
+    private var style = NativeProgressBarStyle()
+    private var displayedProgress: CGFloat = 0
+    private var targetProgress: CGFloat = 0
+    private var hasReceivedProgress = false
+    private var hasCompletedInitialLayout = false
+    private var isAnimatingProgress = false
+    private var progressAnimationGeneration = 0
+    private var advanceScheduled = false
+    private var lastLayoutSize = CGSize.zero
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        clipsToBounds = true
+        addSubview(fillView)
+        isAccessibilityElement = true
+        accessibilityTraits = .updatesFrequently
+        applyStyle()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: style.trackHeight)
+    }
+
+    func update(progress: CGFloat, initialProgress: CGFloat?, style: NativeProgressBarStyle) {
+        let styleChanged = self.style != style
+        self.style = style
+        targetProgress = Self.clamped(progress.isFinite ? progress : 0)
+
+        if !hasReceivedProgress {
+            hasReceivedProgress = true
+            displayedProgress = initialProgress.flatMap { value in
+                value.isFinite ? Self.clamped(value) : nil
+            } ?? targetProgress
+        }
+
+        if styleChanged {
+            applyStyle()
+            restartIndeterminateAnimation()
+        }
+        updateAccessibilityValue()
+        setNeedsLayout()
+
+        if style.reducedMotion {
+            cancelProgressAnimationAndSnapToTarget()
+            return
+        }
+        advanceTowardsTarget()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let sizeChanged = abs(lastLayoutSize.width - bounds.width) > 0.5
+            || abs(lastLayoutSize.height - bounds.height) > 0.5
+        if !hasCompletedInitialLayout || sizeChanged {
+            if isAnimatingProgress {
+                // The running animation still targets the previous bounds.
+                // Keep the visible fill and retarget instead of writing the
+                // destination width into the new frame.
+                displayedProgress = presentedProgress(relativeTo: lastLayoutSize)
+                progressAnimationGeneration += 1
+                isAnimatingProgress = false
+                fillView.layer.removeAllAnimations()
+            }
+            hasCompletedInitialLayout = true
+            lastLayoutSize = bounds.size
+            applyCornerRadii()
+            applyFillFrame()
+            restartIndeterminateAnimation()
+            // The first fill frame has to reach the presentation layer before
+            // an animation can start from it, so let this turn commit first.
+            scheduleAdvance()
+            return
+        }
+
+        // Re-applying the frame mid-flight would drop the running animation.
+        guard !isAnimatingProgress else { return }
+        applyCornerRadii()
+        applyFillFrame()
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        restartIndeterminateAnimation()
+        scheduleAdvance()
+    }
+
+    private func scheduleAdvance() {
+        guard !advanceScheduled else { return }
+        advanceScheduled = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.advanceScheduled = false
+            self.advanceTowardsTarget()
+        }
+    }
+
+    private func advanceTowardsTarget() {
+        guard hasCompletedInitialLayout, bounds.width > 0, window != nil else { return }
+        guard !style.isIndeterminate else {
+            displayedProgress = targetProgress
+            return
+        }
+        guard abs(displayedProgress - targetProgress) > 0.0005 else { return }
+
+        displayedProgress = targetProgress
+        let duration = style.reducedMotion ? 0 : style.animationDuration
+        guard duration > 0 else {
+            applyFillFrame()
+            return
+        }
+
+        isAnimatingProgress = true
+        progressAnimationGeneration += 1
+        let generation = progressAnimationGeneration
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: [.curveEaseInOut, .beginFromCurrentState, .allowUserInteraction]
+        ) {
+            self.applyFillFrame()
+        } completion: { [weak self] _ in
+            // An interrupted animation must not clear the flag while a newer
+            // `UIView.animate` (`.beginFromCurrentState`) is still running.
+            guard let self, generation == self.progressAnimationGeneration else { return }
+            self.isAnimatingProgress = false
+        }
+    }
+
+    private func cancelProgressAnimationAndSnapToTarget() {
+        progressAnimationGeneration += 1
+        isAnimatingProgress = false
+        fillView.layer.removeAllAnimations()
+        displayedProgress = targetProgress
+        applyFillFrame()
+    }
+
+    private func applyStyle() {
+        backgroundColor = style.trackColor
+        fillView.apply(color: style.fillColor, gradientEndColor: style.fillGradientEndColor)
+        accessibilityLabel = style.accessibilityLabel ?? Self.defaultAccessibilityLabel
+        applyCornerRadii()
+    }
+
+    private func applyCornerRadii() {
+        let inset = resolvedFillInset()
+        layer.cornerCurve = .continuous
+        layer.cornerRadius = style.cornerRadius ?? bounds.height / 2
+        fillView.layer.cornerCurve = .continuous
+        fillView.layer.cornerRadius = max(
+            0,
+            style.cornerRadius.map { $0 - inset } ?? (bounds.height - inset * 2) / 2
+        )
+    }
+
+    private func presentedProgress(relativeTo size: CGSize) -> CGFloat {
+        let inset = min(style.fillInset, max(0, min(size.width, size.height) / 2))
+        let trackWidth = max(0, size.width - inset * 2)
+        guard trackWidth > 0 else { return displayedProgress }
+        let presentedWidth = fillView.layer.presentation()?.frame.width ?? fillView.frame.width
+        return Self.clamped(presentedWidth / trackWidth)
+    }
+
+    private func applyFillFrame() {
+        let inset = resolvedFillInset()
+        let trackWidth = max(0, bounds.width - inset * 2)
+        let width = style.isIndeterminate
+            ? max(1, trackWidth * style.indeterminateBandWidth)
+            : trackWidth * displayedProgress
+        fillView.frame = CGRect(
+            x: inset,
+            y: inset,
+            width: width,
+            height: max(0, bounds.height - inset * 2)
+        )
+    }
+
+    private func restartIndeterminateAnimation() {
+        fillView.layer.removeAnimation(forKey: Self.indeterminateAnimationKey)
+        guard style.isIndeterminate,
+              !style.reducedMotion,
+              window != nil,
+              bounds.width > 0 else { return }
+
+        let inset = resolvedFillInset()
+        let trackWidth = max(0, bounds.width - inset * 2)
+        let animation = CABasicAnimation(keyPath: "transform.translation.x")
+        animation.fromValue = -max(1, trackWidth * style.indeterminateBandWidth)
+        animation.toValue = trackWidth
+        animation.duration = style.indeterminateDuration
+        animation.repeatCount = .infinity
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        synchronizeRepeatingAnimation(animation, on: fillView.layer, duration: animation.duration)
+        fillView.layer.add(animation, forKey: Self.indeterminateAnimationKey)
+    }
+
+    private func updateAccessibilityValue() {
+        guard !style.isIndeterminate else {
+            accessibilityValue = nil
+            return
+        }
+        accessibilityValue = Self.percentFormatter.string(from: NSNumber(value: Double(targetProgress)))
+    }
+
+    private func resolvedFillInset() -> CGFloat {
+        min(style.fillInset, max(0, min(bounds.width, bounds.height) / 2))
+    }
+
+    private static func clamped(_ value: CGFloat) -> CGFloat {
+        min(max(value, 0), 1)
+    }
+}
+
+private final class NativeProgressBarBlockFactory {
+    static let customType = "pnlight.progress_bar"
+
+    private let views = NativeViewCache { NativeProgressBarView() }
+
+    func makeBlock(
+        props: [String: Any],
+        data: DivCustomData,
+        context: DivBlockModelingContext
+    ) -> Block {
+        let instanceId = CustomPropReader.string(props["instance_id"])
+            ?? "pnlight.progress_bar.default"
+        if props["instance_id"] == nil {
+            context.addWarning(message: "pnlight.progress_bar should provide instance_id")
+        }
+
+        let style = NativeProgressBarStyle.make(from: props)
+        let view = views.view(for: instanceId)
+        view.update(
+            progress: CustomPropReader.cgFloat(props["progress"]) ?? 0,
+            initialProgress: CustomPropReader.cgFloat(props["initial_progress"]),
+            style: style
+        )
+
+        return GenericViewBlock(
+            content: .view(view),
+            width: blockTrait(from: data.widthTrait, intrinsicSize: 0),
+            height: blockTrait(from: data.heightTrait, intrinsicSize: style.trackHeight)
+        )
+    }
+}
+
+// MARK: - Native animated number
+
+/// Fully-resolved styling for `pnlight.animated_number`, parsed from DivKit
+/// `custom_props`.
+private struct NativeAnimatedNumberStyle: Equatable {
+    /// Shape of the count between two values.
+    enum Curve: String {
+        case linear
+        case easeIn = "ease_in"
+        case easeOut = "ease_out"
+        case easeInOut = "ease_in_out"
+
+        func fraction(at time: Double) -> Double {
+            switch self {
+            case .linear: return time
+            case .easeIn: return time * time
+            case .easeOut: return 1 - (1 - time) * (1 - time)
+            case .easeInOut:
+                return time < 0.5
+                    ? 2 * time * time
+                    : 1 - pow(-2 * time + 2, 2) / 2
+            }
+        }
+    }
+
+    var font = UIFont.monospacedDigitSystemFont(ofSize: 34, weight: .bold)
+    var textColor = UIColor.label
+    var textAlignment = NSTextAlignment.center
+    /// Fraction digits, applied as both the minimum and the maximum so the
+    /// label never changes length mid-count.
+    var fractionDigits = 0
+    var minimumIntegerDigits = 1
+    var usesGroupingSeparator = true
+    /// Monospaced digits keep the label from jittering while it counts.
+    var usesMonospacedDigits = true
+    var prefix = ""
+    var suffix = ""
+    /// Seconds spent counting from the displayed value to a new one.
+    var animationDuration: TimeInterval = 0.6
+    var curve = Curve.easeOut
+    /// Applies value changes immediately, without counting through them.
+    var reducedMotion = false
+    var accessibilityLabel: String?
+
+    static func make(from props: [String: Any]) -> NativeAnimatedNumberStyle {
+        var style = NativeAnimatedNumberStyle()
+        let fontSize = max(1, CustomPropReader.cgFloat(props["font_size"]) ?? 34)
+        let weight = nativeFontWeight(props["font_weight"], default: .bold)
+        style.usesMonospacedDigits = CustomPropReader.bool(props["monospaced_digits"])
+            ?? style.usesMonospacedDigits
+        style.font = style.usesMonospacedDigits
+            ? .monospacedDigitSystemFont(ofSize: fontSize, weight: weight)
+            : .systemFont(ofSize: fontSize, weight: weight)
+        style.textColor = CustomPropReader.color(props["text_color"]) ?? style.textColor
+        style.textAlignment = alignment(props["text_alignment"], default: style.textAlignment)
+        style.fractionDigits = clampedDigits(props["decimals"], default: 0, maximum: 10)
+        style.minimumIntegerDigits = max(1, clampedDigits(props["min_integer_digits"], default: 1, maximum: 20))
+        style.usesGroupingSeparator = CustomPropReader.bool(props["grouping"])
+            ?? style.usesGroupingSeparator
+        style.prefix = CustomPropReader.string(props["prefix"]) ?? style.prefix
+        style.suffix = CustomPropReader.string(props["suffix"]) ?? style.suffix
+        style.animationDuration = max(
+            0,
+            CustomPropReader.double(props["animation_duration"]) ?? style.animationDuration
+        )
+        style.curve = Curve(rawValue: CustomPropReader.string(props["curve"])?.lowercased() ?? "")
+            ?? style.curve
+        style.reducedMotion = CustomPropReader.bool(props["reduced_motion"]) ?? style.reducedMotion
+        style.accessibilityLabel = CustomPropReader.string(props["accessibility_label"])
+        return style
+    }
+
+    private static func alignment(_ value: Any?, default defaultValue: NSTextAlignment) -> NSTextAlignment {
+        switch CustomPropReader.string(value)?.lowercased() {
+        case "left": return .left
+        case "center": return .center
+        case "right": return .right
+        case "natural": return .natural
+        default: return defaultValue
+        }
+    }
+
+    private static func clampedDigits(_ value: Any?, default defaultValue: Int, maximum: Int) -> Int {
+        guard let digits = CustomPropReader.double(value), digits.isFinite else { return defaultValue }
+        return min(maximum, max(0, Int(digits)))
+    }
+}
+
+/// Forwards `CADisplayLink` ticks without the link retaining the view.
+private final class NativeAnimatedNumberTicker: NSObject {
+    weak var view: NativeAnimatedNumberView?
+
+    @objc func step() {
+        view?.stepAnimation()
+    }
+}
+
+/// A persistent native label that counts between two numbers. Like the progress
+/// bar it outlives DivKit re-modelling, so a variable that jumps from `0` to
+/// `14` is rendered as a count through the values in between.
+private final class NativeAnimatedNumberView: UIView {
+    private let label = UILabel()
+    private let formatter = NumberFormatter()
+    private let ticker = NativeAnimatedNumberTicker()
+
+    private var style = NativeAnimatedNumberStyle()
+    private var displayedValue: Double = 0
+    private var animationStartValue: Double = 0
+    private var targetValue: Double = 0
+    private var animationStartTime: CFTimeInterval = 0
+    private var hasReceivedValue = false
+    private var displayLink: CADisplayLink?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backgroundColor = .clear
+        label.numberOfLines = 1
+        addSubview(label)
+        ticker.view = self
+        isAccessibilityElement = true
+        accessibilityTraits = .updatesFrequently
+        applyStyle()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        displayLink?.invalidate()
+    }
+
+    override var intrinsicContentSize: CGSize {
+        // The block's size is fixed when DivKit models the card, so reserve the
+        // widest text the current count can reach — otherwise a value that
+        // gains a digit is clipped until the next re-model.
+        let attributes: [NSAttributedString.Key: Any] = [.font: style.font]
+        let width = [animationStartValue, displayedValue, targetValue]
+            .map { (formattedText(for: $0) as NSString).size(withAttributes: attributes).width }
+            .max() ?? 0
+        return CGSize(width: ceil(width), height: ceil(style.font.lineHeight))
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        label.frame = bounds
+    }
+
+    func update(value: Double, initialValue: Double?, style: NativeAnimatedNumberStyle) {
+        let value = value.isFinite ? value : 0
+        let initialValue = initialValue.flatMap { $0.isFinite ? $0 : nil }
+        let styleChanged = self.style != style
+        let targetChanged = !hasReceivedValue || value != targetValue
+        self.style = style
+        if styleChanged { applyStyle() }
+
+        if !hasReceivedValue {
+            hasReceivedValue = true
+            displayedValue = initialValue ?? value
+        }
+        targetValue = value
+        accessibilityValue = formattedText(for: targetValue)
+
+        if style.reducedMotion {
+            finishAnimation()
+            return
+        }
+
+        // An unrelated variable can re-model the card mid-count. Leaving the
+        // running tween alone keeps it from restarting on every re-model.
+        guard targetChanged else {
+            if styleChanged { refreshText() }
+            return
+        }
+
+        let duration = style.animationDuration
+        guard duration > 0, displayedValue != targetValue else {
+            finishAnimation()
+            return
+        }
+
+        // Count from whatever is on screen so a value that changes mid-count
+        // stays continuous.
+        animationStartValue = displayedValue
+        animationStartTime = CACurrentMediaTime()
+        startAnimation()
+        refreshText()
+    }
+
+    fileprivate func stepAnimation() {
+        let duration = style.animationDuration
+        let elapsed = CACurrentMediaTime() - animationStartTime
+        guard duration > 0, elapsed < duration else {
+            finishAnimation()
+            return
+        }
+        let fraction = style.curve.fraction(at: min(1, max(0, elapsed / duration)))
+        displayedValue = animationStartValue + (targetValue - animationStartValue) * fraction
+        refreshText()
+    }
+
+    private func startAnimation() {
+        guard displayLink == nil else { return }
+        let link = CADisplayLink(
+            target: ticker,
+            selector: #selector(NativeAnimatedNumberTicker.step)
+        )
+        link.add(to: .main, forMode: .common)
+        displayLink = link
+    }
+
+    private func finishAnimation() {
+        displayLink?.invalidate()
+        displayLink = nil
+        displayedValue = targetValue
+        refreshText()
+    }
+
+    private func applyStyle() {
+        label.font = style.font
+        label.textColor = style.textColor
+        label.textAlignment = style.textAlignment
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = style.usesGroupingSeparator
+        formatter.minimumFractionDigits = style.fractionDigits
+        formatter.maximumFractionDigits = style.fractionDigits
+        formatter.minimumIntegerDigits = style.minimumIntegerDigits
+        formatter.roundingMode = .halfUp
+        accessibilityLabel = style.accessibilityLabel
+    }
+
+    private func refreshText() {
+        label.text = formattedText(for: displayedValue)
+    }
+
+    private func formattedText(for value: Double) -> String {
+        let number = formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+        return style.prefix + number + style.suffix
+    }
+}
+
+private final class NativeAnimatedNumberBlockFactory {
+    static let customType = "pnlight.animated_number"
+
+    private let views = NativeViewCache { NativeAnimatedNumberView() }
+
+    func makeBlock(
+        props: [String: Any],
+        data: DivCustomData,
+        context: DivBlockModelingContext
+    ) -> Block {
+        let instanceId = CustomPropReader.string(props["instance_id"])
+            ?? "pnlight.animated_number.default"
+        if props["instance_id"] == nil {
+            context.addWarning(message: "pnlight.animated_number should provide instance_id")
+        }
+
+        let view = views.view(for: instanceId)
+        view.update(
+            value: CustomPropReader.double(props["value"]) ?? 0,
+            initialValue: CustomPropReader.double(props["initial_value"]),
+            style: NativeAnimatedNumberStyle.make(from: props)
+        )
+
+        let intrinsicSize = view.intrinsicContentSize
+        return GenericViewBlock(
+            content: .view(view),
+            width: blockTrait(from: data.widthTrait, intrinsicSize: intrinsicSize.width),
+            height: blockTrait(from: data.heightTrait, intrinsicSize: intrinsicSize.height)
         )
     }
 }
@@ -1826,9 +2464,25 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
         didSet { buttonFactory.overflowBoundary = overflowBoundary }
     }
 
+    /// The rendered document's schema version, so a component introduced in a
+    /// later version stays inert in an older document.
+    var schemaVersion = PNLightRemoteUiSchema.legacyVersion
+
+    /// `custom_type` -> the `*_variable` props that drive one of its values.
+    /// Keeps the cross-platform contract compatible with DivKit Web, where
+    /// expressions embedded directly in `custom_props` are not reactive.
+    private static let variableBackedProps: [String: [(variable: String, value: String)]] = [
+        NativePrependListBlockFactory.customType: [("count_variable", "count")],
+        NativePrependListBlockFactory.legacyCustomType: [("count_variable", "count")],
+        NativeProgressBarBlockFactory.customType: [("progress_variable", "progress")],
+        NativeAnimatedNumberBlockFactory.customType: [("value_variable", "value")],
+    ]
+
     private let circularLoaderFactory = CircularLoaderBlockFactory()
     private let buttonFactory = NativeButtonBlockFactory()
     private let prependListFactory = NativePrependListBlockFactory()
+    private let progressBarFactory = NativeProgressBarBlockFactory()
+    private let animatedNumberFactory = NativeAnimatedNumberBlockFactory()
 
     func makeBlock(data: DivCustomData, context: DivBlockModelingContext) -> Block {
         var rawProps = data.data
@@ -1836,14 +2490,11 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
             from: rawProps.removeValue(forKey: pnlightNativeButtonActionsKey),
             context: context
         )
-        if data.name == NativePrependListBlockFactory.customType ||
-            data.name == NativePrependListBlockFactory.legacyCustomType,
-           let countVariable = CustomPropReader.string(rawProps["count_variable"]) {
-            // Keep the cross-platform contract compatible with DivKit Web,
-            // where expressions embedded directly in custom_props are not
-            // reactive. Resolving the named variable here also registers the
-            // dependency that makes native DivKit remodel on each increment.
-            rawProps["count"] = "@{\(countVariable)}"
+        for binding in Self.variableBackedProps[data.name] ?? [] {
+            // Resolving the named variable here registers the dependency that
+            // makes native DivKit remodel this card on every change.
+            guard let name = CustomPropReader.string(rawProps[binding.variable]) else { continue }
+            rawProps[binding.value] = "@{\(name)}"
         }
         let props = CustomPropReader.resolvingExpressions(
             rawProps,
@@ -1872,10 +2523,32 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
         case NativePrependListBlockFactory.customType,
              NativePrependListBlockFactory.legacyCustomType:
             return prependListFactory.makeBlock(props: props, data: data, context: context)
+        case NativeProgressBarBlockFactory.customType:
+            guard supportsComponent(named: data.name, since: PNLightRemoteUiSchema.nativeComponentsVersion, context: context) else {
+                return EmptyBlock.zeroSized
+            }
+            return progressBarFactory.makeBlock(props: props, data: data, context: context)
+        case NativeAnimatedNumberBlockFactory.customType:
+            guard supportsComponent(named: data.name, since: PNLightRemoteUiSchema.nativeComponentsVersion, context: context) else {
+                return EmptyBlock.zeroSized
+            }
+            return animatedNumberFactory.makeBlock(props: props, data: data, context: context)
         default:
             context.addError(message: "Unsupported PNLight custom type '\(data.name)'")
             return EmptyBlock.zeroSized
         }
+    }
+
+    private func supportsComponent(
+        named customType: String,
+        since requiredVersion: Int,
+        context: DivBlockModelingContext
+    ) -> Bool {
+        guard schemaVersion < requiredVersion else { return true }
+        context.addError(
+            message: "'\(customType)' requires schemaVersion \(requiredVersion)"
+        )
+        return false
     }
 }
 
@@ -1956,7 +2629,11 @@ struct RemoteUiActionPayload {
 /// rendering behavior they had before PNLight extensions were introduced.
 fileprivate enum PNLightRemoteUiSchema {
     static let legacyVersion = 1
-    static let currentVersion = 2
+    static let extensionsVersion = 2
+    static let purchaseActionVersion = 3
+    /// `pnlight.progress_bar` and `pnlight.animated_number`.
+    static let nativeComponentsVersion = 3
+    static let latestSupportedVersion = PNLight.PNLightRemoteUISchema.latestSupportedVersion
 
     static func parse(from root: [String: Any]?) throws -> Int {
         guard let rawValue = root?["schemaVersion"] else {
@@ -1973,7 +2650,7 @@ fileprivate enum PNLightRemoteUiSchema {
         }
         let integerVersion = Int(version)
         guard integerVersion >= legacyVersion,
-              integerVersion <= currentVersion else {
+              integerVersion <= latestSupportedVersion else {
             throw PNLightRemoteUiSchemaError.unsupportedVersion(integerVersion)
         }
         return integerVersion
@@ -1989,7 +2666,7 @@ private enum PNLightRemoteUiSchemaError: LocalizedError {
         case .invalidVersion:
             return "Invalid PNLight schemaVersion: expected an integer"
         case let .unsupportedVersion(version):
-            return "Unsupported PNLight schemaVersion \(version); this SDK supports versions 1...\(PNLightRemoteUiSchema.currentVersion)"
+            return "Unsupported PNLight schemaVersion \(version); this SDK supports versions 1...\(PNLightRemoteUiSchema.latestSupportedVersion)"
         }
     }
 }
@@ -2323,9 +3000,9 @@ fileprivate struct PNLightFlowDefinition {
               CustomPropReader.string(root["type"]) == "flow" else {
             return nil
         }
-        guard schemaVersion >= PNLightRemoteUiSchema.currentVersion else {
+        guard schemaVersion >= PNLightRemoteUiSchema.extensionsVersion else {
             throw PNLightFlowError.invalidConfiguration(
-                "'type: flow' requires schemaVersion \(PNLightRemoteUiSchema.currentVersion)"
+                "'type: flow' requires schemaVersion \(PNLightRemoteUiSchema.extensionsVersion)"
             )
         }
 
@@ -2960,6 +3637,9 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
         renderer.onCustomAction = { [weak owner = owner] payload in
             owner?.onCustomAction?(payload)
         }
+        renderer.onPurchased = { [weak owner = owner] productId in
+            owner?.onPurchased?(productId)
+        }
         let cardId = routeCardId(routeId)
         if preloadOnly {
             renderer.setHapticPatterns(definition.haptics)
@@ -3275,6 +3955,18 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
 }
 
 public class PNLightRemoteUiRendererView: UIView {
+    private final class CustomActionHandler: DivCustomActionHandling {
+        weak var owner: PNLightRemoteUiRendererView?
+
+        func handle(
+            payload: DivDictionary,
+            context: DivActionHandlingContext,
+            sender: AnyObject?
+        ) {
+            owner?.handlePurchaseAction(payload: payload, context: context, sender: sender)
+        }
+    }
+
     private final class UrlHandler: DivUrlHandler {
         weak var owner: PNLightRemoteUiRendererView?
 
@@ -3323,6 +4015,7 @@ public class PNLightRemoteUiRendererView: UIView {
     private let errorLabel: UILabel
     private let contentContainer: UIView
     private let urlHandler: UrlHandler
+    private let customActionHandler: CustomActionHandler
     private let customBlockFactory: PNLightCustomBlockFactory
     private let hapticController: PNLightHapticController
     private var dialogDefinitions: [String: PNLightDialogDefinition] = [:]
@@ -3335,6 +4028,7 @@ public class PNLightRemoteUiRendererView: UIView {
     private var wasScreenCaptured = false
     private var didHandleCaptureAttempt = false
     private var pendingDismissAction = false
+    private var isPurchaseActionInFlight = false
     var secure: Bool {
         didSet {
             guard secure != oldValue else { return }
@@ -3373,6 +4067,10 @@ public class PNLightRemoteUiRendererView: UIView {
         }
     }
 
+    /// Called on the main thread after a Remote UI purchase succeeds and the
+    /// StoreKit transaction has been verified.
+    var onPurchased: ((String) -> Void)?
+
     var loadFailureMessage: String {
         "Failed to load DivKit content"
     }
@@ -3381,10 +4079,12 @@ public class PNLightRemoteUiRendererView: UIView {
         secure = true
         preventRecording = true
         urlHandler = UrlHandler()
+        customActionHandler = CustomActionHandler()
         hapticController = PNLightHapticController()
         let customBlockFactory = PNLightCustomBlockFactory()
         self.customBlockFactory = customBlockFactory
         let divKitComponents = DivKitComponents(
+            customActionHandler: customActionHandler,
             divCustomBlockFactory: customBlockFactory,
             extensionHandlers: [makePNLightLottieExtensionHandler()],
             urlHandler: urlHandler
@@ -3403,6 +4103,7 @@ public class PNLightRemoteUiRendererView: UIView {
         super.init(frame: frame)
 
         urlHandler.owner = self
+        customActionHandler.owner = self
         customBlockFactory.overflowBoundary = divView
         customBlockFactory.onAction = { [weak self] url, logId in
             self?.handleCustomViewAction(urlString: url, logId: logId)
@@ -3416,10 +4117,12 @@ public class PNLightRemoteUiRendererView: UIView {
         self.secure = secure
         self.preventRecording = preventRecording
         urlHandler = UrlHandler()
+        customActionHandler = CustomActionHandler()
         hapticController = PNLightHapticController()
         let customBlockFactory = PNLightCustomBlockFactory()
         self.customBlockFactory = customBlockFactory
         let divKitComponents = DivKitComponents(
+            customActionHandler: customActionHandler,
             divCustomBlockFactory: customBlockFactory,
             extensionHandlers: [makePNLightLottieExtensionHandler()],
             urlHandler: urlHandler
@@ -3438,6 +4141,7 @@ public class PNLightRemoteUiRendererView: UIView {
         super.init(frame: frame)
 
         urlHandler.owner = self
+        customActionHandler.owner = self
         customBlockFactory.overflowBoundary = divView
         customBlockFactory.onAction = { [weak self] url, logId in
             self?.handleCustomViewAction(urlString: url, logId: logId)
@@ -3523,13 +4227,13 @@ public class PNLightRemoteUiRendererView: UIView {
             configureSafeArea(safeAreaOverride ?? documentSafeArea)
 
             let documentReferenceSize = try rootObject.flatMap { root -> PNLightReferenceSizeConfiguration? in
-                guard effectiveSchemaVersion >= PNLightRemoteUiSchema.currentVersion else {
+                guard effectiveSchemaVersion >= PNLightRemoteUiSchema.extensionsVersion else {
                     return nil
                 }
                 return try PNLightReferenceSizeConfiguration.parse(from: root)
             }
             configureReferenceSize(referenceSizeOverride ?? documentReferenceSize)
-            if effectiveSchemaVersion >= PNLightRemoteUiSchema.currentVersion {
+            if effectiveSchemaVersion >= PNLightRemoteUiSchema.extensionsVersion {
                 dialogDefinitions = try PNLightDialogDefinition.parseDefinitions(
                     rootObject?["dialogs"]
                 )
@@ -3647,6 +4351,7 @@ public class PNLightRemoteUiRendererView: UIView {
 
     private func configureSchemaVersion(_ version: Int) {
         schemaVersion = version
+        customBlockFactory.schemaVersion = version
         lastPublishedScale = nil
     }
 
@@ -3776,7 +4481,7 @@ public class PNLightRemoteUiRendererView: UIView {
             divKitComponents.safeAreaManager.setEdgeInsets(variableInsets)
         }
 
-        if schemaVersion >= PNLightRemoteUiSchema.currentVersion {
+        if schemaVersion >= PNLightRemoteUiSchema.extensionsVersion {
             let scale: CGSize
             if let referenceSizeConfiguration,
                nextFrame.width > 0,
@@ -3999,7 +4704,7 @@ public class PNLightRemoteUiRendererView: UIView {
     }
 
     fileprivate func handleDialogAction(_ url: URL, sender: AnyObject?) -> Bool {
-        guard schemaVersion >= PNLightRemoteUiSchema.currentVersion,
+        guard schemaVersion >= PNLightRemoteUiSchema.extensionsVersion,
               url.scheme?.lowercased() == "pnlight",
               url.host?.lowercased() == "dialog",
               url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")) == "show" else {
@@ -4017,12 +4722,95 @@ public class PNLightRemoteUiRendererView: UIView {
     }
 
     fileprivate func handleHapticAction(_ url: URL) -> Bool {
-        guard schemaVersion >= PNLightRemoteUiSchema.currentVersion,
+        guard schemaVersion >= PNLightRemoteUiSchema.extensionsVersion,
               let action = PNLightHapticAction(url: url) else {
             return false
         }
         hapticController.handle(action)
         return true
+    }
+
+    /// Handles the SDK-owned DivKit typed custom purchase action. Unknown custom
+    /// actions remain untouched and keep DivKit's existing no-op behavior.
+    fileprivate func handlePurchaseAction(
+        payload: DivDictionary,
+        context: DivActionHandlingContext,
+        sender: AnyObject?
+    ) {
+        guard payload["id"] as? String == "pnlight.purchase" else { return }
+        guard schemaVersion >= PNLightRemoteUiSchema.purchaseActionVersion else {
+            NSLog(
+                "[PNLight][PurchaseAction] Ignoring purchase action: schemaVersion %d is below required version %d",
+                schemaVersion,
+                PNLightRemoteUiSchema.purchaseActionVersion
+            )
+            return
+        }
+        guard let params = payload["params"] as? DivDictionary else {
+            NSLog("[PNLight][PurchaseAction] Ignoring purchase action without params")
+            return
+        }
+
+        let productId = (params["product_id"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let productId, !productId.isEmpty else {
+            NSLog("[PNLight][PurchaseAction] Ignoring purchase action without product_id")
+            return
+        }
+
+        let onSuccess: [DivDictionary]
+        if let rawActions = params["on_success"] as? DivArray {
+            onSuccess = rawActions.compactMap { $0 as? DivDictionary }
+            if onSuccess.count != rawActions.count {
+                NSLog("[PNLight][PurchaseAction] Ignoring invalid entries in on_success")
+            }
+        } else {
+            onSuccess = []
+            if params["on_success"] != nil {
+                NSLog("[PNLight][PurchaseAction] Ignoring invalid on_success value")
+            }
+        }
+
+        guard !isPurchaseActionInFlight else {
+            NSLog("[PNLight][PurchaseAction] Ignoring duplicate purchase action while a purchase is in progress")
+            return
+        }
+        isPurchaseActionInFlight = true
+
+        let path = context.info.path
+        let source = context.info.source
+        let purchaseCompletion = onPurchased
+
+        Task { @MainActor [weak self] in
+            do {
+                let result = try await PNLight.PNLightSDK.shared.purchase(productId)
+
+                switch result {
+                case .success:
+                    purchaseCompletion?(productId)
+                    guard let self else { return }
+                    self.isPurchaseActionInFlight = false
+                    self.performDivKitActions(
+                        onSuccess,
+                        path: path,
+                        source: source,
+                        sender: self
+                    )
+                case .userCancelled:
+                    self?.isPurchaseActionInFlight = false
+                    NSLog("[PNLight][PurchaseAction] Purchase was cancelled; on_success will not run")
+                case .pending:
+                    self?.isPurchaseActionInFlight = false
+                    NSLog("[PNLight][PurchaseAction] Purchase is pending; on_success will not run")
+                @unknown default:
+                    self?.isPurchaseActionInFlight = false
+                    NSLog("[PNLight][PurchaseAction] Purchase returned an unknown result; on_success will not run")
+                }
+            } catch {
+                self?.isPurchaseActionInFlight = false
+                NSLog("[PNLight][PurchaseAction] Purchase failed; on_success will not run")
+            }
+        }
     }
 
     private func presentDialog(
@@ -4079,6 +4867,25 @@ public class PNLightRemoteUiRendererView: UIView {
                     action: .object(action.typedJSON()),
                     path: path,
                     source: .tap,
+                    url: nil
+                ),
+                sender: sender
+            )
+        }
+    }
+
+    private func performDivKitActions(
+        _ actions: [DivDictionary],
+        path: UIElementPath,
+        source: UserInterfaceAction.DivActionSource,
+        sender: AnyObject
+    ) {
+        for action in actions {
+            divKitComponents.actionHandler.handle(
+                params: UserInterfaceAction.DivActionParams(
+                    action: .object(action.typedJSON()),
+                    path: path,
+                    source: source,
                     url: nil
                 ),
                 sender: sender

@@ -284,19 +284,23 @@ import SwiftUI
 
 struct PaywallScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var isPremium = false
 
     var body: some View {
         RemoteUiView(
             placement: "paywall",
-            cardId: "paywall_card"
-        ) { action in
-            if action.logId == "purchase_button" {
-                let productId = action.params["id"] ?? ""
-                // Start purchase flow for productId
-            } else if action.logId == "close_button" {
-                dismiss()
+            cardId: "paywall_card",
+            onPurchased: { _ in
+                Task {
+                    isPremium = await PNLightSDK.shared.isPremium()
+                }
+            },
+            onAction: { action in
+                if action.logId == "close_button" {
+                    dismiss()
+                }
             }
-        }
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
@@ -319,11 +323,14 @@ final class PaywallViewController: UIViewController {
         view.addSubview(remoteView)
 
         remoteView.onAction = { [weak self] action in
-            if action.logId == "purchase_button" {
-                let productId = action.params["id"] ?? ""
-                // Start purchase flow for productId
-            } else if action.logId == "close_button" {
+            if action.logId == "close_button" {
                 self?.dismiss(animated: true)
+            }
+        }
+        remoteView.onPurchased = { productId in
+            Task {
+                let isPurchased = await PNLightSDK.shared.isPurchased(productId)
+                // Refresh the app's entitlement state.
             }
         }
 
@@ -335,9 +342,55 @@ final class PaywallViewController: UIViewController {
 }
 ```
 
+### System purchase action
+
+Remote UI can start a StoreKit purchase inside PNLight with a DivKit typed
+custom action, without a purchase handler in the host app:
+
+```json
+{
+  "log_id": "purchase_button",
+  "typed": { "type": "custom" },
+  "payload": {
+    "id": "pnlight.purchase",
+    "params": {
+      "product_id": "{{product_1}}",
+      "on_success": [{
+        "log_id": "purchase_success",
+        "url": "pnlight://navigation/replace?route=protected"
+      }]
+    }
+  }
+}
+```
+
+`payload.id` must be `pnlight.purchase`, and `params.product_id` is required.
+`params.on_success` is optional and accepts ordinary DivKit action dictionaries.
+After success, PNLight runs all of them with the original DivKit action context,
+so navigation, `set_variable`, haptics, dialogs, and URL actions retain their
+normal behavior. With no `on_success`, the purchase has no follow-up.
+
+The follow-up runs only for `.success`. Cancellation, a pending StoreKit
+purchase, and errors leave the current UI in place. Repeated purchase taps are
+ignored while one SDK-owned purchase is in progress.
+
+The view's optional `onPurchased` callback receives the `productId` after this
+SDK-owned purchase is verified successfully. It runs before `on_success`, so the
+host can refresh entitlement state even when the follow-up closes the Remote UI.
+It is not emitted for manual `purchase(_:)` calls or purchases started by
+another Remote UI view.
+
+This action is a schema v3 feature. The document must declare
+`"schemaVersion": 3`; schema v1/v2 documents do not execute
+`pnlight.purchase`.
+
 ### Remote UI schema version
 
 PNLight versions the Remote UI envelope independently from the SDK package.
+Schema v3 adds the SDK-owned `pnlight.purchase` action with its `onPurchased`
+event, and the `pnlight.progress_bar` and `pnlight.animated_number` native
+components. Schema v2 remains supported for existing documents and continues to
+provide safe-area handling, scaling variables, flows, haptics, and dialogs.
 Add `"schemaVersion": 2` at the document root to opt into PNLight safe-area
 handling, linear-scaling variables, server-driven flows, native haptics, and
 native dialogs:
@@ -1112,6 +1165,114 @@ padding and stays square.
 `accessibility_label`. It falls back to the SF Symbol name, which is rarely what
 you want VoiceOver to read. An unknown symbol name is reported in the card's
 DivKit errors rather than silently rendering an empty button.
+
+### Native iOS progress bar
+
+`pnlight.progress_bar` is a native linear progress bar. Give it a new
+`progress` (or move the variable behind `progress_variable`) and it animates
+from whatever is currently on screen to the new value, so markup no longer has
+to fake a bar with a stack of DivKit animations.
+
+```json
+{
+  "type": "custom",
+  "custom_type": "pnlight.progress_bar",
+  "width": { "type": "match_parent" },
+  "height": { "type": "fixed", "value": 10 },
+  "custom_props": {
+    "instance_id": "scan",
+    "progress": 0,
+    "progress_variable": "scan_progress",
+    "animation_duration": 0.45
+  }
+}
+```
+
+`progress` is clamped to `0...1`. The bar's thickness is the standard DivKit
+`height`; with `wrap_content` it falls back to `track_height`. `corner_radius`
+defaults to a pill. Colors accept `#RRGGBB` or DivKit-style `#AARRGGBB`.
+
+| Prop | Default | Description |
+| --- | --- | --- |
+| `instance_id` | fallback shared ID | Stable identity for retaining fill state; set this explicitly. |
+| `progress` | `0` | Target fill, clamped to `0...1`. |
+| `progress_variable` | `""` | DivKit variable name that drives `progress` reactively across native and web renderers. |
+| `initial_progress` | — | Fill the first render starts from, so the bar can animate in on appear. Without it the first value is applied immediately. |
+| `indeterminate` | `false` | Loops a sliding band and ignores `progress`, for work of unknown length. |
+| `track_color` | `secondarySystemFill` | Track fill. |
+| `track_height` | `8` | Thickness used only when the DivKit `height` is `wrap_content`. |
+| `fill_color` | `#FF007AFF` | Fill color (also the gradient start). |
+| `fill_color_end` | — | When set, the fill is a horizontal gradient to this color. |
+| `corner_radius` | pill | Continuous corner radius in points, applied to the track and the fill. |
+| `fill_inset` | `0` | Inset between the track's bounds and the fill on every edge. |
+| `animation_duration` | `0.3` | Seconds spent travelling to a new value. |
+| `indeterminate_duration` | `1.1` | Seconds for one band pass. |
+| `indeterminate_band_width` | `0.3` | Band thickness as a fraction of the track width. |
+| `reduced_motion` | `false` | Applies values immediately and holds the indeterminate band still. |
+| `accessibility_label` | `"Progress"` | VoiceOver label; the value is announced as a percentage. |
+
+A long `animation_duration` is also how a bar fills by itself: set `progress`
+to `1` with `"animation_duration": 8` and the bar takes eight seconds to get
+there, with no timer in the markup.
+
+### Native iOS animated number
+
+`pnlight.animated_number` is a native label that counts between values. Pass a
+number variable and it renders every value in between — `0` to `14` counts up
+rather than snapping.
+
+```json
+{
+  "type": "custom",
+  "custom_type": "pnlight.animated_number",
+  "width": { "type": "match_parent" },
+  "height": { "type": "wrap_content" },
+  "custom_props": {
+    "instance_id": "issues",
+    "value": 0,
+    "value_variable": "issues_found",
+    "suffix": " issues found",
+    "font_size": 28,
+    "font_weight": "bold"
+  }
+}
+```
+
+| Prop | Default | Description |
+| --- | --- | --- |
+| `instance_id` | fallback shared ID | Stable identity for retaining the displayed value; set this explicitly. |
+| `value` | `0` | Target number. |
+| `value_variable` | `""` | DivKit variable name that drives `value` reactively across native and web renderers. |
+| `initial_value` | — | Value the first render counts from, e.g. `0` for a count-up on appear. Without it the first value is displayed immediately. |
+| `decimals` | `0` | Fraction digits, applied as both the minimum and the maximum so the label never changes length mid-count. |
+| `min_integer_digits` | `1` | Zero-pads shorter numbers, e.g. `2` renders `07`. |
+| `grouping` | `true` | Thousands separators. |
+| `monospaced_digits` | `true` | Tabular figures, so the label does not jitter while counting. |
+| `prefix` / `suffix` | `""` | Text placed before/after the number, e.g. `"$"` or `" GB"`. |
+| `font_size` | `34` | Point size. |
+| `font_weight` | `bold` | `ultralight`/`thin`/`light`/`regular`/`medium`/`semibold`/`bold`/`heavy`/`black`. |
+| `text_color` | `label` | Adaptive by default. |
+| `text_alignment` | `center` | `left`/`center`/`right`/`natural`. |
+| `animation_duration` | `0.6` | Seconds spent counting to a new value. |
+| `curve` | `ease_out` | `linear`/`ease_in`/`ease_out`/`ease_in_out`. |
+| `reduced_motion` | `false` | Applies values immediately, without counting. |
+| `accessibility_label` | — | VoiceOver label; the target value is announced as the element's value. |
+
+Numbers are formatted for the device locale, so separators follow the user's
+region. A value that changes mid-count is picked up from the value currently on
+screen, and an unrelated variable change never restarts the count.
+
+**Both components are schema v3 features.** The document must declare
+`"schemaVersion": 3`; in a v1/v2 document they report a DivKit error instead of
+rendering. Give every simultaneously rendered instance a stable, unique
+`instance_id` — that identity is what lets the native view keep its animation
+state across DivKit variable updates.
+
+Use `progress_variable` / `value_variable` for variable-driven values so the
+same JSON is reactive in both the native and the web renderer; keep `progress`
+/ `value` as the literal initial value. Every other prop supports DivKit
+expressions. Both components are implemented by PNLightSDK on iOS and by
+`@pnlight/sdk-react` on the web.
 
 ### Manual Config Fetching
 

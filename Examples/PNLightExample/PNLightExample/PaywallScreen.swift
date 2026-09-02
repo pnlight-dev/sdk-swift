@@ -7,9 +7,14 @@ struct PaywallScreen: View {
     @EnvironmentObject private var store: StoreManager
 
     var body: some View {
-        RemoteUiView(placement: PNLightConfig.paywallPlacement, cardId: "paywall_card") { action in
-            handleAction(action)
-        }
+        RemoteUiView(
+            placement: PNLightConfig.paywallPlacement,
+            cardId: "paywall_card",
+            onPurchased: { _ in
+                Task { await store.refreshEntitlements() }
+            },
+            onAction: handleAction
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
     }
@@ -18,10 +23,6 @@ struct PaywallScreen: View {
 
     private func handleAction(_ action: RemoteUiAction) {
         switch action.logId {
-        case "purchase_button":
-            let productId = action.params["id"] ?? ""
-            Task { await store.purchase(productId) }
-
         case "close_button":
             dismiss()
 

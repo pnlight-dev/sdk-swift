@@ -102,6 +102,12 @@ struct ContentView: View {
                     }
 
                     NavigationLink {
+                        ProgressExampleScreen()
+                    } label: {
+                        Label("Progress & Numbers", systemImage: "chart.bar.xaxis")
+                    }
+
+                    NavigationLink {
                         FlowNavigationExampleScreen()
                     } label: {
                         Label("Native Remote UI Flow", systemImage: "rectangle.stack")
