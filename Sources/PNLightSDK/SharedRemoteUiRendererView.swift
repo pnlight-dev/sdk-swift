@@ -2631,6 +2631,7 @@ fileprivate enum PNLightRemoteUiSchema {
     static let legacyVersion = 1
     static let extensionsVersion = 2
     static let purchaseActionVersion = 3
+    static let purchaseOutcomeHooksVersion = 4
     /// `pnlight.progress_bar` and `pnlight.animated_number`.
     static let nativeComponentsVersion = 3
     static let latestSupportedVersion = PNLight.PNLightRemoteUISchema.latestSupportedVersion
@@ -4758,18 +4759,14 @@ public class PNLightRemoteUiRendererView: UIView {
             return
         }
 
-        let onSuccess: [DivDictionary]
-        if let rawActions = params["on_success"] as? DivArray {
-            onSuccess = rawActions.compactMap { $0 as? DivDictionary }
-            if onSuccess.count != rawActions.count {
-                NSLog("[PNLight][PurchaseAction] Ignoring invalid entries in on_success")
-            }
-        } else {
-            onSuccess = []
-            if params["on_success"] != nil {
-                NSLog("[PNLight][PurchaseAction] Ignoring invalid on_success value")
-            }
-        }
+        let onSuccess = purchaseFollowUpActions(params, key: "on_success")
+        let supportsOutcomeHooks = schemaVersion >= PNLightRemoteUiSchema.purchaseOutcomeHooksVersion
+        let onFail = supportsOutcomeHooks
+            ? purchaseFollowUpActions(params, key: "on_fail")
+            : []
+        let onCancel = supportsOutcomeHooks
+            ? purchaseFollowUpActions(params, key: "on_cancel")
+            : []
 
         guard !isPurchaseActionInFlight else {
             NSLog("[PNLight][PurchaseAction] Ignoring duplicate purchase action while a purchase is in progress")
@@ -4797,20 +4794,53 @@ public class PNLightRemoteUiRendererView: UIView {
                         sender: self
                     )
                 case .userCancelled:
-                    self?.isPurchaseActionInFlight = false
-                    NSLog("[PNLight][PurchaseAction] Purchase was cancelled; on_success will not run")
+                    guard let self else { return }
+                    self.isPurchaseActionInFlight = false
+                    NSLog("[PNLight][PurchaseAction] Purchase was cancelled; running on_cancel")
+                    self.performDivKitActions(
+                        onCancel,
+                        path: path,
+                        source: source,
+                        sender: self
+                    )
                 case .pending:
                     self?.isPurchaseActionInFlight = false
-                    NSLog("[PNLight][PurchaseAction] Purchase is pending; on_success will not run")
+                    NSLog("[PNLight][PurchaseAction] Purchase is pending; no follow-up will run")
                 @unknown default:
                     self?.isPurchaseActionInFlight = false
-                    NSLog("[PNLight][PurchaseAction] Purchase returned an unknown result; on_success will not run")
+                    NSLog("[PNLight][PurchaseAction] Purchase returned an unknown result; no follow-up will run")
                 }
             } catch {
-                self?.isPurchaseActionInFlight = false
-                NSLog("[PNLight][PurchaseAction] Purchase failed; on_success will not run")
+                guard let self else { return }
+                self.isPurchaseActionInFlight = false
+                NSLog("[PNLight][PurchaseAction] Purchase failed; running on_fail")
+                self.performDivKitActions(
+                    onFail,
+                    path: path,
+                    source: source,
+                    sender: self
+                )
             }
         }
+    }
+
+    /// Reads one optional follow-up action list from `pnlight.purchase` params.
+    /// Entries DivKit cannot execute are dropped instead of failing the action.
+    private func purchaseFollowUpActions(
+        _ params: DivDictionary,
+        key: String
+    ) -> [DivDictionary] {
+        guard let rawActions = params[key] as? DivArray else {
+            if params[key] != nil {
+                NSLog("[PNLight][PurchaseAction] Ignoring invalid %@ value", key)
+            }
+            return []
+        }
+        let actions = rawActions.compactMap { $0 as? DivDictionary }
+        if actions.count != rawActions.count {
+            NSLog("[PNLight][PurchaseAction] Ignoring invalid entries in %@", key)
+        }
+        return actions
     }
 
     private func presentDialog(

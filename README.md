@@ -358,6 +358,18 @@ custom action, without a purchase handler in the host app:
       "on_success": [{
         "log_id": "purchase_success",
         "url": "pnlight://navigation/replace?route=protected"
+      }],
+      "on_fail": [{
+        "log_id": "purchase_failed",
+        "url": "pnlight://dialog/show?id=purchase_error"
+      }],
+      "on_cancel": [{
+        "log_id": "purchase_cancelled",
+        "typed": {
+          "type": "set_variable",
+          "variable_name": "is_purchasing",
+          "value": { "type": "boolean", "value": false }
+        }
       }]
     }
   }
@@ -365,13 +377,17 @@ custom action, without a purchase handler in the host app:
 ```
 
 `payload.id` must be `pnlight.purchase`, and `params.product_id` is required.
-`params.on_success` is optional and accepts ordinary DivKit action dictionaries.
-After success, PNLight runs all of them with the original DivKit action context,
-so navigation, `set_variable`, haptics, dialogs, and URL actions retain their
-normal behavior. With no `on_success`, the purchase has no follow-up.
+`params.on_success` is optional in schema v3. Schema v4 additionally supports
+the optional `params.on_fail` and `params.on_cancel` lists. Each accepts ordinary
+DivKit action dictionaries. PNLight runs the list matching the outcome with the
+original DivKit action context, so navigation,
+`set_variable`, haptics, dialogs, and URL actions retain their normal behavior.
+An outcome with no list has no follow-up.
 
-The follow-up runs only for `.success`. Cancellation, a pending StoreKit
-purchase, and errors leave the current UI in place. Repeated purchase taps are
+`on_success` runs for `.success`, `on_fail` runs when the purchase throws an
+error, and `on_cancel` runs when the user dismisses the StoreKit sheet. A
+pending StoreKit purchase runs no follow-up and leaves the current UI in place,
+because the transaction may still be approved later. Repeated purchase taps are
 ignored while one SDK-owned purchase is in progress.
 
 The view's optional `onPurchased` callback receives the `productId` after this
@@ -380,13 +396,15 @@ host can refresh entitlement state even when the follow-up closes the Remote UI.
 It is not emitted for manual `purchase(_:)` calls or purchases started by
 another Remote UI view.
 
-This action is a schema v3 feature. The document must declare
-`"schemaVersion": 3`; schema v1/v2 documents do not execute
+The purchase action and `on_success` are schema v3 features. `on_fail` and
+`on_cancel` require `"schemaVersion": 4`; schema v3 documents retain their
+original success-only behavior. Schema v1/v2 documents do not execute
 `pnlight.purchase`.
 
 ### Remote UI schema version
 
 PNLight versions the Remote UI envelope independently from the SDK package.
+Schema v4 adds `on_fail` and `on_cancel` outcome hooks to `pnlight.purchase`.
 Schema v3 adds the SDK-owned `pnlight.purchase` action with its `onPurchased`
 event, and the `pnlight.progress_bar` and `pnlight.animated_number` native
 components. Schema v2 remains supported for existing documents and continues to
