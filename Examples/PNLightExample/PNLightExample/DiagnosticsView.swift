@@ -32,9 +32,10 @@ struct DiagnosticsView: View {
         Section("PNLight") {
             // No separate "token" exists — the API key is the credential, and the
             // user id is the stable per-install identifier sent to the backend.
-            row("API key", maskedApiKey, mono: true, copyable: PNLightConfig.apiKey)
+            row("Server", RuntimeConfig.current.baseDomain, mono: true)
+            row("API key", maskedApiKey, mono: true, copyable: RuntimeConfig.current.apiKey)
             row("User ID", PNLightSDK.shared.getUserId(), mono: true, copyable: PNLightSDK.shared.getUserId())
-            row("Placement", PNLightConfig.paywallPlacement)
+            row("Placement", RuntimeConfig.current.placement)
             row("IDFA", PNLightSDK.shared.getIdfa() ?? "Unavailable (ATT not authorized)", mono: true)
         }
     }
@@ -116,9 +117,7 @@ struct DiagnosticsView: View {
     // MARK: - Helpers
 
     private var maskedApiKey: String {
-        let key = PNLightConfig.apiKey
-        guard key.count > 10 else { return key }
-        return "\(key.prefix(6))…\(key.suffix(4))"
+        RuntimeConfig.current.maskedApiKey
     }
 
     private func row(_ label: String, _ value: String, mono: Bool = false, copyable: String? = nil) -> some View {

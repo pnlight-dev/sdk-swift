@@ -9,6 +9,8 @@ struct ContentView: View {
     @State private var showAttribution = false
     @State private var currentIdfa: String?
     @State private var trackingStatus = ATTrackingManager.trackingAuthorizationStatus
+    /// `run.sh --bench` passes `-PNLightOpenBench YES` to land straight on the bench.
+    @State private var showTestBench = UserDefaults.standard.bool(forKey: "PNLightOpenBench")
 
     var body: some View {
         NavigationStack {
@@ -52,6 +54,14 @@ struct ContentView: View {
                         }
                     } label: {
                         Label("Request ATT / Refresh IDFA", systemImage: "iphone.gen3")
+                    }
+                }
+
+                Section("Remote UI") {
+                    NavigationLink {
+                        RemoteUiTestBenchScreen()
+                    } label: {
+                        Label("Remote UI Test Bench", systemImage: "testtube.2")
                     }
                 }
 
@@ -166,6 +176,9 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("PNLight Example")
+            .navigationDestination(isPresented: $showTestBench) {
+                RemoteUiTestBenchScreen()
+            }
             .sheet(isPresented: $showPaywall) {
                 PaywallScreen()
                     .environmentObject(store)

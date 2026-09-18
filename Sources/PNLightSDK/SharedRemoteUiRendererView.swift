@@ -2632,6 +2632,9 @@ fileprivate enum PNLightRemoteUiSchema {
     static let extensionsVersion = 2
     static let purchaseActionVersion = 3
     static let purchaseOutcomeHooksVersion = 4
+    /// `pnlight://close` fires `onClosed` and replays the legacy `close_button`
+    /// custom action instead of reaching `onAction` unchanged.
+    static let closeActionVersion = 5
     /// `pnlight.progress_bar` and `pnlight.animated_number`.
     static let nativeComponentsVersion = 3
     static let latestSupportedVersion = PNLight.PNLightRemoteUISchema.latestSupportedVersion
@@ -3641,6 +3644,9 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
         renderer.onPurchased = { [weak owner = owner] productId in
             owner?.onPurchased?(productId)
         }
+        renderer.onClosed = { [weak owner = owner] in
+            owner?.onClosed?()
+        }
         let cardId = routeCardId(routeId)
         if preloadOnly {
             renderer.setHapticPatterns(definition.haptics)
@@ -3986,6 +3992,10 @@ public class PNLightRemoteUiRendererView: UIView {
                 return
             }
 
+            if owner.handleCloseAction(url) {
+                return
+            }
+
             if owner.isCustomAction(url) {
                 owner.onCustomAction?(RemoteUiActionPayload(action: info))
                 return
@@ -4003,6 +4013,9 @@ public class PNLightRemoteUiRendererView: UIView {
                 return
             }
             if owner.handleHapticAction(url) {
+                return
+            }
+            if owner.handleCloseAction(url) {
                 return
             }
             owner.open(url)
@@ -4071,6 +4084,11 @@ public class PNLightRemoteUiRendererView: UIView {
     /// Called on the main thread after a Remote UI purchase succeeds and the
     /// StoreKit transaction has been verified.
     var onPurchased: ((String) -> Void)?
+
+    /// Called on the main thread when the document runs a `pnlight://close`
+    /// action. The renderer does not change its own state: the host owns the
+    /// screen and dismisses the Remote UI here.
+    var onClosed: (() -> Void)?
 
     var loadFailureMessage: String {
         "Failed to load DivKit content"
@@ -4680,6 +4698,10 @@ public class PNLightRemoteUiRendererView: UIView {
                 return
             }
 
+            if handleCloseAction(url) {
+                return
+            }
+
             if isCustomAction(url) {
                 onCustomAction?(RemoteUiActionPayload(url: url, logId: logId ?? ""))
             } else {
@@ -4730,6 +4752,30 @@ public class PNLightRemoteUiRendererView: UIView {
         hapticController.handle(action)
         return true
     }
+
+    /// Consumes `pnlight://close`: fires `onClosed`, then delivers the legacy
+    /// `myapp://close` / `close_button` custom action so hosts that still
+    /// dismiss from `onAction` keep working. Older schemas keep delivering the
+    /// URL to `onCustomAction` as an ordinary custom action.
+    fileprivate func handleCloseAction(_ url: URL) -> Bool {
+        guard schemaVersion >= PNLightRemoteUiSchema.closeActionVersion,
+              url.scheme?.lowercased() == "pnlight",
+              url.host?.lowercased() == "close",
+              url.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")).isEmpty else {
+            return false
+        }
+
+        onClosed?()
+        onCustomAction?(RemoteUiActionPayload(
+            url: Self.legacyCloseActionUrl,
+            logId: Self.legacyCloseActionLogId
+        ))
+        return true
+    }
+
+    /// The custom action apps handled before `pnlight://close` existed.
+    private static let legacyCloseActionUrl = URL(string: "myapp://close")!
+    private static let legacyCloseActionLogId = "close_button"
 
     /// Handles the SDK-owned DivKit typed custom purchase action. Unknown custom
     /// actions remain untouched and keep DivKit's existing no-op behavior.

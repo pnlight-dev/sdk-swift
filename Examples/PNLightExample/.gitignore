@@ -44,6 +44,8 @@ playground.xcworkspace
 
 ## Local config (copy from PNLightConfig.example.swift; holds your API key)
 PNLightExample/PNLightConfig.swift
+# run.sh --local credentials for a local backend
+local.env
 
 ## Other
 *.swp

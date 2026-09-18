@@ -21,6 +21,7 @@ private struct FileRemoteUiView: UIViewRepresentable {
     func makeUIView(context: Context) -> PNLightRemoteUiView {
         let view = PNLightRemoteUiView()
         view.onAction = handleAction
+        view.onClosed = onClose
 
         guard let fileUrl = Bundle.main.url(
             forResource: "RemoteUiExample",
@@ -47,6 +48,7 @@ private struct FileRemoteUiView: UIViewRepresentable {
 
     func updateUIView(_ uiView: PNLightRemoteUiView, context: Context) {
         uiView.onAction = handleAction
+        uiView.onClosed = onClose
     }
 
     private func handleAction(_ action: RemoteUiAction) {

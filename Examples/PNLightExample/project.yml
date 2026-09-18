@@ -30,6 +30,11 @@ targets:
         UILaunchScreen:
           UIColorName: ""
         NSUserTrackingUsageDescription: "This identifier will be used to deliver personalized ads to you."
+        # Locale.current takes its language from the app's own localizations, so the
+        # SDK only ever sends a language the app declares (otherwise the development
+        # language). Declaring the App Store languages lets the Remote UI test bench
+        # reach locale variants.
+        CFBundleLocalizations: [ar, ca, cs, da, de, el, en, es, fi, fr, he, hi, hr, hu, id, it, ja, ko, ms, nb, nl, pl, pt-BR, pt-PT, ro, ru, sk, sv, th, tr, uk, vi, zh-Hans, zh-Hant]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.pnlight-example

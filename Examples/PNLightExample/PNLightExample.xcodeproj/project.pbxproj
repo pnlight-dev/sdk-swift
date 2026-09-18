@@ -11,6 +11,7 @@
 		0EA8161214D0C679C36089A4 /* RemoteUiExample.json in Resources */ = {isa = PBXBuildFile; fileRef = 7A295E84D851B7D7C010751A /* RemoteUiExample.json */; };
 		0EBD1DAFE281DAEE88707185 /* PaywallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D60FAFDD018AEDFC66D7E4F /* PaywallScreen.swift */; };
 		1522A7D14B14BEEDD766E83A /* DiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8325D174A595C98C76A0FFF9 /* DiagnosticsView.swift */; };
+		215AA7407F8C78DE3344E13D /* RemoteUiTestBenchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9613D154269560D5185B42B /* RemoteUiTestBenchScreen.swift */; };
 		25C572D7EB00A710BB6EC722 /* ProgressExampleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E4EFB4D5E0F95F72F5103A /* ProgressExampleScreen.swift */; };
 		398CD431BAB1848EA0FF610D /* LottieExampleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDEA3F2C5EBFB8160B4637C3 /* LottieExampleScreen.swift */; };
 		536D002E95D0061C2DE53A62 /* StoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A581C9EFA557636260CAE1C5 /* StoreScreen.swift */; };
@@ -23,6 +24,7 @@
 		B0D6929F7EB71EB0D5E76A26 /* SDKConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A09723A5F97B2654CE43E1C /* SDKConfig.swift */; };
 		BD5E69FA6FBEC327A807E259 /* RemoteConfigDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BB3C47332F8E1A3EC92F8A /* RemoteConfigDefaults.swift */; };
 		DB447F78A940F286D7F84F8B /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8E4DA6B9E07D895D4CF92A0 /* App.swift */; };
+		E9BE334B779C9C00444510CE /* RuntimeConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED908E4DA86FD671B0579576 /* RuntimeConfig.swift */; };
 		F4254D5FD97D2FE88630F7C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */; };
 		F52985867225279DFD6FB353 /* FlowNavigationExampleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09FCE61E0CDC27E25E04962F /* FlowNavigationExampleScreen.swift */; };
 		FDB210BE4B5AF0737E422B66 /* PNLightConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */; };
@@ -47,8 +49,10 @@
 		CADA171AA9E7D5B5F69ACA0D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D20F7D6DCB61E9148C184EFF /* PNLightConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNLightConfig.swift; sourceTree = "<group>"; };
 		D8AB896FE9E26414969F76C6 /* HapticsExampleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsExampleScreen.swift; sourceTree = "<group>"; };
+		D9613D154269560D5185B42B /* RemoteUiTestBenchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteUiTestBenchScreen.swift; sourceTree = "<group>"; };
 		E0131C11A87F63167861D96A /* SPM */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SPM; path = ../..; sourceTree = SOURCE_ROOT; };
 		E2BB3C47332F8E1A3EC92F8A /* RemoteConfigDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteConfigDefaults.swift; sourceTree = "<group>"; };
+		ED908E4DA86FD671B0579576 /* RuntimeConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeConfig.swift; sourceTree = "<group>"; };
 		F8E4DA6B9E07D895D4CF92A0 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		FDEA3F2C5EBFB8160B4637C3 /* LottieExampleScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieExampleScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -110,6 +114,8 @@
 				E2BB3C47332F8E1A3EC92F8A /* RemoteConfigDefaults.swift */,
 				98257827E086F1826B683996 /* RemoteConfigExampleScreen.swift */,
 				7A295E84D851B7D7C010751A /* RemoteUiExample.json */,
+				D9613D154269560D5185B42B /* RemoteUiTestBenchScreen.swift */,
+				ED908E4DA86FD671B0579576 /* RuntimeConfig.swift */,
 				7A09723A5F97B2654CE43E1C /* SDKConfig.swift */,
 				75BB2C8ACC7A89773E64D2BC /* StoreManager.swift */,
 				A581C9EFA557636260CAE1C5 /* StoreScreen.swift */,
@@ -201,6 +207,8 @@
 				25C572D7EB00A710BB6EC722 /* ProgressExampleScreen.swift in Sources */,
 				BD5E69FA6FBEC327A807E259 /* RemoteConfigDefaults.swift in Sources */,
 				A5B1A6B15F7A284E4D8E13AF /* RemoteConfigExampleScreen.swift in Sources */,
+				215AA7407F8C78DE3344E13D /* RemoteUiTestBenchScreen.swift in Sources */,
+				E9BE334B779C9C00444510CE /* RuntimeConfig.swift in Sources */,
 				B0D6929F7EB71EB0D5E76A26 /* SDKConfig.swift in Sources */,
 				0E0E9A4A4B27415E11C789A8 /* StoreManager.swift in Sources */,
 				536D002E95D0061C2DE53A62 /* StoreScreen.swift in Sources */,

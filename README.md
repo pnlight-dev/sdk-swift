@@ -295,9 +295,12 @@ struct PaywallScreen: View {
                     isPremium = await PNLightSDK.shared.isPremium()
                 }
             },
+            onClosed: {
+                dismiss()
+            },
             onAction: { action in
-                if action.logId == "close_button" {
-                    dismiss()
+                if action.logId == "open_terms" {
+                    // Handle app-specific custom actions.
                 }
             }
         )
@@ -322,9 +325,12 @@ final class PaywallViewController: UIViewController {
         remoteView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(remoteView)
 
-        remoteView.onAction = { [weak self] action in
-            if action.logId == "close_button" {
-                self?.dismiss(animated: true)
+        remoteView.onClosed = { [weak self] in
+            self?.dismiss(animated: true)
+        }
+        remoteView.onAction = { action in
+            if action.logId == "open_terms" {
+                // Handle app-specific custom actions.
             }
         }
         remoteView.onPurchased = { productId in
@@ -401,9 +407,36 @@ The purchase action and `on_success` are schema v3 features. `on_fail` and
 original success-only behavior. Schema v1/v2 documents do not execute
 `pnlight.purchase`.
 
+### System close action
+
+Remote UI can ask the host to close it with a plain URL action:
+
+```json
+{
+  "log_id": "close_button",
+  "url": "pnlight://close"
+}
+```
+
+PNLight consumes the URL and calls the view's `onClosed` callback. The SDK does
+not dismiss anything itself: the host owns the screen, so pop or dismiss the
+view controller (or the SwiftUI sheet) from `onClosed`. The action works from
+any route of a flow, including presented sheets, and from dialog buttons and
+purchase follow-ups.
+
+Right after `onClosed`, PNLight delivers the custom action `myapp://close` with
+`logId` `close_button` through `onAction`. This is the action documents used
+before `pnlight://close` existed, so an app that still dismisses from
+`onAction` keeps working without changes. Handle the close in one of the two
+callbacks, not both.
+
+`pnlight://close` requires `"schemaVersion": 5`. In older schemas the URL is not
+consumed and reaches `onAction` as an ordinary custom action.
+
 ### Remote UI schema version
 
 PNLight versions the Remote UI envelope independently from the SDK package.
+Schema v5 adds the `pnlight://close` action with its `onClosed` event.
 Schema v4 adds `on_fail` and `on_cancel` outcome hooks to `pnlight.purchase`.
 Schema v3 adds the SDK-owned `pnlight.purchase` action with its `onPurchased`
 event, and the `pnlight.progress_bar` and `pnlight.animated_number` native
@@ -1347,6 +1380,8 @@ PNLightSDK.shared.clearUIConfigCache()
 | `cardId` | `String` | Card identifier |
 | `secure` | `Bool` | Deprecated. Secure rendering is controlled by the backend response. |
 | `preventRecording` | `Bool` | Deprecated. Capture blocking is controlled by the backend. |
+| `onPurchased` | `((String) -> Void)?` | Called with the `productId` after this view verifies a Remote UI purchase |
+| `onClosed` | `(() -> Void)?` | Called when the document runs `pnlight://close`; dismiss the view here |
 | `onAction` | `((RemoteUiAction) -> Void)?` | Called when a custom action is triggered |
 
 ### `PNLightRemoteUiView` (UIKit)
@@ -1354,6 +1389,8 @@ PNLightSDK.shared.clearUIConfigCache()
 | Member | Description |
 | --- | --- |
 | `onAction: ((RemoteUiAction) -> Void)?` | Called on the main thread when a custom action fires |
+| `onPurchased: ((String) -> Void)?` | Called on the main thread after this view verifies a Remote UI purchase |
+| `onClosed: (() -> Void)?` | Called on the main thread when the document runs `pnlight://close` |
 | `applyConfig(configJson:cardId:)` | Load and render a server-driven layout from a JSON string |
 
 ### `RemoteUiAction`

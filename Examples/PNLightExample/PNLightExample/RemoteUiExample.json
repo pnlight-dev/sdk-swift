@@ -7,10 +7,7 @@
   },
   "safe_area": {
     "mode": "content",
-    "edges": [
-      "top",
-      "bottom"
-    ]
+    "edges": ["top", "bottom"]
   },
   "initial_route": "trip_intro",
   "routes": {
@@ -825,9 +822,7 @@
                               "duration": "@{reduced_motion ? 1 : 220}",
                               "interpolator": "ease_in_out"
                             },
-                            "transition_triggers": [
-                              "data_change"
-                            ]
+                            "transition_triggers": ["data_change"]
                           }
                         ],
                         "width": {
@@ -2536,9 +2531,7 @@
                       "duration": "@{reduced_motion ? 1 : 200}",
                       "interpolator": "ease_out"
                     },
-                    "transition_triggers": [
-                      "visibility_change"
-                    ],
+                    "transition_triggers": ["visibility_change"],
                     "accessibility": {
                       "description": "Trip itinerary completed",
                       "type": "text",
@@ -2733,9 +2726,7 @@
                       "duration": "@{reduced_motion ? 1 : 150}",
                       "interpolator": "ease_out"
                     },
-                    "transition_triggers": [
-                      "visibility_change"
-                    ],
+                    "transition_triggers": ["visibility_change"],
                     "accessibility": {
                       "description": "Save itinerary dialog",
                       "type": "none",

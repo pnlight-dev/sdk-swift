@@ -61,6 +61,13 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
         set { super.onPurchased = newValue }
     }
 
+    /// Called on the main thread when the document runs a `pnlight://close`
+    /// action (schema v5+). The view stays on screen; dismiss it here.
+    public override var onClosed: (() -> Void)? {
+        get { super.onClosed }
+        set { super.onClosed = newValue }
+    }
+
     override var loadFailureMessage: String {
         "Failed to load content"
     }
@@ -107,6 +114,8 @@ public struct RemoteUiView: UIViewRepresentable {
     public let ignoreCache: Bool
     /// Called after a purchase started by this Remote UI succeeds.
     public var onPurchased: ((String) -> Void)?
+    /// Called when the document runs `pnlight://close`; dismiss the view here.
+    public var onClosed: (() -> Void)?
     public var onAction: ((RemoteUiAction) -> Void)?
     /// Called when the UI config fails to load (network/server error).
     public var onError: ((Error) -> Void)?
@@ -116,6 +125,7 @@ public struct RemoteUiView: UIViewRepresentable {
         cardId: String,
         ignoreCache: Bool = false,
         onPurchased: ((String) -> Void)? = nil,
+        onClosed: (() -> Void)? = nil,
         onAction: ((RemoteUiAction) -> Void)? = nil,
         onError: ((Error) -> Void)? = nil
     ) {
@@ -125,6 +135,7 @@ public struct RemoteUiView: UIViewRepresentable {
         self.preventRecording = true
         self.ignoreCache = ignoreCache
         self.onPurchased = onPurchased
+        self.onClosed = onClosed
         self.onAction = onAction
         self.onError = onError
     }
@@ -143,6 +154,7 @@ public struct RemoteUiView: UIViewRepresentable {
         self.preventRecording = preventRecording
         self.ignoreCache = false
         self.onPurchased = nil
+        self.onClosed = nil
         self.onAction = onAction
         self.onError = nil
     }
@@ -150,6 +162,7 @@ public struct RemoteUiView: UIViewRepresentable {
     public func makeUIView(context: Context) -> PNLightRemoteUiView {
         let view = PNLightRemoteUiView()
         view.onPurchased = onPurchased
+        view.onClosed = onClosed
         view.onAction = onAction
         view.onError = onError
         context.coordinator.load(into: view, placement: placement, cardId: cardId, ignoreCache: ignoreCache)
@@ -158,6 +171,7 @@ public struct RemoteUiView: UIViewRepresentable {
 
     public func updateUIView(_ uiView: PNLightRemoteUiView, context: Context) {
         uiView.onPurchased = onPurchased
+        uiView.onClosed = onClosed
         uiView.onAction = onAction
         uiView.onError = onError
         context.coordinator.load(into: uiView, placement: placement, cardId: cardId, ignoreCache: ignoreCache)

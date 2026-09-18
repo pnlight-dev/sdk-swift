@@ -41,6 +41,10 @@ Remote UI secure rendering and capture blocking are controlled by the backend. T
 ./run.sh -d "iPhone 16 Pro"   # a specific device (name or UDID)
 ./run.sh -g                   # regenerate the .xcodeproj first
 ./run.sh -c                   # wipe DerivedData (forces package re-resolution)
+./run.sh --local              # talk to a local backend (see below)
+./run.sh -p onboarding        # use this Remote UI placement for the paywall and the bench
+./run.sh --locale fr          # launch in French: the locale Remote UI receives
+./run.sh --bench              # open the Remote UI test bench on launch
 ./run.sh --no-console         # launch detached instead of streaming stdout
 ```
 
@@ -59,6 +63,32 @@ This is also the fastest way to tell a broken project from a broken Xcode. If `r
 rm -rf ~/Library/Developer/Xcode/DerivedData/PNLightExample-*
 xcrun simctl shutdown all && xcrun simctl erase all
 ```
+
+## Remote UI test bench
+
+**Remote UI → Remote UI Test Bench** checks what a placement serves to this install, variant by variant:
+
+- **PNLight config**: override the API key, the Remote UI placement and the server from inside the app. **Apply** uses them across the whole app right away (the home screen's paywall included) and keeps them for later launches. A new key or server re-initializes the SDK and clears its Remote UI cache. **Local** switches the server to `http://localhost:3000`, and **Defaults** goes back to `PNLightConfig.swift`. Values the backend would reject, like a key that isn't a UUID or a placement outside `a-z 0-9 _ -`, can't be applied.
+- **Request the SDK sends**: placement, `locale`, `sdkVersion`, `sdkPlatform`, `schemaVersion` and user ID. Tap `locale` to switch the app language; it applies after a relaunch.
+- **Resolve on server**: sends that request and shows the variant the server picked (name and id), or lists what can cause a 404. **Preview served config** renders exactly that config. Resolving records an impression like a real request does.
+- **Open with RemoteUiView**: the real SDK path with the cache bypassed. Remote UI actions and errors appear in the log.
+
+To run it against a local backend without touching `PNLightConfig.swift`, create `local.env` next to `run.sh`. It is gitignored and never published.
+
+```bash
+PNLIGHT_BASE_DOMAIN=http://localhost:3000   # optional, this is the default
+PNLIGHT_API_KEY=<the project's access token>
+```
+
+Then run:
+
+```bash
+./run.sh --local --bench --locale de
+```
+
+Launch arguments (`--local`, `--placement`) take precedence over saved values when the app starts. Apply in the bench still replaces them for the rest of that run.
+
+**Locale follows the app's localizations, not the device.** The SDK sends `Locale.current.languageCode`, and iOS only gives it a language the app declares. On a French device, an app localized only into English sends `en`. The example declares the App Store languages in `CFBundleLocalizations` (`project.yml`), so their variants can be tested. The bench shows the device languages next to the sent `locale` so a mismatch is visible. Test devices and debug placements skip placement targeting and attribution, but variants still match on locale, SDK version and platform.
 
 ## Testing in-app purchases on the simulator
 
@@ -85,6 +115,8 @@ PNLightExample/
 ├── LottieExampleScreen.swift # Inline Lottie rendered by DivKit with no host setup
 ├── RemoteConfigExampleScreen.swift # Fetch, send custom attribution, read one key per type
 ├── RemoteConfigDefaults.swift # Compiled-in Remote Config defaults + typed readers
+├── RemoteUiTestBenchScreen.swift # Resolve a placement's variant, preview it, open it via the SDK
+├── RuntimeConfig.swift  # API key, placement and server: PNLightConfig overridden by launch args or the bench
 ├── SDKConfig.swift      # Alias for the SDK's PNLightConfig (name-collision shim)
 ├── RemoteUiExample.json # Bundled schema-v2 Remote UI flow
 ├── PaywallScreen.swift  # RemoteUiView paywall sheet
@@ -95,6 +127,7 @@ PNLightExample/
 └── Info.plist
 project.yml              # xcodegen spec (SPM dep + scheme/StoreKit config)
 run.sh                   # build + install + launch on a simulator, no Xcode
+local.env                # gitignored: local backend key for run.sh --local
 ```
 
 ## Key integration points
@@ -109,6 +142,7 @@ run.sh                   # build + install + launch on a simulator, no Xcode
 | `HapticsExampleScreen.swift` | `pnlight://haptic/...` actions and a named looping Core Haptics pattern |
 | `LottieExampleScreen.swift` | DivKit's `lottie` extension with a self-contained inline animation |
 | `RemoteConfigExampleScreen.swift` | `fetchAndActivate` controls, `addAttribution` with an editable provider/identifier/JSON payload, plus string, number, Boolean and JSON-object reads |
+| `RemoteUiTestBenchScreen.swift` | Which variant a placement serves for this request, previewing it, and the `RemoteUiView` path with `ignoreCache` |
 | `RemoteConfigDefaults.swift` | `remoteConfigDefaults` registered at `initialize()` — one key per supported value type |
 | `StoreScreen.swift` | IAP catalog UI driven by `StoreManager` |
 | `StoreManager.swift` | `fetchProducts`, `purchase`, `restorePurchases`, `isPremium`, `getAppleReceipt` |
