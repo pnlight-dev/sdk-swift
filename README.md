@@ -433,9 +433,138 @@ callbacks, not both.
 `pnlight://close` requires `"schemaVersion": 5`. In older schemas the URL is not
 consumed and reaches `onAction` as an ordinary custom action.
 
+### System restore action
+
+Remote UI can restore the user's purchases with a typed DivKit `custom` action:
+
+```json
+{
+  "log_id": "restore_purchases",
+  "typed": { "type": "custom" },
+  "payload": {
+    "id": "pnlight.restore",
+    "params": {
+      "on_success": [
+        { "log_id": "restored", "url": "pnlight://close" }
+      ],
+      "on_fail": [
+        { "log_id": "restore_failed", "url": "pnlight://dialog/show?id=restore_error" }
+      ]
+    }
+  }
+}
+```
+
+PNLight syncs the user's App Store purchases, the same work as
+`restorePurchases()`, then runs `on_success`, or `on_fail` when the sync
+fails or the user cancels the App Store sign-in. `params` and both lists are
+optional. Follow-ups are ordinary DivKit actions and run in the context of
+the card that started the restore. While a purchase or a restore is in
+flight, another one is ignored.
+
+`pnlight.restore` requires `"schemaVersion": 6`; older schemas ignore it.
+
+### Products
+
+Product state belongs to one document. All flow routes, including preloaded
+and modal routes, share the selected product and store updates. Applying a new
+document starts a fresh selection; an absent or empty `products` list removes
+the previous document's product variables. Schemas 1–5 do not publish them.
+
+A paywall lists the products it sells at the document root, a flow's root
+included:
+
+```json
+"products": [
+  { "id": "{{product_1}}", "selected": true,
+    "fallback": { "price": "$39.99", "period": "year", "has_trial": true, "trial_count": 3, "trial_unit": "day" } },
+  "{{product_2}}"
+]
+```
+
+An entry is a product id, or an object with an `id`, an optional `selected`
+flag and an optional `fallback`. PNLight publishes three variables before the
+first render and keeps them current:
+
+| Variable | Type | Value |
+| --- | --- | --- |
+| `products` | array | One dictionary per product, in the document's order |
+| `selected_product` | string | The selected product id: the entry marked `selected`, else the first |
+| `selected` | dict | The dictionary of the selected product |
+
+Every dictionary always has every key:
+
+| Key | Type | Value |
+| --- | --- | --- |
+| `id` | string | Product id |
+| `name` | string | What the document calls the plan; only ever the fallback's |
+| `price` | string | Localized price, e.g. `"$39.99"` |
+| `period`, `period_count` | string, integer | Renewal period: `day`, `week`, `month` or `year`, and how many |
+| `price_per_month`, `price_per_week` | string | The price spread over the period, written like `price` |
+| `has_trial` | boolean | The product has a free trial and this user can still get it |
+| `trial_count`, `trial_unit` | integer, string | Trial length, e.g. `3` and `day` |
+| `intro_price` | string | Price of a paid introductory offer, else empty |
+| `is_selected` | boolean | Whether this is the selected product |
+| `is_loaded` | boolean | Whether the values came from the store |
+
+Values start from `fallback` (empty strings, zeroes and `false` where it says
+nothing) and are replaced by the store's as soon as they are known; a product
+the store does not have keeps its fallback.
+
+Draw the plans with DivKit's `item_builder`, which repeats one design per
+product and names the current one. Tapping a plan selects it with an ordinary
+`set_variable`; `is_selected` and `selected` follow.
+
+```json
+{
+  "type": "container",
+  "item_builder": {
+    "data": "@{products}",
+    "data_element_name": "product",
+    "prototypes": [{
+      "div": {
+        "type": "container",
+        "border": {
+          "corner_radius": 16,
+          "stroke": { "color": "@{product.getBoolean('is_selected') ? '#FF4E6BFF' : '#33FFFFFF'}" }
+        },
+        "items": [
+          { "type": "text", "text": "@{product.getString('price')}/@{product.getString('period')}" },
+          {
+            "type": "text",
+            "text": "@{product.getInteger('trial_count')}-day free trial",
+            "visibility": "@{product.getBoolean('has_trial') ? 'visible' : 'gone'}"
+          }
+        ],
+        "actions": [{
+          "log_id": "select_plan",
+          "typed": {
+            "type": "set_variable",
+            "variable_name": "selected_product",
+            "value": { "type": "string", "value": "@{product.getString('id')}" }
+          }
+        }]
+      }
+    }]
+  }
+}
+```
+
+Anything outside the list reads the selection,
+`"@{selected.getString('price')}/@{selected.getString('period')}"`, and the
+buy button purchases it: from schema v6 `pnlight.purchase` resolves an
+expression in `product_id`, so write `"product_id": "@{selected_product}"`.
+
+A document lists at most 16 products, each once. An invalid `products` array
+fails the document. `products` requires `"schemaVersion": 6`; older schemas
+ignore it.
+
 ### Remote UI schema version
 
 PNLight versions the Remote UI envelope independently from the SDK package.
+Schema v6 adds the `pnlight.restore` action, the root `products` array with its
+`products`, `selected_product` and `selected` variables, and expressions in
+the purchase action's `product_id`.
 Schema v5 adds the `pnlight://close` action with its `onClosed` event.
 Schema v4 adds `on_fail` and `on_cancel` outcome hooks to `pnlight.purchase`.
 Schema v3 adds the SDK-owned `pnlight.purchase` action with its `onPurchased`

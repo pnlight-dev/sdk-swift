@@ -5,8 +5,8 @@ import Foundation
 // Released binary artifact. Both lines are rewritten by scripts/publish_spm.sh
 // at release time; the .xcframework itself is not committed — it is attached as
 // a zip asset to the matching GitHub Release and fetched here by checksum.
-let releaseVersion = "0.13.0"
-let releaseChecksum = "8ca414519418b66674fbeb7c873f60ff70d42832ab35397162e0e0df955b9271"
+let releaseVersion = "0.14.0"
+let releaseChecksum = "4c334da03466677a249ac8fcbbe0c7cd42fd44edfa762f3cd0090de7f4d61e17"
 
 // Local development: when the xcframework is present next to this manifest,
 // resolve against the on-disk copy instead of the published release.
@@ -56,6 +56,13 @@ let package = Package(
                 .product(name: "DivKit", package: "divkit-ios"),
                 .product(name: "DivKitExtensions", package: "divkit-ios"),
                 .product(name: "Lottie", package: "lottie-spm"),
+            ]
+        ),
+        .testTarget(
+            name: "PNLightSDKTests",
+            dependencies: [
+                "PNLightSDK",
+                .product(name: "DivKit", package: "divkit-ios"),
             ]
         ),
     ]

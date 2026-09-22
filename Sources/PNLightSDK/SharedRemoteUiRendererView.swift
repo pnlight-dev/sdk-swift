@@ -2635,6 +2635,9 @@ fileprivate enum PNLightRemoteUiSchema {
     /// `pnlight://close` fires `onClosed` and replays the legacy `close_button`
     /// custom action instead of reaching `onAction` unchanged.
     static let closeActionVersion = 5
+    /// The `pnlight.restore` action and the root `products` array, published
+    /// as the `products`, `selected_product` and `selected` variables.
+    static let storeExtensionsVersion = 6
     /// `pnlight.progress_bar` and `pnlight.animated_number`.
     static let nativeComponentsVersion = 3
     static let latestSupportedVersion = PNLight.PNLightRemoteUISchema.latestSupportedVersion
@@ -2780,6 +2783,305 @@ fileprivate struct PNLightDialogDefinition {
             )
         }
         return definitions
+    }
+}
+
+/// A store product a Remote UI document sells. The document lists its
+/// products under the root `products` array; the renderer publishes them as
+/// the `products` array variable (one dictionary per product), the
+/// `selected_product` id and the `selected` dictionary.
+struct PNLightProductDefinition: Equatable {
+    let productId: String
+    /// Shown until the store answers, and kept when it has no such product.
+    let fallback: [String: AnyHashable]
+    let selectedByDefault: Bool
+
+    private static let fallbackStrings = ["name", "price", "period", "price_per_month", "price_per_week", "trial_unit", "intro_price"]
+    private static let fallbackIntegers = ["period_count", "trial_count"]
+
+    static func parseDefinitions(_ value: Any?) throws -> [PNLightProductDefinition] {
+        guard let value else { return [] }
+        guard let entries = value as? [Any] else {
+            throw PNLightProductsError.invalidConfiguration("'products' must be an array")
+        }
+        guard entries.count <= 16 else {
+            throw PNLightProductsError.invalidConfiguration(
+                "'products' cannot contain more than 16 products"
+            )
+        }
+
+        var seen = Set<String>()
+        return try entries.enumerated().map { index, entry in
+            let dictionary = entry as? [String: Any]
+            let rawId = dictionary.map { CustomPropReader.string($0["id"]) } ?? CustomPropReader.string(entry)
+            guard let productId = rawId?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  productId.isEmpty == false else {
+                throw PNLightProductsError.invalidConfiguration(
+                    "Product \(index) must be a product id or an object with a non-empty 'id'"
+                )
+            }
+            guard seen.insert(productId).inserted else {
+                throw PNLightProductsError.invalidConfiguration(
+                    "Product '\(productId)' is listed twice"
+                )
+            }
+
+            var fallback: [String: AnyHashable] = [:]
+            if let raw = dictionary?["fallback"] as? [String: Any] {
+                for key in fallbackStrings {
+                    if let text = CustomPropReader.string(raw[key]) { fallback[key] = text }
+                }
+                for key in fallbackIntegers {
+                    if let number = CustomPropReader.double(raw[key]) { fallback[key] = Int(number) }
+                }
+                if let hasTrial = raw["has_trial"] as? Bool { fallback["has_trial"] = hasTrial }
+            }
+            return PNLightProductDefinition(
+                productId: productId,
+                fallback: fallback,
+                selectedByDefault: dictionary?["selected"] as? Bool ?? false
+            )
+        }
+    }
+
+    /// The dictionary a document reads as `product` inside an `item_builder`.
+    /// Every key is always present, so an expression never meets a missing one.
+    func entry(store: PNLight.PNLightProduct?, isSelected: Bool) -> [String: AnyHashable] {
+        var entry: [String: AnyHashable] = [
+            "id": productId,
+            "name": "",
+            "price": "",
+            "period": "",
+            "period_count": 0,
+            "price_per_month": "",
+            "price_per_week": "",
+            "has_trial": false,
+            "trial_count": 0,
+            "trial_unit": "",
+            "intro_price": "",
+        ]
+        entry.merge(fallback) { _, fallback in fallback }
+        if let store {
+            entry.merge(Self.storeValues(store)) { _, store in store }
+        }
+        entry["is_selected"] = isSelected
+        entry["is_loaded"] = store != nil
+        return entry
+    }
+
+    private static func storeValues(_ product: PNLight.PNLightProduct) -> [String: AnyHashable] {
+        var values: [String: AnyHashable] = ["price": product.displayPrice]
+        guard let subscription = product.subscription else { return values }
+
+        values["period"] = subscription.period.unit.rawValue
+        values["period_count"] = subscription.period.value
+        if let months = months(in: subscription.period) {
+            values["price_per_month"] = format(product.price / Decimal(months), like: product)
+            values["price_per_week"] = format(product.price / Decimal(months * 52 / 12), like: product)
+        }
+
+        // A trial the user has already used is not a trial for this user.
+        let offer = subscription.isEligibleForIntroOffer ? subscription.introductoryOffer : nil
+        values["has_trial"] = offer?.paymentMode == .freeTrial
+        values["trial_count"] = 0
+        values["trial_unit"] = ""
+        values["intro_price"] = ""
+        if let offer {
+            if offer.paymentMode == .freeTrial {
+                values["trial_count"] = offer.period.value * offer.periodCount
+                values["trial_unit"] = offer.period.unit.rawValue
+            } else {
+                values["intro_price"] = offer.displayPrice
+            }
+        }
+        return values
+    }
+
+    private static func months(in period: PNLight.PNLightSubscriptionPeriod) -> Double? {
+        let value = Double(period.value)
+        switch period.unit {
+        case .year: return value * 12
+        case .month: return value
+        case .week: return value * 12 / 52
+        case .day: return value * 12 / 365
+        case .unknown: return nil
+        @unknown default: return nil
+        }
+    }
+
+    /// Writes another amount the way the store wrote the product's price: same
+    /// currency symbol, its place, and decimal separator. The store formats
+    /// for the storefront, which a formatter of the phone's locale would not.
+    private static func format(_ amount: Decimal, like product: PNLight.PNLightProduct) -> String {
+        let price = product.displayPrice
+        guard let digits = price.range(
+            of: "[0-9][0-9.,\\u{00A0}\\u{202F} ]*[0-9]|[0-9]",
+            options: .regularExpression
+        ) else {
+            return ""
+        }
+        let number = String(price[digits])
+        let separator = number.dropLast().last { $0 == "." || $0 == "," }
+        let fraction = separator.flatMap { separator in
+            number.split(separator: separator).last.map(\.count)
+        } ?? 0
+        let decimals = fraction == 3 ? 0 : fraction
+
+        var rounded = Decimal()
+        var value = amount
+        NSDecimalRound(&rounded, &value, decimals, .plain)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = false
+        formatter.minimumFractionDigits = decimals
+        formatter.maximumFractionDigits = decimals
+        formatter.decimalSeparator = separator.map(String.init) ?? "."
+        let text = formatter.string(from: rounded as NSDecimalNumber) ?? ""
+        return price.replacingCharacters(in: digits, with: text)
+    }
+}
+
+private enum PNLightProductsError: LocalizedError {
+    case invalidConfiguration(String)
+
+    var errorDescription: String? {
+        switch self {
+        case let .invalidConfiguration(message):
+            return "Invalid PNLight products: \(message)"
+        }
+    }
+}
+
+/// One store lookup shared by every renderer: the routes of a flow each have
+/// their own DivKit variables, and all of them ask for the same products.
+@MainActor
+private enum PNLightProductStore {
+    private static var lookup: Task<[String: PNLight.PNLightProduct], Never>?
+
+    static func products() async -> [String: PNLight.PNLightProduct] {
+        if let lookup {
+            return await lookup.value
+        }
+        let task = Task<[String: PNLight.PNLightProduct], Never> {
+            do {
+                let products = try await PNLight.PNLightSDK.shared.fetchProducts()
+                return Dictionary(
+                    products.map { ($0.id, $0) },
+                    uniquingKeysWith: { first, _ in first }
+                )
+            } catch {
+                NSLog("[PNLight][Products] Could not load store products: %@", error.localizedDescription)
+                return [:]
+            }
+        }
+        lookup = task
+        let products = await task.value
+        // A failed or empty lookup is tried again by the next document.
+        if products.isEmpty {
+            lookup = nil
+        }
+        return products
+    }
+}
+
+/// Product data and selection belong to one document, including all of its
+/// preloaded and presented flow routes. A replacement document gets a new owner,
+/// so a previous store request cannot publish into the replacement.
+@MainActor
+final class PNLightDocumentProducts {
+    let definitions: [PNLightProductDefinition]
+    private(set) var selection: String
+    private var storeProducts: [String: PNLight.PNLightProduct] = [:]
+    private let bindings = NSHashTable<PNLightProductVariables>.weakObjects()
+
+    init(
+        definitions: [PNLightProductDefinition],
+        loadProducts: @escaping () async -> [String: PNLight.PNLightProduct] = {
+            await PNLightProductStore.products()
+        }
+    ) {
+        self.definitions = definitions
+        selection = (definitions.first(where: \.selectedByDefault) ?? definitions.first)?.productId ?? ""
+        guard definitions.isEmpty == false else { return }
+
+        Task { @MainActor [weak self] in
+            let products = await loadProducts()
+            guard let self, products.isEmpty == false else { return }
+            storeProducts = products
+            publish()
+        }
+    }
+
+    fileprivate func attach(_ binding: PNLightProductVariables) {
+        bindings.add(binding)
+        binding.storage.replaceAll(variables, notifyObservers: false)
+    }
+
+    fileprivate func detach(_ binding: PNLightProductVariables) {
+        bindings.remove(binding)
+    }
+
+    fileprivate func select(_ productId: String) {
+        guard definitions.isEmpty == false, productId != selection else { return }
+        selection = productId
+        publish()
+    }
+
+    private var variables: DivVariables {
+        guard definitions.isEmpty == false else { return [:] }
+        let entries = definitions.map { definition in
+            definition.entry(
+                store: storeProducts[definition.productId],
+                isSelected: definition.productId == selection
+            )
+        }
+        let selected = entries.first { $0["id"] == AnyHashable(selection) } ?? entries.first ?? [:]
+        return [
+            PNLightProductVariables.productsVariable: .array(entries.map { AnyHashable($0) }),
+            PNLightProductVariables.selectedProductVariable: .string(selection),
+            PNLightProductVariables.selectedVariable: .dict(selected),
+        ]
+    }
+
+    private func publish() {
+        let snapshot = variables
+        for binding in bindings.allObjects {
+            binding.storage.replaceAll(snapshot)
+        }
+    }
+}
+
+/// An outer DivKit scope containing only SDK product variables. Detaching it
+/// removes those variables and the selection observer without clearing a card's
+/// own variables, scale factors, or safe-area properties.
+@MainActor
+final class PNLightProductVariables {
+    static let productsVariable = DivVariableName(rawValue: "products")
+    static let selectedProductVariable = DivVariableName(rawValue: "selected_product")
+    static let selectedVariable = DivVariableName(rawValue: "selected")
+
+    let storage = DivVariableStorage()
+    private(set) var document: PNLightDocumentProducts?
+    private var selectionObserver: Disposable?
+
+    func attach(_ document: PNLightDocumentProducts?) {
+        selectionObserver?.dispose()
+        selectionObserver = nil
+        self.document?.detach(self)
+        self.document = nil
+        storage.clear()
+        guard let document, document.definitions.isEmpty == false else { return }
+        self.document = document
+        document.attach(self)
+
+        selectionObserver = storage.addObserver { [weak self, weak document] event in
+            guard let self, let document, self.document === document,
+                  event.changedVariables.contains(Self.selectedProductVariable),
+                  case let .string(selection)? = storage.getVariableValue(Self.selectedProductVariable) else {
+                return
+            }
+            document.select(selection)
+        }
     }
 }
 
@@ -2996,6 +3298,7 @@ fileprivate struct PNLightFlowDefinition {
     let routes: [String: Route]
     let haptics: [String: HapticPattern]
     let dialogs: [String: PNLightDialogDefinition]
+    let products: [PNLightProductDefinition]
     let safeArea: PNLightSafeAreaConfiguration
     let schemaVersion: Int
 
@@ -3018,6 +3321,9 @@ fileprivate struct PNLightFlowDefinition {
         }
         let haptics = try parseHaptics(root["haptics"])
         let dialogs = try PNLightDialogDefinition.parseDefinitions(root["dialogs"])
+        let products = schemaVersion >= PNLightRemoteUiSchema.storeExtensionsVersion
+            ? try PNLightProductDefinition.parseDefinitions(root["products"])
+            : []
         let safeArea = PNLightSafeAreaConfiguration.parse(from: root)
         let referenceSize = try PNLightReferenceSizeConfiguration.parse(from: root)
 
@@ -3073,6 +3379,7 @@ fileprivate struct PNLightFlowDefinition {
             routes: routes,
             haptics: haptics,
             dialogs: dialogs,
+            products: products,
             safeArea: safeArea,
             schemaVersion: schemaVersion
         )
@@ -3550,6 +3857,7 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
 
     private let definition: PNLightFlowDefinition
     private let baseCardId: String
+    private let products: PNLightDocumentProducts?
     private weak var owner: PNLightRemoteUiRendererView?
     private(set) var navigationController: PNLightFlowNavigationController!
     private var presentedNavigationControllers: [PNLightFlowNavigationController] = []
@@ -3559,10 +3867,12 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
     init(
         definition: PNLightFlowDefinition,
         baseCardId: String,
-        owner: PNLightRemoteUiRendererView
+        owner: PNLightRemoteUiRendererView,
+        products: PNLightDocumentProducts?
     ) {
         self.definition = definition
         self.baseCardId = baseCardId
+        self.products = products
         self.owner = owner
         super.init()
 
@@ -3648,11 +3958,13 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
             owner?.onClosed?()
         }
         let cardId = routeCardId(routeId)
+        // Prices are variables, so they have to exist before the card renders.
+        renderer.setProducts(products)
         if preloadOnly {
             renderer.setHapticPatterns(definition.haptics)
             controller.prepare(configJson: route.divKitJson, cardId: cardId)
         } else {
-            renderer.applyConfig(configJson: route.divKitJson, cardId: cardId)
+            renderer.applyConfig(configJson: route.divKitJson, cardId: cardId, sharedProducts: products)
             renderer.setHapticPatterns(definition.haptics)
         }
         renderer.setDialogDefinitions(definition.dialogs)
@@ -3971,6 +4283,7 @@ public class PNLightRemoteUiRendererView: UIView {
             sender: AnyObject?
         ) {
             owner?.handlePurchaseAction(payload: payload, context: context, sender: sender)
+            owner?.handleRestoreAction(payload: payload, context: context)
         }
     }
 
@@ -4043,6 +4356,7 @@ public class PNLightRemoteUiRendererView: UIView {
     private var didHandleCaptureAttempt = false
     private var pendingDismissAction = false
     private var isPurchaseActionInFlight = false
+    let productVariables: PNLightProductVariables
     var secure: Bool {
         didSet {
             guard secure != oldValue else { return }
@@ -4102,11 +4416,14 @@ public class PNLightRemoteUiRendererView: UIView {
         hapticController = PNLightHapticController()
         let customBlockFactory = PNLightCustomBlockFactory()
         self.customBlockFactory = customBlockFactory
+        let productVariables = PNLightProductVariables()
+        self.productVariables = productVariables
         let divKitComponents = DivKitComponents(
             customActionHandler: customActionHandler,
             divCustomBlockFactory: customBlockFactory,
             extensionHandlers: [makePNLightLottieExtensionHandler()],
-            urlHandler: urlHandler
+            urlHandler: urlHandler,
+            variablesStorage: DivVariablesStorage(outerStorage: productVariables.storage)
         )
         self.divKitComponents = divKitComponents
         let divViewPreloader = DivViewPreloader(divKitComponents: divKitComponents)
@@ -4140,11 +4457,14 @@ public class PNLightRemoteUiRendererView: UIView {
         hapticController = PNLightHapticController()
         let customBlockFactory = PNLightCustomBlockFactory()
         self.customBlockFactory = customBlockFactory
+        let productVariables = PNLightProductVariables()
+        self.productVariables = productVariables
         let divKitComponents = DivKitComponents(
             customActionHandler: customActionHandler,
             divCustomBlockFactory: customBlockFactory,
             extensionHandlers: [makePNLightLottieExtensionHandler()],
-            urlHandler: urlHandler
+            urlHandler: urlHandler,
+            variablesStorage: DivVariablesStorage(outerStorage: productVariables.storage)
         )
         self.divKitComponents = divKitComponents
         let divViewPreloader = DivViewPreloader(divKitComponents: divKitComponents)
@@ -4209,6 +4529,16 @@ public class PNLightRemoteUiRendererView: UIView {
     }
 
     public func applyConfig(configJson: String?, cardId: String) {
+        applyConfig(configJson: configJson, cardId: cardId, sharedProducts: nil)
+    }
+
+    fileprivate func applyConfig(
+        configJson: String?,
+        cardId: String,
+        sharedProducts: PNLightDocumentProducts?
+    ) {
+        // Run before every exit, including empty, invalid, and older documents.
+        setProducts(sharedProducts)
         hapticController.configure(patterns: [:])
         currentCardId = cardId
         dialogDefinitions = [:]
@@ -4256,6 +4586,13 @@ public class PNLightRemoteUiRendererView: UIView {
                 dialogDefinitions = try PNLightDialogDefinition.parseDefinitions(
                     rootObject?["dialogs"]
                 )
+            }
+            if sharedProducts == nil,
+               effectiveSchemaVersion >= PNLightRemoteUiSchema.storeExtensionsVersion {
+                let definitions = try PNLightProductDefinition.parseDefinitions(rootObject?["products"])
+                if definitions.isEmpty == false {
+                    setProducts(PNLightDocumentProducts(definitions: definitions))
+                }
             }
             if let flow = try PNLightFlowDefinition.parse(
                 data: preservedData,
@@ -4356,6 +4693,10 @@ public class PNLightRemoteUiRendererView: UIView {
         dialogDefinitions = definitions
     }
 
+    fileprivate func setProducts(_ products: PNLightDocumentProducts?) {
+        productVariables.attach(products)
+    }
+
     fileprivate func configureSafeArea(_ configuration: PNLightSafeAreaConfiguration) {
         safeAreaConfiguration = configuration
         lastPublishedSafeAreaInsets = nil
@@ -4405,7 +4746,8 @@ public class PNLightRemoteUiRendererView: UIView {
         let coordinator = PNLightFlowCoordinator(
             definition: flow,
             baseCardId: cardId,
-            owner: self
+            owner: self,
+            products: productVariables.document
         )
         flowCoordinator = coordinator
         coordinator.installView(in: contentContainer)
@@ -4798,7 +5140,15 @@ public class PNLightRemoteUiRendererView: UIView {
             return
         }
 
-        let productId = (params["product_id"] as? String)?
+        // From schema 6 the id may be an expression, so a paywall can buy
+        // whichever product is selected: "@{selected_product}".
+        var rawProductId = params["product_id"] as? String
+        if let expression = rawProductId,
+           expression.contains("@{"),
+           schemaVersion >= PNLightRemoteUiSchema.storeExtensionsVersion {
+            rawProductId = context.expressionResolver.resolveString(expression)
+        }
+        let productId = rawProductId?
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard let productId, !productId.isEmpty else {
             NSLog("[PNLight][PurchaseAction] Ignoring purchase action without product_id")
@@ -4859,7 +5209,7 @@ public class PNLightRemoteUiRendererView: UIView {
             } catch {
                 guard let self else { return }
                 self.isPurchaseActionInFlight = false
-                NSLog("[PNLight][PurchaseAction] Purchase failed; running on_fail")
+                NSLog("[PNLight][PurchaseAction] Purchase failed (%@); running on_fail", error.localizedDescription)
                 self.performDivKitActions(
                     onFail,
                     path: path,
@@ -4887,6 +5237,53 @@ public class PNLightRemoteUiRendererView: UIView {
             NSLog("[PNLight][PurchaseAction] Ignoring invalid entries in %@", key)
         }
         return actions
+    }
+
+    /// Handles the SDK-owned `pnlight.restore` typed custom action: syncs the
+    /// user's App Store purchases, then runs `on_success` or `on_fail`.
+    fileprivate func handleRestoreAction(
+        payload: DivDictionary,
+        context: DivActionHandlingContext
+    ) {
+        guard payload["id"] as? String == "pnlight.restore" else { return }
+        guard schemaVersion >= PNLightRemoteUiSchema.storeExtensionsVersion else {
+            NSLog(
+                "[PNLight][RestoreAction] Ignoring restore action: schemaVersion %d is below required version %d",
+                schemaVersion,
+                PNLightRemoteUiSchema.storeExtensionsVersion
+            )
+            return
+        }
+        guard !isPurchaseActionInFlight else {
+            NSLog("[PNLight][RestoreAction] Ignoring restore action while a store request is in progress")
+            return
+        }
+        isPurchaseActionInFlight = true
+
+        let params = payload["params"] as? DivDictionary ?? [:]
+        let onSuccess = purchaseFollowUpActions(params, key: "on_success")
+        let onFail = purchaseFollowUpActions(params, key: "on_fail")
+        let path = context.info.path
+        let source = context.info.source
+
+        Task { @MainActor [weak self] in
+            let succeeded: Bool
+            do {
+                try await PNLight.PNLightSDK.shared.restorePurchases()
+                succeeded = true
+            } catch {
+                NSLog("[PNLight][RestoreAction] Restore failed; running on_fail")
+                succeeded = false
+            }
+            guard let self else { return }
+            self.isPurchaseActionInFlight = false
+            self.performDivKitActions(
+                succeeded ? onSuccess : onFail,
+                path: path,
+                source: source,
+                sender: self
+            )
+        }
     }
 
     private func presentDialog(
