@@ -35,7 +35,7 @@ public struct RemoteUiAction {
 /// view.onAction = { action in print(action.url) }
 /// Task {
 ///     if let config = await PNLightSDK.shared.getUIConfig(placement: "my_placement") {
-///         view.applyConfig(configJson: config.config, cardId: "my_card")
+///         view.applyUIConfig(config, cardId: "my_card")
 ///     }
 /// }
 /// ```
@@ -74,6 +74,13 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
+    }
+
+    /// Applies a backend UI response, including its capture and Home gesture policy.
+    public func applyUIConfig(_ config: UIConfig?, cardId: String) {
+        secure = config?.secure ?? true
+        deferHomeGesture = config?.deferHomeGesture ?? false
+        applyConfig(configJson: config?.config, cardId: cardId)
     }
 
     @available(*, deprecated, message: "Remote UI secure rendering and capture blocking are controlled by the backend.")
@@ -191,6 +198,7 @@ public struct RemoteUiView: UIViewRepresentable {
             currentRequestId += 1
             let requestId = currentRequestId
             view.secure = true
+            view.deferHomeGesture = false
             view.showLoading()
             Task {
                 let result = await PNLightSDK.shared.getUIConfigResult(placement: placement, ignoreCache: ignoreCache)
@@ -200,10 +208,10 @@ public struct RemoteUiView: UIViewRepresentable {
                           cardId == currentCardId else { return }
                     switch result {
                     case .success(let config):
-                        view.secure = config?.secure ?? true
-                        view.applyConfig(configJson: config?.config, cardId: cardId)
+                        view.applyUIConfig(config, cardId: cardId)
                     case .failure(let error):
                         view.secure = true
+                        view.deferHomeGesture = false
                         view.showLoadFailure()
                         view.onError?(error)
                     }

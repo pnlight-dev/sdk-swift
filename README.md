@@ -559,9 +559,27 @@ A document lists at most 16 products, each once. An invalid `products` array
 fails the document. `products` requires `"schemaVersion": 6`; older schemas
 ignore it.
 
+### Document files
+
+A document built by the PNLight console reads its pictures from storage and
+lists them under the root `files` array (`id`, `url`, `contentType`, `bytes`).
+Document files require `"schemaVersion": 7`; schemas 1–6 ignore `files` and
+retain DivKit's original image-loading behavior.
+Before the SDK hands a config out of `getUIConfig` (from the server, from
+memory, or from disk), it downloads and decodes every listed file into memory
+(`PNLightDocumentImages`), waiting up to fifteen seconds on top of the config
+itself. The renderer gives DivKit the decoded pictures directly, so a document
+with files draws exactly like one with inline pictures: every picture is in
+the first layout pass and nothing fills in later. After the first time the
+files come from the shared `URLCache` on disk, so the wait is short. A
+document handed to `applyConfig` by other means loads its pictures first, then
+shows. A picture still missing after the wait loads when drawn.
+
 ### Remote UI schema version
 
 PNLight versions the Remote UI envelope independently from the SDK package.
+Schema v7 adds the root `files` array and preloads its images before the first
+layout pass. Schemas v1–v6 continue to use DivKit's original image loading.
 Schema v6 adds the `pnlight.restore` action, the root `products` array with its
 `products`, `selected_product` and `selected` variables, and expressions in
 the purchase action's `product_id`.
@@ -1297,6 +1315,33 @@ RemoteUiView(placement: "paywall", cardId: "paywall_card") { action in
 }
 ```
 
+### Defer the iOS Home gesture
+
+For a `schemaVersion: 8` Remote UI document, the backend UI response can set
+`"deferHomeGesture": true` alongside `secure`. While that placement is visible,
+the first swipe from the bottom edge reveals the system gesture; a second swipe
+can leave the app. An absent or false flag, and documents using schemas 1–7,
+keep the usual gesture. This does not affect a sheet's `dismissible` setting.
+
+UIKit reads this preference from the hosting **view controller**, so an
+embedded Remote UI view needs its host to opt in once:
+
+```swift
+final class RemoteScreenController: UIViewController {
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        PNLightHomeGestureDeferral.preferredEdges(for: self)
+    }
+}
+```
+
+For SwiftUI, use the same override in the screen's `UIHostingController`
+subclass. A custom container controller must forward
+`childForScreenEdgesDeferringSystemGestures` to its visible child. The SDK
+notifies the host when the backend flag or view attachment changes. The
+SDK-owned flow modals handle this preference themselves. For UIKit rendering,
+pass the fetched response to `PNLightRemoteUiView.applyUIConfig(_:cardId:)` so
+its backend policies are applied with the document.
+
 Native CTA and icon buttons also support the standard DivKit `actions` array.
 Actions execute in declaration order through DivKit's normal action handler,
 including typed variable/state actions, PNLight haptics, dialogs, navigation,
@@ -1520,6 +1565,7 @@ PNLightSDK.shared.clearUIConfigCache()
 | `onAction: ((RemoteUiAction) -> Void)?` | Called on the main thread when a custom action fires |
 | `onPurchased: ((String) -> Void)?` | Called on the main thread after this view verifies a Remote UI purchase |
 | `onClosed: (() -> Void)?` | Called on the main thread when the document runs `pnlight://close` |
+| `applyUIConfig(_:cardId:)` | Render a fetched UI config and apply its backend capture and Home gesture policies |
 | `applyConfig(configJson:cardId:)` | Load and render a server-driven layout from a JSON string |
 
 ### `RemoteUiAction`

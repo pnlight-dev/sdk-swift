@@ -2638,6 +2638,9 @@ fileprivate enum PNLightRemoteUiSchema {
     /// The `pnlight.restore` action and the root `products` array, published
     /// as the `products`, `selected_product` and `selected` variables.
     static let storeExtensionsVersion = 6
+    /// Root `files` are decoded before rendering and supplied to DivKit from
+    /// the document image cache.
+    static let documentFilesVersion = PNLightDocumentImagePolicy.requiredSchemaVersion
     /// `pnlight.progress_bar` and `pnlight.animated_number`.
     static let nativeComponentsVersion = 3
     static let latestSupportedVersion = PNLight.PNLightRemoteUISchema.latestSupportedVersion
@@ -3738,6 +3741,21 @@ private final class PNLightHapticController {
 
 private final class PNLightFlowNavigationController: UINavigationController {
     let isModalFlowContext: Bool
+    var deferHomeGesture = false {
+        didSet {
+            if deferHomeGesture != oldValue {
+                setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+            }
+        }
+    }
+
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        deferHomeGesture ? .bottom : []
+    }
+
+    override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
+        deferHomeGesture ? nil : super.childForScreenEdgesDeferringSystemGestures
+    }
 
     init(rootViewController: UIViewController, isModalFlowContext: Bool) {
         self.isModalFlowContext = isModalFlowContext
@@ -3881,8 +3899,14 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
             rootViewController: root,
             isModalFlowContext: false
         )
+        navigationController.deferHomeGesture = owner.deferHomeGesture
         navigationController.view.backgroundColor = .clear
         prepareAllRoutes()
+    }
+
+    func setDeferHomeGesture(_ enabled: Bool) {
+        navigationController.deferHomeGesture = enabled
+        presentedNavigationControllers.forEach { $0.deferHomeGesture = enabled }
     }
 
     func installView(in container: UIView) {
@@ -4032,6 +4056,7 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
                     rootViewController: controller,
                     isModalFlowContext: true
                 )
+                modalNavigation.deferHomeGesture = self.owner?.deferHomeGesture ?? false
                 self.configure(
                     modalNavigation,
                     with: (route.presentation ?? .largeSheet).overriding(with: action.params)
@@ -4273,6 +4298,31 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
     }
 }
 
+/// Use from a hosting view controller's `preferredScreenEdgesDeferringSystemGestures`.
+/// UIKit asks the controller, rather than an embedded UIView, whether to defer
+/// the Home gesture. The backend flag is effective only while a configured
+/// Remote UI view is visible in this controller's view hierarchy.
+public enum PNLightHomeGestureDeferral {
+    public static func preferredEdges(for controller: UIViewController) -> UIRectEdge {
+        guard controller.isViewLoaded,
+              controller.view.window != nil else {
+            return []
+        }
+        return containsEnabledRemoteUI(in: controller.view) ? .bottom : []
+    }
+
+    private static func containsEnabledRemoteUI(in view: UIView) -> Bool {
+        guard !view.isHidden, view.alpha > 0.01 else { return false }
+        if let remoteUI = view as? PNLightRemoteUiRendererView {
+            guard !remoteUI.isLeavingHierarchy else { return false }
+            if remoteUI.deferHomeGesture, remoteUI.window != nil {
+                return true
+            }
+        }
+        return view.subviews.contains(where: containsEnabledRemoteUI)
+    }
+}
+
 public class PNLightRemoteUiRendererView: UIView {
     private final class CustomActionHandler: DivCustomActionHandling {
         weak var owner: PNLightRemoteUiRendererView?
@@ -4344,10 +4394,13 @@ public class PNLightRemoteUiRendererView: UIView {
     private let urlHandler: UrlHandler
     private let customActionHandler: CustomActionHandler
     private let customBlockFactory: PNLightCustomBlockFactory
+    private let documentImagePolicy: PNLightDocumentImagePolicy
     private let hapticController: PNLightHapticController
     private var dialogDefinitions: [String: PNLightDialogDefinition] = [:]
     private weak var presentedDialog: UIAlertController?
     private var currentCardId = "divkit"
+    /// Counts applyConfig calls, so a render waiting on pictures knows it is still wanted.
+    private var applyGeneration = 0
     private let dismissActionName = "view_dismissed"
     private var flowCoordinator: PNLightFlowCoordinator?
     private var captureObservers: [NSObjectProtocol] = []
@@ -4370,6 +4423,14 @@ public class PNLightRemoteUiRendererView: UIView {
             }
         }
     }
+    var deferHomeGesture = false {
+        didSet {
+            guard deferHomeGesture != oldValue else { return }
+            flowCoordinator?.setDeferHomeGesture(deferHomeGesture)
+            notifyHomeGestureDeferralChanged()
+        }
+    }
+    fileprivate var isLeavingHierarchy = false
     var preventRecording: Bool {
         didSet {
             // Deprecated. Capture reporting is backend-controlled.
@@ -4416,12 +4477,17 @@ public class PNLightRemoteUiRendererView: UIView {
         hapticController = PNLightHapticController()
         let customBlockFactory = PNLightCustomBlockFactory()
         self.customBlockFactory = customBlockFactory
+        let documentImagePolicy = PNLightDocumentImagePolicy()
+        self.documentImagePolicy = documentImagePolicy
         let productVariables = PNLightProductVariables()
         self.productVariables = productVariables
         let divKitComponents = DivKitComponents(
             customActionHandler: customActionHandler,
             divCustomBlockFactory: customBlockFactory,
             extensionHandlers: [makePNLightLottieExtensionHandler()],
+            imageHolderFactory: PNLightDocumentImageHolders.makeImageHolderFactory(
+                policy: documentImagePolicy
+            ),
             urlHandler: urlHandler,
             variablesStorage: DivVariablesStorage(outerStorage: productVariables.storage)
         )
@@ -4457,12 +4523,17 @@ public class PNLightRemoteUiRendererView: UIView {
         hapticController = PNLightHapticController()
         let customBlockFactory = PNLightCustomBlockFactory()
         self.customBlockFactory = customBlockFactory
+        let documentImagePolicy = PNLightDocumentImagePolicy()
+        self.documentImagePolicy = documentImagePolicy
         let productVariables = PNLightProductVariables()
         self.productVariables = productVariables
         let divKitComponents = DivKitComponents(
             customActionHandler: customActionHandler,
             divCustomBlockFactory: customBlockFactory,
             extensionHandlers: [makePNLightLottieExtensionHandler()],
+            imageHolderFactory: PNLightDocumentImageHolders.makeImageHolderFactory(
+                policy: documentImagePolicy
+            ),
             urlHandler: urlHandler,
             variablesStorage: DivVariablesStorage(outerStorage: productVariables.storage)
         )
@@ -4518,6 +4589,9 @@ public class PNLightRemoteUiRendererView: UIView {
 
     public override func didMoveToWindow() {
         super.didMoveToWindow()
+        if window != nil {
+            isLeavingHierarchy = false
+        }
         if window == nil {
             hapticController.stopAll()
             flowCoordinator?.detach()
@@ -4526,6 +4600,37 @@ public class PNLightRemoteUiRendererView: UIView {
         }
         updateSafeAreaLayout()
         evaluateCaptureStateIfNeeded()
+        notifyHomeGestureDeferralChanged()
+    }
+
+    public override func willMove(toWindow newWindow: UIWindow?) {
+        if newWindow == nil {
+            isLeavingHierarchy = true
+            notifyHomeGestureDeferralChanged()
+        }
+        super.willMove(toWindow: newWindow)
+    }
+
+    public override func willMove(toSuperview newSuperview: UIView?) {
+        isLeavingHierarchy = true
+        notifyHomeGestureDeferralChanged()
+        super.willMove(toSuperview: newSuperview)
+    }
+
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if superview != nil && window != nil {
+            isLeavingHierarchy = false
+        }
+        notifyHomeGestureDeferralChanged()
+    }
+
+    public override var isHidden: Bool {
+        didSet {
+            if isHidden != oldValue {
+                notifyHomeGestureDeferralChanged()
+            }
+        }
     }
 
     public func applyConfig(configJson: String?, cardId: String) {
@@ -4537,6 +4642,10 @@ public class PNLightRemoteUiRendererView: UIView {
         cardId: String,
         sharedProducts: PNLightDocumentProducts?
     ) {
+        // Invalidate any render still waiting for a previous document's files,
+        // including when this call clears the view and returns early.
+        applyGeneration += 1
+        let generation = applyGeneration
         // Run before every exit, including empty, invalid, and older documents.
         setProducts(sharedProducts)
         hapticController.configure(patterns: [:])
@@ -4560,6 +4669,35 @@ public class PNLightRemoteUiRendererView: UIView {
         divView.alpha = 0
 
         let preservedDocument = PNLightNativeButtonActionPreserver.preserve(in: data)
+        let documentSchemaVersion = try? PNLightRemoteUiSchema.parse(from: preservedDocument.root)
+        let effectiveSchemaVersion = schemaVersionOverride ?? documentSchemaVersion
+        guard let effectiveSchemaVersion,
+              effectiveSchemaVersion >= PNLightRemoteUiSchema.documentFilesVersion else {
+            renderDocument(preservedDocument, cardId: cardId, sharedProducts: sharedProducts)
+            return
+        }
+        // A config from the SDK arrives with its pictures already in memory,
+        // so it draws at once. A document handed in by other means (a file,
+        // a test) loads them first, so it too shows whole. A later applyConfig
+        // makes this one stale, and its render is dropped.
+        let fileURLs = PNLightDocumentImages.fileURLs(in: preservedDocument.root)
+        if PNLightDocumentImages.holds(all: fileURLs) {
+            renderDocument(preservedDocument, cardId: cardId, sharedProducts: sharedProducts)
+            return
+        }
+        Task { @MainActor [weak self] in
+            await PNLightDocumentImages.load(fileURLs)
+            guard let self, self.applyGeneration == generation else { return }
+            self.renderDocument(preservedDocument, cardId: cardId, sharedProducts: sharedProducts)
+        }
+    }
+
+    /// Parses the document and shows it: a flow, or one DivKit card.
+    private func renderDocument(
+        _ preservedDocument: (data: Data, root: [String: Any]?),
+        cardId: String,
+        sharedProducts: PNLightDocumentProducts?
+    ) {
         do {
             let preservedData = preservedDocument.data
             let rootObject = preservedDocument.root
@@ -4712,6 +4850,7 @@ public class PNLightRemoteUiRendererView: UIView {
     private func configureSchemaVersion(_ version: Int) {
         schemaVersion = version
         customBlockFactory.schemaVersion = version
+        documentImagePolicy.schemaVersion = version
         lastPublishedScale = nil
     }
 
@@ -4757,6 +4896,7 @@ public class PNLightRemoteUiRendererView: UIView {
 
     /// Shows the loading indicator (e.g. while the config request is in flight).
     public func showLoading() {
+        applyGeneration += 1
         errorLabel.alpha = 0
         divView.alpha = 0
         flowCoordinator?.navigationController.view.alpha = 0
@@ -4766,6 +4906,7 @@ public class PNLightRemoteUiRendererView: UIView {
 
     /// Stops the loader and surfaces a load failure in the view.
     public func showLoadFailure(message: String? = nil) {
+        applyGeneration += 1
         resetFlow()
         errorLabel.text = message ?? loadFailureMessage
         loadingIndicator.stopAnimating()
@@ -5380,6 +5521,17 @@ public class PNLightRemoteUiRendererView: UIView {
             responder = current.next
         }
         return nil
+    }
+
+    private func notifyHomeGestureDeferralChanged() {
+        var controller = nearestViewController
+        var visited = Set<ObjectIdentifier>()
+        while let current = controller,
+              visited.insert(ObjectIdentifier(current)).inserted {
+            current.setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
+            controller = current.parent ?? current.presentingViewController
+        }
+        window?.rootViewController?.setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
     }
 
     private func resetFlow() {
