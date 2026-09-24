@@ -17,6 +17,7 @@ struct PaywallScreen: View {
             onClosed: dismissOnce,
             onAction: handleAction
         )
+        .pnlightHomeGestureDeferral()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
     }

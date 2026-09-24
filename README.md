@@ -42,6 +42,12 @@ For apps that need IDFA tracking, add `NSUserTrackingUsageDescription` to `Info.
 <string>This app uses device tracking to provide analytics and improve user experience.</string>
 ```
 
+The optional backend-controlled **Home gesture deferral** needs a one-time host
+change: add `.pnlightHomeGestureDeferral()` to a SwiftUI `RemoteUiView`, or
+override `preferredScreenEdgesDeferringSystemGestures` in a UIKit host. See
+[Defer the iOS Home gesture](#defer-the-ios-home-gesture). Without it,
+`deferHomeGesture: true` has no effect.
+
 ---
 
 ## Example Project
@@ -1323,8 +1329,29 @@ the first swipe from the bottom edge reveals the system gesture; a second swipe
 can leave the app. An absent or false flag, and documents using schemas 1–7,
 keep the usual gesture. This does not affect a sheet's `dismissible` setting.
 
-UIKit reads this preference from the hosting **view controller**, so an
-embedded Remote UI view needs its host to opt in once:
+UIKit asks the hosting **view controller**, not an embedded view, whether to
+defer the gesture, so the host opts in once. The setup depends on how the
+screen is hosted.
+
+**SwiftUI.** Attach `pnlightHomeGestureDeferral()` directly to `RemoteUiView`:
+
+```swift
+RemoteUiView(placement: "paywall", cardId: "paywall_card")
+    .pnlightHomeGestureDeferral()
+```
+
+This works with the SwiftUI app lifecycle (`@main struct App` + `WindowGroup`);
+no `UIHostingController` subclass is needed. Deferral needs iOS 16, and on
+iOS 15 the modifier has no effect. Keep the modifier on the `RemoteUiView`
+itself rather than on a parent that presents it: a `sheet` or
+`fullScreenCover` is hosted by its own view controller, so a modifier outside
+it cannot reach the presented screen. Deferral stops when the view leaves the
+hierarchy, and within a fraction of a second after a UIKit ancestor is hidden or
+made transparent. SwiftUI's `.opacity(0)` does not hide it from UIKit; remove
+the `RemoteUiView` (for example, with `if`) instead.
+
+**UIKit.** Override the preference on the view controller that shows
+`PNLightRemoteUiView` (or a `UIHostingController` subclass you create yourself):
 
 ```swift
 final class RemoteScreenController: UIViewController {
@@ -1334,13 +1361,14 @@ final class RemoteScreenController: UIViewController {
 }
 ```
 
-For SwiftUI, use the same override in the screen's `UIHostingController`
-subclass. A custom container controller must forward
+A custom container controller must forward
 `childForScreenEdgesDeferringSystemGestures` to its visible child. The SDK
-notifies the host when the backend flag or view attachment changes. The
-SDK-owned flow modals handle this preference themselves. For UIKit rendering,
-pass the fetched response to `PNLightRemoteUiView.applyUIConfig(_:cardId:)` so
-its backend policies are applied with the document.
+notifies the host when the backend flag or view attachment changes. Pass the
+fetched response to `PNLightRemoteUiView.applyUIConfig(_:cardId:)` so its
+backend policies are applied with the document.
+
+SDK-owned flow modals handle this preference themselves in both cases. Without
+the modifier or the override, `deferHomeGesture: true` has no effect.
 
 Native CTA and icon buttons also support the standard DivKit `actions` array.
 Actions execute in declaration order through DivKit's normal action handler,
@@ -1557,6 +1585,10 @@ PNLightSDK.shared.clearUIConfigCache()
 | `onPurchased` | `((String) -> Void)?` | Called with the `productId` after this view verifies a Remote UI purchase |
 | `onClosed` | `(() -> Void)?` | Called when the document runs `pnlight://close`; dismiss the view here |
 | `onAction` | `((RemoteUiAction) -> Void)?` | Called when a custom action is triggered |
+
+| Modifier | Description |
+| --- | --- |
+| `.pnlightHomeGestureDeferral()` | Applies the backend `deferHomeGesture` flag of this `RemoteUiView` to the SwiftUI screen (iOS 16+) |
 
 ### `PNLightRemoteUiView` (UIKit)
 

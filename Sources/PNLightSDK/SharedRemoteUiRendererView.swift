@@ -4298,6 +4298,15 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
     }
 }
 
+/// Forwards visibility checks without the timer retaining the renderer.
+private final class HomeGestureVisibilityTicker: NSObject {
+    weak var view: PNLightRemoteUiRendererView?
+
+    @objc func tick() {
+        view?.refreshHomeGestureDeferralIfNeeded()
+    }
+}
+
 /// Use from a hosting view controller's `preferredScreenEdgesDeferringSystemGestures`.
 /// UIKit asks the controller, rather than an embedded UIView, whether to defer
 /// the Home gesture. The backend flag is effective only while a configured
@@ -4313,11 +4322,9 @@ public enum PNLightHomeGestureDeferral {
 
     private static func containsEnabledRemoteUI(in view: UIView) -> Bool {
         guard !view.isHidden, view.alpha > 0.01 else { return false }
-        if let remoteUI = view as? PNLightRemoteUiRendererView {
-            guard !remoteUI.isLeavingHierarchy else { return false }
-            if remoteUI.deferHomeGesture, remoteUI.window != nil {
-                return true
-            }
+        if let remoteUI = view as? PNLightRemoteUiRendererView,
+           remoteUI.isDeferringHomeGesture {
+            return true
         }
         return view.subviews.contains(where: containsEnabledRemoteUI)
     }
@@ -4428,7 +4435,25 @@ public class PNLightRemoteUiRendererView: UIView {
             guard deferHomeGesture != oldValue else { return }
             flowCoordinator?.setDeferHomeGesture(deferHomeGesture)
             notifyHomeGestureDeferralChanged()
+            updateHomeGestureVisibilityMonitoring()
         }
+    }
+    /// Receives whether this view currently defers the Home gesture, for hosts
+    /// that cannot override `preferredScreenEdgesDeferringSystemGestures`.
+    var onHomeGestureDeferralChange: ((Bool) -> Void)?
+    private var lastReportedHomeGestureDeferral: Bool?
+    private let homeGestureVisibilityTicker = HomeGestureVisibilityTicker()
+    private var homeGestureVisibilityTimer: Timer?
+    /// True while the backend flag is set and this view is visible: attached to a
+    /// window, and neither it nor any ancestor is hidden or transparent.
+    var isDeferringHomeGesture: Bool {
+        guard deferHomeGesture, window != nil, !isLeavingHierarchy else { return false }
+        var view: UIView? = self
+        while let current = view {
+            if current.isHidden || current.alpha <= 0.01 { return false }
+            view = current.superview
+        }
+        return true
     }
     fileprivate var isLeavingHierarchy = false
     var preventRecording: Bool {
@@ -4567,6 +4592,7 @@ public class PNLightRemoteUiRendererView: UIView {
     }
 
     deinit {
+        homeGestureVisibilityTimer?.invalidate()
         presentedDialog?.dismiss(animated: false)
         hapticController.stopAll()
         flowCoordinator?.detach()
@@ -4575,6 +4601,7 @@ public class PNLightRemoteUiRendererView: UIView {
 
     public override func layoutSubviews() {
         super.layoutSubviews()
+        refreshHomeGestureDeferralIfNeeded()
         updateSafeAreaLayout()
         loadingIndicator.center = CGPoint(
             x: contentContainer.bounds.width / 2,
@@ -4601,6 +4628,7 @@ public class PNLightRemoteUiRendererView: UIView {
         updateSafeAreaLayout()
         evaluateCaptureStateIfNeeded()
         notifyHomeGestureDeferralChanged()
+        updateHomeGestureVisibilityMonitoring()
     }
 
     public override func willMove(toWindow newWindow: UIWindow?) {
@@ -4628,6 +4656,14 @@ public class PNLightRemoteUiRendererView: UIView {
     public override var isHidden: Bool {
         didSet {
             if isHidden != oldValue {
+                notifyHomeGestureDeferralChanged()
+            }
+        }
+    }
+
+    public override var alpha: CGFloat {
+        didSet {
+            if (alpha <= 0.01) != (oldValue <= 0.01) {
                 notifyHomeGestureDeferralChanged()
             }
         }
@@ -5523,7 +5559,39 @@ public class PNLightRemoteUiRendererView: UIView {
         return nil
     }
 
+    fileprivate func refreshHomeGestureDeferralIfNeeded() {
+        if lastReportedHomeGestureDeferral != isDeferringHomeGesture {
+            notifyHomeGestureDeferralChanged()
+        }
+    }
+
+    /// UIKit has no callback for an ancestor's `isHidden` or `alpha`, so while the
+    /// backend flag is set and the view is in a window, poll the effective
+    /// visibility a few times a second and report only when it changes.
+    private func updateHomeGestureVisibilityMonitoring() {
+        let shouldMonitor = deferHomeGesture && window != nil
+        if shouldMonitor, homeGestureVisibilityTimer == nil {
+            homeGestureVisibilityTicker.view = self
+            let timer = Timer(
+                timeInterval: 0.25,
+                target: homeGestureVisibilityTicker,
+                selector: #selector(HomeGestureVisibilityTicker.tick),
+                userInfo: nil,
+                repeats: true
+            )
+            timer.tolerance = 0.1
+            RunLoop.main.add(timer, forMode: .common)
+            homeGestureVisibilityTimer = timer
+        } else if !shouldMonitor {
+            homeGestureVisibilityTimer?.invalidate()
+            homeGestureVisibilityTimer = nil
+        }
+    }
+
     private func notifyHomeGestureDeferralChanged() {
+        let isDeferring = isDeferringHomeGesture
+        lastReportedHomeGestureDeferral = isDeferring
+        onHomeGestureDeferralChange?(isDeferring)
         var controller = nearestViewController
         var visited = Set<ObjectIdentifier>()
         while let current = controller,

@@ -109,6 +109,9 @@ public final class PNLightRemoteUiView: PNLightRemoteUiRendererView {
 ///     print("Tapped:", action.url)
 /// }
 /// ```
+///
+/// Attach ``SwiftUI/View/pnlightHomeGestureDeferral()`` so a backend
+/// `deferHomeGesture` flag takes effect in a SwiftUI-owned screen.
 @available(iOS 14, *)
 public struct RemoteUiView: UIViewRepresentable {
     public let placement: String
@@ -172,6 +175,7 @@ public struct RemoteUiView: UIViewRepresentable {
         view.onClosed = onClosed
         view.onAction = onAction
         view.onError = onError
+        context.coordinator.observeHomeGestureDeferral(of: view, state: context.environment.pnlightHomeGestureDeferral)
         context.coordinator.load(into: view, placement: placement, cardId: cardId, ignoreCache: ignoreCache)
         return view
     }
@@ -181,7 +185,12 @@ public struct RemoteUiView: UIViewRepresentable {
         uiView.onClosed = onClosed
         uiView.onAction = onAction
         uiView.onError = onError
+        context.coordinator.observeHomeGestureDeferral(of: uiView, state: context.environment.pnlightHomeGestureDeferral)
         context.coordinator.load(into: uiView, placement: placement, cardId: cardId, ignoreCache: ignoreCache)
+    }
+
+    public static func dismantleUIView(_ uiView: PNLightRemoteUiView, coordinator: Coordinator) {
+        coordinator.observeHomeGestureDeferral(of: uiView, state: nil)
     }
 
     public func makeCoordinator() -> Coordinator { Coordinator() }
@@ -190,6 +199,26 @@ public struct RemoteUiView: UIViewRepresentable {
         private var currentPlacement: String?
         private var currentCardId: String?
         private var currentRequestId = 0
+        private weak var homeGestureDeferralState: PNLightHomeGestureDeferralState?
+
+        /// Reports the view's Home gesture deferral to the nearest
+        /// `pnlightHomeGestureDeferral()` modifier, moving the report when the
+        /// environment's modifier changes.
+        func observeHomeGestureDeferral(of view: PNLightRemoteUiView, state: PNLightHomeGestureDeferralState?) {
+            let source = ObjectIdentifier(self)
+            if homeGestureDeferralState !== state {
+                homeGestureDeferralState?.setDeferring(false, for: source)
+                homeGestureDeferralState = state
+            }
+            guard let state else {
+                view.onHomeGestureDeferralChange = nil
+                return
+            }
+            view.onHomeGestureDeferralChange = { [weak state] isDeferring in
+                state?.setDeferring(isDeferring, for: source)
+            }
+            state.setDeferring(view.isDeferringHomeGesture, for: source)
+        }
 
         func load(into view: PNLightRemoteUiView, placement: String, cardId: String, ignoreCache: Bool) {
             guard placement != currentPlacement || cardId != currentCardId else { return }
@@ -218,5 +247,68 @@ public struct RemoteUiView: UIViewRepresentable {
                 }
             }
         }
+    }
+}
+
+// MARK: - SwiftUI Home gesture deferral
+
+/// Collects the Home gesture deferral of every `RemoteUiView` below one
+/// `pnlightHomeGestureDeferral()` modifier.
+final class PNLightHomeGestureDeferralState: ObservableObject {
+    @Published private(set) var isDeferring = false
+    private var deferringSources = Set<ObjectIdentifier>()
+
+    func setDeferring(_ deferring: Bool, for source: ObjectIdentifier) {
+        if deferring {
+            deferringSources.insert(source)
+        } else {
+            deferringSources.remove(source)
+        }
+        // Reports arrive from UIKit layout and SwiftUI view updates, where
+        // publishing synchronously is not allowed.
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            let isDeferring = !self.deferringSources.isEmpty
+            if self.isDeferring != isDeferring {
+                self.isDeferring = isDeferring
+            }
+        }
+    }
+}
+
+private struct PNLightHomeGestureDeferralKey: EnvironmentKey {
+    static let defaultValue: PNLightHomeGestureDeferralState? = nil
+}
+
+extension EnvironmentValues {
+    var pnlightHomeGestureDeferral: PNLightHomeGestureDeferralState? {
+        get { self[PNLightHomeGestureDeferralKey.self] }
+        set { self[PNLightHomeGestureDeferralKey.self] = newValue }
+    }
+}
+
+private struct PNLightHomeGestureDeferralModifier: ViewModifier {
+    @StateObject private var state = PNLightHomeGestureDeferralState()
+
+    func body(content: Content) -> some View {
+        let content = content.environment(\.pnlightHomeGestureDeferral, state)
+        if #available(iOS 16, *) {
+            content.defersSystemGestures(on: state.isDeferring ? .bottom : [])
+        } else {
+            content
+        }
+    }
+}
+
+public extension View {
+    /// Applies the backend `deferHomeGesture` flag of the `RemoteUiView`s in
+    /// this view. While one of them is visible with the flag set, the first
+    /// swipe from the bottom edge reveals the Home indicator and a second
+    /// swipe leaves the app.
+    ///
+    /// Attach it directly to `RemoteUiView`. The deferral needs iOS 16; on
+    /// iOS 15 the modifier has no effect.
+    func pnlightHomeGestureDeferral() -> some View {
+        modifier(PNLightHomeGestureDeferralModifier())
     }
 }

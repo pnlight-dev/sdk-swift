@@ -71,6 +71,7 @@ struct RemoteUiTestBenchScreen: View {
                         record("SDK error: \(error.localizedDescription)", isError: true)
                     }
                 )
+                .pnlightHomeGestureDeferral()
             } onClose: {
                 showSdkView = false
             }
