@@ -584,6 +584,7 @@ shows. A picture still missing after the wait loads when drawn.
 ### Remote UI schema version
 
 PNLight versions the Remote UI envelope independently from the SDK package.
+Schema v9 adds the `pnlight.symbol` native SF Symbol component.
 Schema v7 adds the root `files` array and preloads its images before the first
 layout pass. Schemas v1–v6 continue to use DivKit's original image loading.
 Schema v6 adds the `pnlight.restore` action, the root `products` array with its
@@ -1418,6 +1419,49 @@ padding and stays square.
 `accessibility_label`. It falls back to the SF Symbol name, which is rarely what
 you want VoiceOver to read. An unknown symbol name is reported in the card's
 DivKit errors rather than silently rendering an empty button.
+
+### Native iOS symbol
+
+`pnlight.symbol` draws one SF Symbol natively, for icons that are not buttons:
+a list row's icon, a hero symbol, or a status glyph. It requires
+`"schemaVersion": 9`; an older document reports
+`'pnlight.symbol' requires schemaVersion 9` in the card's DivKit errors and
+renders nothing.
+
+```json
+{
+  "type": "custom",
+  "custom_type": "pnlight.symbol",
+  "width": { "type": "fixed", "value": 22 },
+  "height": { "type": "fixed", "value": 22 },
+  "custom_props": {
+    "name": "lock.shield.fill",
+    "color": "#FF007AFF",
+    "weight": "semibold",
+    "accessibility_label": "Security"
+  }
+}
+```
+
+The symbol is scaled aspect-fit and centred inside the DivKit frame. With
+`wrap_content` the frame takes the symbol image's own size at `point_size`.
+
+| Prop | Default | Description |
+| --- | --- | --- |
+| `name` | — (required) | SF Symbol name. |
+| `color` | `label` (adaptive) | `#RRGGBB` or `#AARRGGBB`. The tint for `monochrome` and `multicolor`, the base color for `hierarchical`, and the primary color for `palette`. |
+| `weight` | `regular` | `ultralight`, `thin`, `light`, `regular`, `medium`, `semibold`, `bold`, `heavy`, or `black`. |
+| `point_size` | the fixed `height`, else `17` | Symbol point size. It sets stroke detail; the drawing still fits the frame. |
+| `rendering` | `monochrome` | `monochrome`, `hierarchical`, `palette`, or `multicolor`. |
+| `secondary_color` | — | Second layer color; `palette` only. |
+| `accessibility_label` | — | VoiceOver label. Without it the symbol is decorative and hidden from accessibility. |
+| `fallback` | — | Stand-in drawing: a base64 `data:` URL, or an https URL (listed in the document's root `files` to show on the first frame; otherwise it loads and appears once in). Where the frame wraps content, a fallback takes a square `point_size` (else 17) on a side, held or loading alike. |
+
+**Unknown names:** when `name` is not an SF Symbol on the device (for example a
+symbol newer than its iOS), the renderer shows `fallback` instead. Without a
+usable `fallback` it reports `Unknown SF Symbol '<name>'` in the card's DivKit
+errors and renders nothing. The web preview cannot draw SF Symbols, so it always
+shows `fallback` when one is set and otherwise a matching Lucide icon.
 
 ### Native iOS progress bar
 

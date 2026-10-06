@@ -370,6 +370,212 @@ private final class CircularLoaderBlockFactory {
     }
 }
 
+/// Renders `pnlight.symbol` (schema 9+) as one SF Symbol in a `UIImageView`,
+/// scaled aspect-fit and centred inside the DivKit frame.
+final class NativeSymbolBlockFactory {
+    static let customType = "pnlight.symbol"
+    static let defaultPointSize: CGFloat = 17
+
+    /// The resolved image plus the tint its image view applies.
+    struct Content {
+        let image: UIImage
+        let tintColor: UIColor?
+        let isSymbol: Bool
+    }
+
+    func makeBlock(
+        props: [String: Any],
+        data: DivCustomData,
+        context: DivBlockModelingContext
+    ) -> Block {
+        let frameHeight: CGFloat?
+        if case let .fixed(value) = data.heightTrait {
+            frameHeight = value
+        } else {
+            frameHeight = nil
+        }
+
+        guard let content = Self.content(from: props, frameHeight: frameHeight) else {
+            // A fallback picture the SDK does not hold yet loads like any
+            // other DivKit picture and appears once it is in.
+            if let url = Self.remoteFallbackURL(props["fallback"]) {
+                let imageView = Self.imageView(image: nil, props: props)
+                Self.loadFallback(url, into: imageView)
+                let size = Self.intrinsicSize(of: nil, props: props, frameHeight: frameHeight)
+                return GenericViewBlock(
+                    content: .view(imageView),
+                    width: blockTrait(from: data.widthTrait, intrinsicSize: size.width),
+                    height: blockTrait(from: data.heightTrait, intrinsicSize: size.height)
+                )
+            }
+            let name = CustomPropReader.string(props["name"]) ?? ""
+            context.addError(message: "Unknown SF Symbol '\(name)'")
+            return EmptyBlock.zeroSized
+        }
+
+        let imageView = Self.imageView(image: content.image, props: props)
+        if let tintColor = content.tintColor {
+            imageView.tintColor = tintColor
+        }
+
+        let intrinsicSize = Self.intrinsicSize(of: content, props: props, frameHeight: frameHeight)
+        return GenericViewBlock(
+            content: .view(imageView),
+            width: blockTrait(from: data.widthTrait, intrinsicSize: intrinsicSize.width),
+            height: blockTrait(from: data.heightTrait, intrinsicSize: intrinsicSize.height)
+        )
+    }
+
+    /// The size the element takes where its frame wraps content: a symbol's
+    /// own, and for a fallback picture, cached or still loading alike, a
+    /// square as tall as the symbol would be, so the layout never depends on
+    /// whether the picture was already in.
+    static func intrinsicSize(of content: Content?, props: [String: Any], frameHeight: CGFloat?) -> CGSize {
+        if let content, content.isSymbol {
+            return content.image.size
+        }
+        let side = CustomPropReader.cgFloat(props["point_size"]).flatMap { $0 > 0 ? $0 : nil }
+            ?? frameHeight.flatMap { $0 > 0 ? $0 : nil }
+            ?? defaultPointSize
+        return CGSize(width: side, height: side)
+    }
+
+    /// An aspect-fit image view, announced only when the props label it.
+    private static func imageView(image: UIImage?, props: [String: Any]) -> UIImageView {
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        if let label = CustomPropReader.string(props["accessibility_label"]) {
+            imageView.isAccessibilityElement = true
+            imageView.accessibilityLabel = label
+            imageView.accessibilityTraits = .image
+        } else {
+            imageView.isAccessibilityElement = false
+            imageView.accessibilityElementsHidden = true
+        }
+        return imageView
+    }
+
+    /// The http(s) address of a `fallback` picture. Asked only after the
+    /// cache missed; the cache is not read again, since a picture prefetched
+    /// in between would otherwise leave neither path to show it.
+    static func remoteFallbackURL(_ value: Any?) -> URL? {
+        guard let fallback = CustomPropReader.string(value),
+              let url = URL(string: fallback),
+              let scheme = url.scheme?.lowercased(),
+              scheme == "https" || scheme == "http" else {
+            return nil
+        }
+        return url
+    }
+
+    /// Downloads the fallback picture (the shared URL cache serves a repeat)
+    /// and shows it in `imageView` if the view is still around.
+    private static func loadFallback(_ url: URL, into imageView: UIImageView) {
+        var request = URLRequest(url: url)
+        request.cachePolicy = .returnCacheDataElseLoad
+        Task { @MainActor [weak imageView] in
+            guard let (data, _) = try? await URLSession.shared.data(for: request),
+                  let image = UIImage(data: data) else {
+                return
+            }
+            imageView?.image = image.withRenderingMode(.alwaysOriginal)
+        }
+    }
+
+    /// Resolves the symbol image for `props`, falling back to the `fallback`
+    /// drawing when `name` is not a known SF Symbol. Returns nil when neither
+    /// yields an image.
+    static func content(from props: [String: Any], frameHeight: CGFloat?) -> Content? {
+        let color = CustomPropReader.color(props["color"]) ?? .label
+        if let name = CustomPropReader.string(props["name"]),
+           let content = symbolContent(named: name, props: props, color: color, frameHeight: frameHeight) {
+            return content
+        }
+        guard let fallback = fallbackImage(from: props["fallback"]) else { return nil }
+        return Content(image: fallback.withRenderingMode(.alwaysOriginal), tintColor: nil, isSymbol: false)
+    }
+
+    /// Builds the configured SF Symbol image for one rendering mode.
+    private static func symbolContent(
+        named name: String,
+        props: [String: Any],
+        color: UIColor,
+        frameHeight: CGFloat?
+    ) -> Content? {
+        let pointSize = CustomPropReader.cgFloat(props["point_size"]).flatMap { $0 > 0 ? $0 : nil }
+            ?? frameHeight.flatMap { $0 > 0 ? $0 : nil }
+            ?? defaultPointSize
+        var configuration = UIImage.SymbolConfiguration(
+            pointSize: pointSize,
+            weight: symbolWeight(props["weight"])
+        )
+        let renderingMode: UIImage.RenderingMode
+        let tintColor: UIColor?
+
+        switch CustomPropReader.string(props["rendering"])?.lowercased() {
+        case "hierarchical":
+            configuration = configuration.applying(UIImage.SymbolConfiguration(hierarchicalColor: color))
+            renderingMode = .alwaysOriginal
+            tintColor = nil
+        case "palette":
+            var colors = [color]
+            if let secondary = CustomPropReader.color(props["secondary_color"]) {
+                colors.append(secondary)
+            }
+            configuration = configuration.applying(UIImage.SymbolConfiguration(paletteColors: colors))
+            renderingMode = .alwaysOriginal
+            tintColor = nil
+        case "multicolor":
+            // Layers without a fixed multicolor tint follow the view's tint.
+            configuration = configuration.applying(UIImage.SymbolConfiguration.preferringMulticolor())
+            renderingMode = .automatic
+            tintColor = color
+        default:
+            renderingMode = .alwaysTemplate
+            tintColor = color
+        }
+
+        guard let image = UIImage(systemName: name, withConfiguration: configuration) else {
+            return nil
+        }
+        return Content(image: image.withRenderingMode(renderingMode), tintColor: tintColor, isSymbol: true)
+    }
+
+    /// Parses a `custom_props` weight name; anything else is regular.
+    private static func symbolWeight(_ value: Any?) -> UIImage.SymbolWeight {
+        switch CustomPropReader.string(value)?.lowercased() {
+        case "ultralight": return .ultraLight
+        case "thin": return .thin
+        case "light": return .light
+        case "medium": return .medium
+        case "semibold": return .semibold
+        case "bold": return .bold
+        case "heavy": return .heavy
+        case "black": return .black
+        default: return .regular
+        }
+    }
+
+    /// Decodes a base64 `data:` URL, or returns an https picture the SDK
+    /// already holds from the document's root `files`.
+    private static func fallbackImage(from value: Any?) -> UIImage? {
+        guard let fallback = CustomPropReader.string(value) else { return nil }
+        if fallback.lowercased().hasPrefix("data:") {
+            guard let comma = fallback.firstIndex(of: ","),
+                  fallback[..<comma].lowercased().contains(";base64"),
+                  let data = Data(
+                    base64Encoded: String(fallback[fallback.index(after: comma)...]),
+                    options: .ignoreUnknownCharacters
+                  ) else {
+                return nil
+            }
+            return UIImage(data: data)
+        }
+        guard let url = URL(string: fallback) else { return nil }
+        return PNLightDocumentImages.image(for: url)
+    }
+}
+
 // MARK: - Native buttons
 
 /// An ordered tap-action sequence parsed by DivKit and executed by the same
@@ -2483,6 +2689,7 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
     private let prependListFactory = NativePrependListBlockFactory()
     private let progressBarFactory = NativeProgressBarBlockFactory()
     private let animatedNumberFactory = NativeAnimatedNumberBlockFactory()
+    private let symbolFactory = NativeSymbolBlockFactory()
 
     func makeBlock(data: DivCustomData, context: DivBlockModelingContext) -> Block {
         var rawProps = data.data
@@ -2533,6 +2740,11 @@ private final class PNLightCustomBlockFactory: DivCustomBlockFactory {
                 return EmptyBlock.zeroSized
             }
             return animatedNumberFactory.makeBlock(props: props, data: data, context: context)
+        case NativeSymbolBlockFactory.customType:
+            guard supportsComponent(named: data.name, since: PNLightRemoteUiSchema.nativeSymbolVersion, context: context) else {
+                return EmptyBlock.zeroSized
+            }
+            return symbolFactory.makeBlock(props: props, data: data, context: context)
         default:
             context.addError(message: "Unsupported PNLight custom type '\(data.name)'")
             return EmptyBlock.zeroSized
@@ -2643,6 +2855,8 @@ fileprivate enum PNLightRemoteUiSchema {
     static let documentFilesVersion = PNLightDocumentImagePolicy.requiredSchemaVersion
     /// `pnlight.progress_bar` and `pnlight.animated_number`.
     static let nativeComponentsVersion = 3
+    /// `pnlight.symbol`, one natively drawn SF Symbol.
+    static let nativeSymbolVersion = 9
     static let latestSupportedVersion = PNLight.PNLightRemoteUISchema.latestSupportedVersion
 
     static func parse(from root: [String: Any]?) throws -> Int {
@@ -4057,10 +4271,11 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
                     isModalFlowContext: true
                 )
                 modalNavigation.deferHomeGesture = self.owner?.deferHomeGesture ?? false
-                self.configure(
-                    modalNavigation,
-                    with: (route.presentation ?? .largeSheet).overriding(with: action.params)
-                )
+                let presentation = (route.presentation ?? .largeSheet).overriding(with: action.params)
+                if presentation.style == .fullScreen {
+                    self.stopCoveredHaptics()
+                }
+                self.configure(modalNavigation, with: presentation)
                 modalNavigation.presentationController?.delegate = self
                 self.presentedNavigationControllers.removeAll {
                     $0.presentingViewController == nil && $0.viewIfLoaded?.window == nil
@@ -4244,6 +4459,20 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
         appearance.window?.backgroundColor = appearance.windowBackgroundColor
     }
 
+    /// A full screen stays over the routes under it without taking them out
+    /// of the window, so it stops their haptic patterns itself, as leaving
+    /// the window would.
+    private func stopCoveredHaptics() {
+        owner?.stopHaptics()
+        let navigations: [PNLightFlowNavigationController] =
+            [navigationController] + presentedNavigationControllers
+        navigations.forEach { navigation in
+            navigation.viewControllers
+                .compactMap { $0 as? PNLightFlowRouteViewController }
+                .forEach { $0.renderer.stopHaptics() }
+        }
+    }
+
     private func validRoute(named routeId: String?) -> PNLightFlowDefinition.Route? {
         guard let routeId, let route = definition.routes[routeId] else {
             NSLog("[PNLight][RemoteUiFlow] Ignoring navigation to unknown route '%@'", routeId ?? "")
@@ -4258,7 +4487,12 @@ private final class PNLightFlowCoordinator: NSObject, UIAdaptivePresentationCont
     ) {
         switch presentation.style {
         case .fullScreen:
-            navigationController.modalPresentationStyle = .fullScreen
+            // `.fullScreen` takes the presenting screen out of the window, and
+            // a renderer that leaves the window detaches its flow, dismissing
+            // this very presentation. Over full screen looks the same and keeps
+            // the flow's host in place.
+            navigationController.modalPresentationStyle = .overFullScreen
+            navigationController.modalPresentationCapturesStatusBarAppearance = true
 
         case .embedded, .sheet:
             navigationController.modalPresentationStyle = .pageSheet
@@ -5261,6 +5495,11 @@ public class PNLightRemoteUiRendererView: UIView {
         }
         presentDialog(definition, sourceView: sender as? UIView)
         return true
+    }
+
+    /// Stops every haptic pattern this renderer started.
+    fileprivate func stopHaptics() {
+        hapticController.stopAll()
     }
 
     fileprivate func handleHapticAction(_ url: URL) -> Bool {
